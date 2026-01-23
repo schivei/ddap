@@ -346,7 +346,7 @@ public class YamlOutputFormatterTests
 
         // Assert
         memoryStream.Position = 0;
-        var reader = new StreamReader(memoryStream);
+        using var reader = new StreamReader(memoryStream);
         var content = await reader.ReadToEndAsync();
         content.Should().NotBeEmpty();
         content.Should().Contain("Name:");
@@ -386,7 +386,7 @@ public class YamlOutputFormatterTests
 
         // Assert
         memoryStream.Position = 0;
-        var reader = new StreamReader(memoryStream);
+        using var reader = new StreamReader(memoryStream);
         var content = await reader.ReadToEndAsync();
         content.Should().NotBeNull();
     }
@@ -418,7 +418,7 @@ public class YamlOutputFormatterTests
 
         // Assert
         memoryStream.Position = 0;
-        var reader = new StreamReader(memoryStream);
+        using var reader = new StreamReader(memoryStream);
         var content = await reader.ReadToEndAsync();
         content.Should().Contain("Name:");
         content.Should().Contain("Items:");

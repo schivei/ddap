@@ -62,9 +62,9 @@ public class EntityHub : Hub
     {
         lock (_lock)
         {
-            if (_subscriptions.ContainsKey(entityName))
+            if (_subscriptions.TryGetValue(entityName, out var connections))
             {
-                _subscriptions[entityName].Remove(Context.ConnectionId);
+                connections.Remove(Context.ConnectionId);
             }
         }
 

@@ -176,10 +176,10 @@ public static class QueryFilterBuilder
         {
             if (expression[i] == '(') level++;
             if (expression[i] == ')') level--;
-            if (level == 0 && i + op.Length <= expression.Length)
+            if (level == 0 && i + op.Length <= expression.Length &&
+                expression.Substring(i, op.Length).Equals(op, StringComparison.OrdinalIgnoreCase))
             {
-                if (expression.Substring(i, op.Length).Equals(op, StringComparison.OrdinalIgnoreCase))
-                    return i;
+                return i;
             }
         }
         return -1;

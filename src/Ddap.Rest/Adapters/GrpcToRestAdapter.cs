@@ -47,17 +47,9 @@ public class GrpcToRestAdapter
 
         // Check if method has ServerCallContext parameter
         var parameters = method.GetParameters();
-        object? result;
-
-        if (parameters.Length == 2 && parameters[1].ParameterType == typeof(ServerCallContext))
-        {
-            // Create a dummy ServerCallContext (for non-streaming calls)
-            result = method.Invoke(serviceInstance, new object[] { request, null! });
-        }
-        else
-        {
-            result = method.Invoke(serviceInstance, new object[] { request });
-        }
+        var result = parameters.Length == 2 && parameters[1].ParameterType == typeof(ServerCallContext)
+            ? method.Invoke(serviceInstance, new object[] { request, null! })
+            : method.Invoke(serviceInstance, new object[] { request });
 
         if (result is Task<TResponse> taskResult)
         {
