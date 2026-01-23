@@ -1,0 +1,45 @@
+# DDAP API Reference
+
+Welcome to the DDAP API Reference documentation. This section provides detailed API documentation generated from XML comments in the source code.
+
+## Namespaces
+
+Browse the API documentation by namespace:
+
+- **Ddap.Core** - Core abstractions and interfaces
+- **Ddap.Data.Dapper.SqlServer** - SQL Server provider with Dapper
+- **Ddap.Data.Dapper.MySQL** - MySQL provider with Dapper
+- **Ddap.Data.Dapper.PostgreSQL** - PostgreSQL provider with Dapper
+- **Ddap.Data.EntityFramework** - Entity Framework Core provider
+- **Ddap.Rest** - REST API provider
+- **Ddap.GraphQL** - GraphQL provider
+- **Ddap.Grpc** - gRPC provider
+- **Ddap.Memory** - In-memory entity management
+- **Ddap.CodeGen** - Source generators
+- **Ddap.Aspire** - .NET Aspire integration
+- **Ddap.Auth** - Authentication and authorization
+- **Ddap.Subscriptions** - Real-time subscriptions
+
+## Key Interfaces
+
+### Core Interfaces
+
+- `IEntityConfiguration` - Represents entity metadata
+- `IPropertyConfiguration` - Represents property/column metadata
+- `IIndexConfiguration` - Represents index metadata
+- `IRelationshipConfiguration` - Represents foreign key relationships
+- `IEntityRepository` - Entity registry
+- `IDataProvider` - Database provider abstraction
+- `IDdapBuilder` - Fluent configuration API
+
+## Getting Started
+
+To understand how to use these APIs, check out our guides:
+
+- [Getting Started](../get-started.html)
+- [Architecture Overview](../architecture.html)
+- [Advanced Usage](../advanced.html)
+
+## Contributing
+
+Found an issue in the API documentation? Please [open an issue](https://github.com/schivei/ddap/issues) on GitHub.

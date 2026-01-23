@@ -9,13 +9,18 @@
           ],
           "exclude": [
             "**/bin/**",
-            "**/obj/**"
+            "**/obj/**",
+            "**/Internals/**"
           ]
         }
       ],
       "dest": "api",
+      "includePrivateMembers": false,
       "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "disableDefaultFilter": false,
+      "properties": {
+        "TargetFramework": "net10.0"
+      }
     }
   ],
   "build": {
@@ -30,6 +35,9 @@
         "files": [
           "*.md",
           "toc.yml"
+        ],
+        "exclude": [
+          "_site/**"
         ]
       }
     ],
@@ -44,10 +52,24 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "default",
+      "modern"
     ],
     "postProcessors": [],
+    "markdownEngineName": "markdig",
     "keepFileLink": false,
-    "disableGitFeatures": false
+    "disableGitFeatures": false,
+    "globalMetadata": {
+      "_appTitle": "DDAP - Dynamic Data API Provider",
+      "_appName": "DDAP",
+      "_appFooter": "DDAP - Dynamic Data API Provider | MIT License",
+      "_enableSearch": true,
+      "_enableNewTab": true,
+      "_disableContribution": false,
+      "_gitContribute": {
+        "repo": "https://github.com/schivei/ddap",
+        "branch": "main"
+      }
+    }
   }
 }

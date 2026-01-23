@@ -34,31 +34,36 @@ jobs:
 
     - name: Setup DocFX
       run: dotnet tool install -g docfx
-      continue-on-error: true
 
-    - name: Generate API documentation
+    - name: Restore and Build projects
+      run: |
+        dotnet restore
+        dotnet build --configuration Release --no-restore
+      continue-on-error: false
+
+    - name: Generate API documentation from XML comments
       run: |
         mkdir -p docs/api
-        docfx metadata docs/docfx.json || echo "DocFX metadata generation skipped (optional)"
-      continue-on-error: true
+        docfx metadata docs/docfx.json
+      continue-on-error: false
 
-    - name: Build documentation with DocFX
+    - name: Build documentation site with DocFX
       run: |
-        cd docs
-        docfx build docfx.json || echo "DocFX build skipped (optional)"
-      continue-on-error: true
+        docfx build docs/docfx.json
+      continue-on-error: false
 
-    - name: Create documentation site
+    - name: Enhance documentation site
       run: |
-        mkdir -p docs/_site
+        # DocFX has already created docs/_site with API documentation
+        # Now we add our custom markdown documentation as HTML
         
-        # Copy markdown documentation files
+        # Copy markdown files for reference
         cp docs/*.md docs/_site/ 2>/dev/null || true
         cp README.md docs/_site/ 2>/dev/null || true
         cp CONTRIBUTING.md docs/_site/ 2>/dev/null || true
         
         # Create HTML wrappers for each markdown file
-        for mdfile in docs/_site/*.md; do
+        for mdfile in docs/*.md; do
           if [ -f "$mdfile" ]; then
             basename=$(basename "$mdfile" .md)
             cat > "docs/_site/${basename}.html" << 'HTMLEOF'
@@ -67,7 +72,7 @@ jobs:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDAP Documentation</title>
+    <title>DDAP Documentation - ${basename}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -89,6 +94,7 @@ jobs:
             <h1>🚀 DDAP Documentation</h1>
             <div class="nav-links">
                 <a href="index.html">Home</a>
+                <a href="api/">API Reference</a>
                 <a href="https://github.com/schivei/ddap">GitHub</a>
             </div>
         </div>
@@ -244,6 +250,11 @@ HTMLEOF
                                 <h3>🎯 Get Started</h3>
                                 <p>Learn the basics and create your first DDAP API in minutes</p>
                                 <a href="get-started.html">Start Tutorial →</a>
+                            </div>
+                            <div class="nav-card">
+                                <h3>📖 API Reference</h3>
+                                <p>Complete API documentation generated from XML comments</p>
+                                <a href="api/">Browse API →</a>
                             </div>
                             <div class="nav-card">
                                 <h3>🏗️ Architecture</h3>
