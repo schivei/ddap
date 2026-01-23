@@ -1,0 +1,121 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build-docs:
+    name: Build and Deploy Documentation
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup DocFX
+      run: dotnet tool install -g docfx
+
+    - name: Generate API documentation
+      run: |
+        mkdir -p docs/api
+        docfx metadata docs/docfx.json || echo "DocFX metadata generation needs configuration"
+      continue-on-error: true
+
+    - name: Build documentation
+      run: |
+        cd docs
+        docfx build docfx.json || echo "DocFX build needs configuration"
+      continue-on-error: true
+
+    - name: Create documentation index
+      run: |
+        mkdir -p docs/_site
+        cat > docs/_site/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>DDAP Documentation</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+                h1 { color: #333; }
+                .section { margin: 20px 0; padding: 20px; background: #f5f5f5; border-radius: 5px; }
+                a { color: #0066cc; text-decoration: none; }
+                a:hover { text-decoration: underline; }
+                code { background: #e0e0e0; padding: 2px 5px; border-radius: 3px; }
+            </style>
+        </head>
+        <body>
+            <h1>DDAP - Dynamic Data API Provider</h1>
+            <p>Welcome to the DDAP documentation. DDAP automatically generates REST, gRPC, and GraphQL APIs from your database schema.</p>
+            
+            <div class="section">
+                <h2>Getting Started</h2>
+                <p>Install the NuGet packages:</p>
+                <pre><code>dotnet add package Ddap.Core
+        dotnet add package Ddap.Data
+        dotnet add package Ddap.Rest
+        dotnet add package Ddap.Grpc
+        dotnet add package Ddap.GraphQL</code></pre>
+            </div>
+
+            <div class="section">
+                <h2>Quick Start</h2>
+                <pre><code>builder.Services
+            .AddDdap(options => {
+                options.ConnectionString = "...";
+                options.Provider = DatabaseProvider.SQLServer;
+            })
+            .AddDataProvider()
+            .AddRest()      // JSON (Newtonsoft.Json), XML, YAML support
+            .AddGrpc()
+            .AddGraphQL();</code></pre>
+            </div>
+
+            <div class="section">
+                <h2>Features</h2>
+                <ul>
+                    <li><strong>Multiple Database Providers:</strong> SQL Server, MySQL, PostgreSQL</li>
+                    <li><strong>Multiple API Formats:</strong> REST (JSON/XML/YAML), gRPC, GraphQL</li>
+                    <li><strong>Content Negotiation:</strong> Automatic format selection via Accept header</li>
+                    <li><strong>JSON Serialization:</strong> Uses Newtonsoft.Json for all JSON operations</li>
+                    <li><strong>Extensible:</strong> Partial classes for custom extensions</li>
+                    <li><strong>Code Generation:</strong> Compile-time code generation support</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="https://github.com/schivei/ddap">GitHub Repository</a></li>
+                    <li><a href="https://github.com/schivei/ddap/tree/main/examples">Examples</a></li>
+                    <li><a href="https://www.nuget.org/packages?q=ddap">NuGet Packages</a></li>
+                </ul>
+            </div>
+        </body>
+        </html>
+        EOF
+
+    - name: Upload to GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs/_site
+
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v4

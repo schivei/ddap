@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Ddap.Data" />
+    <InternalsVisibleTo Include="Ddap.Data.Dapper.SqlServer" />
+    <InternalsVisibleTo Include="Ddap.Data.Dapper.MySQL" />
+    <InternalsVisibleTo Include="Ddap.Data.Dapper.PostgreSQL" />
+    <InternalsVisibleTo Include="Ddap.Data.EntityFramework" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Ddap.Core\Ddap.Core.csproj" />
+    <ProjectReference Include="..\..\src\Ddap.Rest\Ddap.Rest.csproj" />
+    <ProjectReference Include="..\..\src\Ddap.Grpc\Ddap.Grpc.csproj" />
+    <ProjectReference Include="..\..\src\Ddap.GraphQL\Ddap.GraphQL.csproj" />
+    <ProjectReference Include="..\..\src\Ddap.Data.Dapper.SqlServer\Ddap.Data.Dapper.SqlServer.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
