@@ -110,7 +110,7 @@ public class QueryTests
         {
             CreateTestEntity("Entity1", "dbo", 5),
             CreateTestEntity("Entity2", "schema1", 3),
-            CreateTestEntity("Entity3", null, 2)
+            CreateTestEntity("Entity3", null, 2),
         };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
@@ -145,10 +145,7 @@ public class QueryTests
     {
         // Arrange
         var query = new Query();
-        var entities = new List<IEntityConfiguration>
-        {
-            CreateTestEntity("Entity1", null, 5)
-        };
+        var entities = new List<IEntityConfiguration> { CreateTestEntity("Entity1", null, 5) };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
@@ -231,10 +228,7 @@ public class QueryTests
     {
         // Arrange
         var query = new Query();
-        var entities = new List<IEntityConfiguration>
-        {
-            CreateTestEntity("Entity1", "dbo", 1)
-        };
+        var entities = new List<IEntityConfiguration> { CreateTestEntity("Entity1", "dbo", 1) };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
@@ -259,7 +253,11 @@ public class QueryTests
         _mockRepository.Verify(r => r.GetEntity("TestEntity"), Times.Once);
     }
 
-    private static IEntityConfiguration CreateTestEntity(string name, string? schema, int propertyCount)
+    private static IEntityConfiguration CreateTestEntity(
+        string name,
+        string? schema,
+        int propertyCount
+    )
     {
         var properties = new List<IPropertyConfiguration>();
         for (int i = 0; i < propertyCount; i++)
@@ -339,7 +337,7 @@ public class EntityMetadataTests
         {
             Name = "TestEntity",
             Schema = "dbo",
-            PropertyCount = 5
+            PropertyCount = 5,
         };
 
         // Assert
@@ -356,7 +354,7 @@ public class EntityMetadataTests
         {
             Name = "TestEntity",
             Schema = null,
-            PropertyCount = 5
+            PropertyCount = 5,
         };
 
         // Assert
@@ -371,7 +369,7 @@ public class EntityMetadataTests
         {
             Name = "TestEntity",
             Schema = "dbo",
-            PropertyCount = 0
+            PropertyCount = 0,
         };
 
         // Assert
@@ -386,7 +384,7 @@ public class EntityMetadataTests
         {
             Name = "TestEntity",
             Schema = "dbo",
-            PropertyCount = 1000
+            PropertyCount = 1000,
         };
 
         // Assert

@@ -69,7 +69,7 @@ public class DdapServiceCollectionExtensionsTests
         // Assert
         builder.Should().NotBeNull();
         builder.Services.Should().BeSameAs(services);
-        
+
         var serviceProvider = services.BuildServiceProvider();
         var entityRepository = serviceProvider.GetService<IEntityRepository>();
         entityRepository.Should().NotBeNull();

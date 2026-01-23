@@ -22,10 +22,10 @@ public static class DdapSubscriptionsExtensions
     /// })
     /// .AddGraphQL()
     /// .AddDdapSubscriptions();
-    /// 
+    ///
     /// // In application startup:
     /// app.MapHub&lt;EntityHub&gt;("/entityhub");
-    /// 
+    ///
     /// // Subscribe to entity changes in GraphQL:
     /// subscription {
     ///   onEntityChanged(entityName: "User") {

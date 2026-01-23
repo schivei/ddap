@@ -1,0 +1,17 @@
+{
+  "name": "ddap",
+  "version": "1.0.0",
+  "description": "Dynamic Data API Provider for .NET",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "format": "dotnet tool restore && dotnet csharpier format .",
+    "format:check": "dotnet tool restore && dotnet csharpier check .",
+    "test": "dotnet test Ddap.slnx --configuration Release --verbosity minimal"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11"
+  },
+  "author": "schivei",
+  "license": "MIT"
+}

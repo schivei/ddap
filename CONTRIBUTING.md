@@ -323,15 +323,51 @@ public class entityconfiguration
 
 ### Code Formatting
 
-The project uses **CSharpier** for consistent formatting:
+The project uses **CSharpier** for consistent code formatting. The formatting is enforced through:
+
+1. **Pre-commit hooks** - Automatically formats code before commits
+2. **CI/CD pipeline** - Validates formatting in pull requests
+3. **Build integration** - Auto-formats in Debug builds
+
+#### Manual Formatting Commands
 
 ```bash
-# Format all files
-dotnet format
+# Restore .NET tools (first time or after clean)
+dotnet tool restore
 
-# Check formatting
-dotnet format --verify-no-changes
+# Format all files in the solution
+dotnet csharpier format .
+
+# Check if formatting is needed (without modifying files)
+dotnet csharpier check .
+
+# Using npm scripts
+npm run format        # Format all files
+npm run format:check  # Check formatting
 ```
+
+#### Pre-commit Hook
+
+The project uses **Husky** for git hooks. After cloning the repository, install dependencies:
+
+```bash
+# Install npm dependencies and setup hooks
+npm install
+```
+
+The pre-commit hook will automatically:
+1. Restore .NET tools
+2. Format code with CSharpier
+3. Run unit tests
+4. Abort commit if formatting changed files or tests fail
+
+#### Editor Integration
+
+Configure your IDE to use CSharpier:
+
+- **Visual Studio**: Install the CSharpier extension
+- **VS Code**: Install the "CSharpier - Code formatter" extension
+- **JetBrains Rider**: Install the CSharpier plugin
 
 Configuration is in `.editorconfig` and `.csharpierrc.json`.
 

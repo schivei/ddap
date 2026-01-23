@@ -1,7 +1,7 @@
+using System.Text;
 using Ddap.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 
 namespace Ddap.Grpc.Controllers;
 
@@ -13,7 +13,7 @@ namespace Ddap.Grpc.Controllers;
 /// <code>
 /// // Download .proto for specific entity:
 /// // GET /proto/User
-/// 
+///
 /// // Download .proto for all entities:
 /// // GET /proto
 /// </code>

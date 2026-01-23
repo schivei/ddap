@@ -72,12 +72,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }}
 
-    - name: Install CSharpier
-      run: dotnet tool install -g csharpier
+    - name: Restore .NET tools
+      run: dotnet tool restore
 
     - name: Check code formatting
-      run: dotnet csharpier --check .
-      continue-on-error: true
+      run: dotnet csharpier check .
+      continue-on-error: false
 
     - name: Build
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release

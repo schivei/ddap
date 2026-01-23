@@ -15,16 +15,11 @@ internal class SchemaRefreshHostedService : BackgroundService
     private readonly int _intervalSeconds;
     private readonly ILogger<SchemaRefreshHostedService> _logger;
 
-    public SchemaRefreshHostedService(
-        IServiceProvider serviceProvider,
-        int intervalSeconds
-    )
+    public SchemaRefreshHostedService(IServiceProvider serviceProvider, int intervalSeconds)
     {
         _serviceProvider = serviceProvider;
         _intervalSeconds = intervalSeconds;
-        _logger = serviceProvider.GetRequiredService<
-            ILogger<SchemaRefreshHostedService>
-        >();
+        _logger = serviceProvider.GetRequiredService<ILogger<SchemaRefreshHostedService>>();
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,13 +37,12 @@ internal class SchemaRefreshHostedService : BackgroundService
             {
                 using var scope = _serviceProvider.CreateScope();
                 var dataProvider = scope.ServiceProvider.GetService<IDataProvider>();
-                var entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+                var entityRepository =
+                    scope.ServiceProvider.GetRequiredService<IEntityRepository>();
 
                 if (dataProvider == null)
                 {
-                    _logger.LogWarning(
-                        "No data provider registered. Schema refresh skipped."
-                    );
+                    _logger.LogWarning("No data provider registered. Schema refresh skipped.");
                     continue;
                 }
 

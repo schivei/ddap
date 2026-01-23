@@ -13,13 +13,13 @@ namespace Ddap.Auth.Attributes;
 /// {
 ///     // Only users with read permission can access
 /// }
-/// 
+///
 /// [DdapAuthorize(DdapAuthorizationPolicies.Write)]
 /// public async Task&lt;IActionResult&gt; UpdateEntity(string id, EntityData data)
 /// {
 ///     // Only users with write permission can access
 /// }
-/// 
+///
 /// [DdapAuthorize(DdapAuthorizationPolicies.Admin)]
 /// public async Task&lt;IActionResult&gt; DeleteEntity(string id)
 /// {
@@ -27,7 +27,11 @@ namespace Ddap.Auth.Attributes;
 /// }
 /// </code>
 /// </example>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+[AttributeUsage(
+    AttributeTargets.Class | AttributeTargets.Method,
+    AllowMultiple = true,
+    Inherited = true
+)]
 public class DdapAuthorizeAttribute : AuthorizeAttribute
 {
     /// <summary>

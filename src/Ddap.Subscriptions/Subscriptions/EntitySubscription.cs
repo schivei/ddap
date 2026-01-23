@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using HotChocolate;
-using HotChocolate.Types;
 using HotChocolate.Subscriptions;
+using HotChocolate.Types;
 
 namespace Ddap.Subscriptions.Subscriptions;
 
@@ -21,7 +21,7 @@ namespace Ddap.Subscriptions.Subscriptions;
 ///     data
 ///   }
 /// }
-/// 
+///
 /// // To publish changes from code:
 /// await eventSender.SendAsync("entity_changed_User", new EntityChangeNotification
 /// {
@@ -47,13 +47,17 @@ public partial class EntitySubscription
     public async IAsyncEnumerable<EntityChangeNotification> OnEntityChanged(
         string entityName,
         [Service] ITopicEventReceiver eventReceiver,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
     {
         var stream = await eventReceiver.SubscribeAsync<EntityChangeNotification>(
-            $"entity_changed_{entityName}", 
-            cancellationToken);
+            $"entity_changed_{entityName}",
+            cancellationToken
+        );
 
-        await foreach (var notification in stream.ReadEventsAsync().WithCancellation(cancellationToken))
+        await foreach (
+            var notification in stream.ReadEventsAsync().WithCancellation(cancellationToken)
+        )
         {
             yield return notification;
         }

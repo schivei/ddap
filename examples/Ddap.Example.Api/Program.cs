@@ -1,8 +1,8 @@
 using Ddap.Core;
 using Ddap.Data.Dapper.SqlServer;
-using Ddap.Rest;
-using Ddap.Grpc;
 using Ddap.GraphQL;
+using Ddap.Grpc;
+using Ddap.Rest;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,8 +34,7 @@ app.MapGraphQL("/graphql");
 
 app.MapGet(
     "/",
-    () =>
-        "DDAP Example API - Use /api/entity to see loaded entities, /graphql for GraphQL"
+    () => "DDAP Example API - Use /api/entity to see loaded entities, /graphql for GraphQL"
 );
 
 app.Run();

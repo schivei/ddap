@@ -1,3 +1,4 @@
+using System.Text;
 using Ddap.Core;
 using Ddap.Core.Internals;
 using Ddap.Rest;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System.Text;
 using Xunit;
 
 namespace Ddap.Tests.Rest;
@@ -111,7 +111,7 @@ public class EntityControllerTests
         var entities = new List<IEntityConfiguration>
         {
             CreateTestEntity("Entity1", "dbo", 5),
-            CreateTestEntity("Entity2", "schema1", 3)
+            CreateTestEntity("Entity2", "schema1", 3),
         };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
@@ -159,7 +159,9 @@ public class EntityControllerTests
     public void GetEntityMetadata_Should_Return_NotFound_When_Entity_Does_Not_Exist()
     {
         // Arrange
-        _mockRepository.Setup(r => r.GetEntity("NonExistent")).Returns((IEntityConfiguration?)null);
+        _mockRepository
+            .Setup(r => r.GetEntity("NonExistent"))
+            .Returns((IEntityConfiguration?)null);
 
         // Act
         var result = _controller.GetEntityMetadata("NonExistent");
@@ -215,7 +217,11 @@ public class EntityControllerTests
         result.Should().BeOfType<OkObjectResult>();
     }
 
-    private static IEntityConfiguration CreateTestEntity(string name, string? schema, int propertyCount)
+    private static IEntityConfiguration CreateTestEntity(
+        string name,
+        string? schema,
+        int propertyCount
+    )
     {
         var properties = new List<IPropertyConfiguration>();
         for (int i = 0; i < propertyCount; i++)
@@ -244,7 +250,7 @@ public class EntityControllerTests
     private static IEntityConfiguration CreateTestEntityWithDetails(string name, string? schema)
     {
         var properties = new List<IPropertyConfiguration>();
-        
+
         var mockProp1 = new Mock<IPropertyConfiguration>();
         mockProp1.Setup(p => p.PropertyName).Returns("Id");
         mockProp1.Setup(p => p.ColumnName).Returns("Id");
@@ -404,7 +410,7 @@ public class YamlOutputFormatterTests
         {
             Name = "Test",
             Items = new[] { "Item1", "Item2" },
-            Nested = new { Value = 42 }
+            Nested = new { Value = 42 },
         };
         var context = new OutputFormatterWriteContext(
             httpContext,

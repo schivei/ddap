@@ -20,15 +20,15 @@ public static class DdapAspireExtensions
     /// <example>
     /// <code>
     /// var builder = DistributedApplication.CreateBuilder(args);
-    /// 
+    ///
     /// var db = builder.AddSqlServer("sql")
     ///                .AddDatabase("mydb");
-    /// 
+    ///
     /// builder.AddDdapApi("api")
     ///        .WithReference(db)
     ///        .WithRestApi()
     ///        .WithGraphQL();
-    /// 
+    ///
     /// builder.Build().Run();
     /// </code>
     /// </example>
@@ -38,10 +38,12 @@ public static class DdapAspireExtensions
     )
     {
         var resource = new DdapResource(name);
-        return builder.AddResource(resource).WithManifestPublishingCallback(context =>
-        {
-            context.Writer.WriteString("type", "project.v0");
-        });
+        return builder
+            .AddResource(resource)
+            .WithManifestPublishingCallback(context =>
+            {
+                context.Writer.WriteString("type", "project.v0");
+            });
     }
 
     /// <summary>

@@ -9,10 +9,10 @@ namespace Ddap.Auth.Policies;
 /// // Use in controllers:
 /// [Authorize(Policy = DdapAuthorizationPolicies.Read)]
 /// public async Task&lt;IActionResult&gt; GetEntity(string id) { }
-/// 
+///
 /// [Authorize(Policy = DdapAuthorizationPolicies.Write)]
 /// public async Task&lt;IActionResult&gt; UpdateEntity(string id, object data) { }
-/// 
+///
 /// [Authorize(Policy = DdapAuthorizationPolicies.Admin)]
 /// public async Task&lt;IActionResult&gt; DeleteEntity(string id) { }
 /// </code>

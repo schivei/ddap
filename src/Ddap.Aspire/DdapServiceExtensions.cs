@@ -20,14 +20,14 @@ public static class DdapServiceExtensions
     /// <example>
     /// <code>
     /// var builder = WebApplication.CreateBuilder(args);
-    /// 
+    ///
     /// builder.AddServiceDefaults();
-    /// 
+    ///
     /// builder.Services.AddDdapForAspire(builder.Configuration)
     ///        .AddSqlServerDapper()
     ///        .AddRest()
     ///        .AddGraphQL();
-    /// 
+    ///
     /// var app = builder.Build();
     /// app.Run();
     /// </code>
@@ -68,10 +68,7 @@ public static class DdapServiceExtensions
         var builder = services.AddDdapForAspire(configuration);
 
         // Add auto-refresh hosted service
-        services.AddHostedService(sp => new SchemaRefreshHostedService(
-            sp,
-            refreshIntervalSeconds
-        ));
+        services.AddHostedService(sp => new SchemaRefreshHostedService(sp, refreshIntervalSeconds));
 
         return builder;
     }

@@ -84,5 +84,6 @@ public class EntityGeneratorConfig
     /// <summary>
     /// Gets or sets custom properties or metadata for this entity.
     /// </summary>
-    public Dictionary<string, string> CustomProperties { get; set; } = new Dictionary<string, string>();
+    public Dictionary<string, string> CustomProperties { get; set; } =
+        new Dictionary<string, string>();
 }
