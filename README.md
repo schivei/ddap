@@ -16,7 +16,10 @@
 - 📦 **Modular**: Separate libraries for each provider
 - 🎯 **Builder Pattern**: Fluent API for easy configuration
 - 📊 **Code Coverage**: Generated code automatically excluded from coverage reports
-- 🔄 **Source Generators**: Compile-time code generation support
+- 🔄 **Source Generators**: Compile-time code generation support with `Ddap.CodeGen`
+- 🔐 **Authentication & Authorization**: JWT, role-based access, entity-level security with `Ddap.Auth`
+- 🔔 **Real-Time Subscriptions**: SignalR and GraphQL subscriptions with `Ddap.Subscriptions`
+- ☁️ **.NET Aspire Integration**: Seamless integration with `Ddap.Aspire` for cloud-native apps
 
 ## Quick Start
 
@@ -207,6 +210,123 @@ All providers support:
 - UUID/GUID keys
 - Auto-increment columns
 
+## Advanced Features
+
+### Authentication & Authorization (`Ddap.Auth`)
+
+Secure your APIs with JWT authentication and role-based authorization:
+
+```csharp
+builder.Services
+    .AddDdap(options => { /* ... */ })
+    .AddSqlServerDapper()
+    .AddAuth(authOptions =>
+    {
+        authOptions.RequireAuthenticationByDefault = true;
+        authOptions.AddEntityPolicy("Users", policy => policy.RequireRole("Admin"));
+        authOptions.AddEntityPolicy("Products", policy => policy.RequireAuthenticatedUser());
+    })
+    .AddRest();
+```
+
+**Features:**
+- JWT Bearer authentication
+- Role-based authorization
+- Entity-level security policies
+- Field-level access control
+- Multi-tenant support
+
+[📖 See full Auth example](examples/Ddap.Example.Auth)
+
+### Real-Time Subscriptions (`Ddap.Subscriptions`)
+
+Get real-time notifications when data changes:
+
+```csharp
+builder.Services
+    .AddDdap(options => { /* ... */ })
+    .AddSqlServerDapper()
+    .AddRest()
+    .AddGraphQL()
+    .AddSubscriptions(subscriptionOptions =>
+    {
+        subscriptionOptions.EnableFor("Products");
+        subscriptionOptions.NotifyOnCreate = true;
+        subscriptionOptions.NotifyOnUpdate = true;
+    });
+```
+
+**Features:**
+- SignalR integration
+- GraphQL subscriptions
+- WebSocket support
+- Filtered notifications
+- Custom event handlers
+
+[📖 See full Subscriptions example](examples/Ddap.Example.Subscriptions)
+
+### Source Generator (`Ddap.CodeGen`)
+
+Generate strongly-typed entity classes at compile-time:
+
+```csharp
+[GenerateEntity("Products")]
+public partial class Product
+{
+    // Properties generated from database schema at compile-time
+    // Full IntelliSense support!
+}
+```
+
+**Benefits:**
+- Type-safe property access
+- IntelliSense support
+- Compile-time checking
+- No reflection overhead
+- Auto-generated DTOs
+
+[📖 See full CodeGen example](examples/Ddap.Example.CodeGen)
+
+### .NET Aspire Integration (`Ddap.Aspire`)
+
+Seamless integration with .NET Aspire for cloud-native applications:
+
+```csharp
+var builder = DistributedApplication.CreateBuilder(args);
+
+var db = builder.AddSqlServer("sqlserver").AddDatabase("catalogdb");
+
+var api = builder.AddDdapApi("ddap-api")
+                 .WithReference(db)
+                 .WithRestApi()
+                 .WithGraphQL()
+                 .WithAutoRefresh(30);
+
+builder.Build().Run();
+```
+
+**Features:**
+- Automatic service discovery
+- Database connection management
+- Auto-refresh for schema changes
+- Observability dashboard
+- Easy scaling
+
+[📖 See full Aspire example](examples/Ddap.Example.Aspire)
+
+## Database Support
+
+- **SQL Server** - Full support with indexes, relationships, composite keys
+- **MySQL** - Full support
+- **PostgreSQL** - Full support
+
+All providers support:
+- Complex indexes
+- Foreign key relationships
+- Composite primary keys
+- UUID/GUID keys
+- Auto-increment columns
+
 ## CI/CD
 
 The project includes GitHub Actions workflows for:
@@ -249,12 +369,23 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Roadmap
 
-- [ ] Enhanced source generator support
+### Completed ✅
+- ✅ **Authentication and authorization support** - Available via `Ddap.Auth` package
+- ✅ **Real-time subscriptions** - Available via `Ddap.Subscriptions` package with SignalR
+- ✅ **Source generator support** - Available via `Ddap.CodeGen` package
+- ✅ **.NET Aspire integration** - Available via `Ddap.Aspire` package
+
+### In Progress 🚧
+- [ ] Enhanced query filtering and pagination
 - [ ] Dynamic .proto file download endpoint for gRPC
 - [ ] REST endpoints derived from gRPC services
-- [ ] Advanced query filtering and pagination
-- [ ] Real-time subscriptions (GraphQL/SignalR)
-- [ ] Authentication and authorization support
+
+### Planned 📋
+- [ ] OData support
+- [ ] Webhook notifications
+- [ ] Rate limiting and throttling
+- [ ] Advanced caching strategies
+- [ ] Multi-tenancy support
 
 ## Documentation
 
@@ -273,11 +404,20 @@ Full documentation is available at [https://schivei.github.io/ddap](https://schi
 
 ## Examples
 
-Check out the [example application](examples/Ddap.Example.Api) for a complete working implementation showcasing:
-- Multiple database providers
-- REST, gRPC, and GraphQL APIs
-- Content negotiation (JSON, XML, YAML)
-- Custom endpoint extensions
+Comprehensive examples demonstrating each feature:
+
+- **[Basic API Example](examples/Ddap.Example.Api)** - REST, gRPC, and GraphQL with multiple database providers
+- **[Aspire Integration](examples/Ddap.Example.Aspire)** - .NET Aspire orchestration with auto-refresh
+- **[Authentication & Authorization](examples/Ddap.Example.Auth)** - JWT authentication, role-based access, entity-level security
+- **[Real-Time Subscriptions](examples/Ddap.Example.Subscriptions)** - SignalR and GraphQL subscriptions for live updates
+- **[Source Generator](examples/Ddap.Example.CodeGen)** - Compile-time entity generation with strong typing
+
+Each example includes:
+- Complete source code
+- Step-by-step setup instructions
+- Configuration examples
+- Usage demonstrations
+- Best practices
 
 ## Support
 
