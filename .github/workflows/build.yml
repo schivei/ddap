@@ -21,14 +21,15 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: YourStrong@Passw0rd
+          MSSQL_SA_PASSWORD: YourStrong@Passw0rd
         ports:
           - 1433:1433
         options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q 'SELECT 1'"
+          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -C -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q 'SELECT 1'"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
+          --health-retries=10
+          --health-start-period=10s
 
       mysql:
         image: mysql:8.0
@@ -79,11 +80,41 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
 
     - name: Run tests
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage --settings coverlet.runsettings
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
         POSTGRES_CONNECTION: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres_password;"
+
+    - name: Generate Coverage Report
+      run: |
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:"coverage/report" -reporttypes:"Html;MarkdownSummaryGithub;Cobertura" -verbosity:Info
+        
+    - name: Check Coverage Threshold
+      run: |
+        reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:"coverage/report" -reporttypes:"Badges" -verbosity:Info
+        # Parse coverage and fail if below 80%
+        LINES=$(grep -oP 'Line coverage: \K[0-9.]+' coverage/report/Summary.md | head -1 || echo "0")
+        BRANCHES=$(grep -oP 'Branch coverage: \K[0-9.]+' coverage/report/Summary.md | head -1 || echo "0")
+        echo "Line Coverage: ${LINES}%"
+        echo "Branch Coverage: ${BRANCHES}%"
+        if (( $(echo "$LINES < 80" | bc -l) )); then
+          echo "❌ Line coverage ${LINES}% is below the required 80%"
+          exit 1
+        fi
+        if (( $(echo "$BRANCHES < 80" | bc -l) )); then
+          echo "❌ Branch coverage ${BRANCHES}% is below the required 80%"
+          exit 1
+        fi
+        echo "✅ Coverage meets requirements: Lines ${LINES}%, Branches ${BRANCHES}%"
+
+    - name: Comment PR with Coverage
+      if: github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: coverage
+        path: coverage/report/SummaryGithub.md
 
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
