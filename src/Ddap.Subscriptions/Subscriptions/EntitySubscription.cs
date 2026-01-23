@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using HotChocolate;
 using HotChocolate.Types;
 using HotChocolate.Subscriptions;
@@ -46,7 +47,7 @@ public partial class EntitySubscription
     public async IAsyncEnumerable<EntityChangeNotification> OnEntityChanged(
         string entityName,
         [Service] ITopicEventReceiver eventReceiver,
-        CancellationToken cancellationToken = default)
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var stream = await eventReceiver.SubscribeAsync<EntityChangeNotification>(
             $"entity_changed_{entityName}", 
