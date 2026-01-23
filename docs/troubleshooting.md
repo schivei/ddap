@@ -199,6 +199,8 @@ Unable to connect to any of the specified MySQL hosts
 
 4. **Create a dedicated application user (recommended):**
    ```sql
+   -- Replace 'your-strong-password' with a secure password (min 16 chars, mixed case, numbers, symbols)
+   -- Replace 'your_database' with your actual database name
    CREATE USER 'ddap_app'@'localhost' IDENTIFIED BY 'your-strong-password';
    GRANT SELECT, INSERT, UPDATE, DELETE ON your_database.* TO 'ddap_app'@'localhost';
    FLUSH PRIVILEGES;
