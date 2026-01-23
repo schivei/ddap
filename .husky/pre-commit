@@ -1,3 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
 # Restore .NET tools
 echo "Restoring .NET tools..."
 dotnet tool restore
@@ -23,4 +26,3 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "All checks passed!"
-

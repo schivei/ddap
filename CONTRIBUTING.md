@@ -340,26 +340,26 @@ dotnet csharpier format .
 
 # Check if formatting is needed (without modifying files)
 dotnet csharpier check .
-
-# Using npm scripts
-npm run format        # Format all files
-npm run format:check  # Check formatting
 ```
 
 #### Pre-commit Hook
 
-The project uses **Husky** for git hooks. After cloning the repository, install dependencies:
+The project uses **Husky.Net** for git hooks. After cloning the repository:
 
 ```bash
-# Install npm dependencies and setup hooks
-npm install
+# Restore .NET tools (includes Husky.Net and CSharpier)
+dotnet tool restore
+
+# Install git hooks
+dotnet husky install
 ```
 
 The pre-commit hook will automatically:
 1. Restore .NET tools
 2. Format code with CSharpier
-3. Run unit tests
-4. Abort commit if formatting changed files or tests fail
+3. Auto-stage formatted files
+4. Run unit tests
+5. Abort commit only if tests fail
 
 #### Editor Integration
 
