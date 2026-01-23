@@ -65,34 +65,204 @@ jobs:
             basename=$(basename "$mdfile" .md)
             cat > "docs/_site/${basename}.html" <<'HTMLEOF'
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="en" data-theme="light">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>DDAP Documentation</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
-            <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
             <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f8fa; margin: 0; padding: 0; }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+                :root[data-theme="light"] {
+                    --bg-primary: #ffffff;
+                    --bg-secondary: #f6f8fa;
+                    --text-primary: #24292f;
+                    --text-secondary: #57606a;
+                    --text-tertiary: #6e7781;
+                    --link-color: #0969da;
+                    --link-hover: #0550ae;
+                    --border-color: #d0d7de;
+                    --code-bg: rgba(175,184,193,0.2);
+                    --code-text: #1f2328;
+                    --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    --shadow: rgba(0,0,0,0.1);
+                }
+                :root[data-theme="dark"] {
+                    --bg-primary: #0d1117;
+                    --bg-secondary: #010409;
+                    --text-primary: #e6edf3;
+                    --text-secondary: #8d96a0;
+                    --text-tertiary: #7d8590;
+                    --link-color: #4493f8;
+                    --link-hover: #58a6ff;
+                    --border-color: #30363d;
+                    --code-bg: rgba(110,118,129,0.2);
+                    --code-text: #e6edf3;
+                    --header-bg: linear-gradient(135deg, #4a5fa8 0%, #5a3c72 100%);
+                    --shadow: rgba(0,0,0,0.5);
+                }
+                :root[data-theme="high-contrast"] {
+                    --bg-primary: #ffffff;
+                    --bg-secondary: #f0f0f0;
+                    --text-primary: #000000;
+                    --text-secondary: #000000;
+                    --text-tertiary: #1a1a1a;
+                    --link-color: #0000ee;
+                    --link-hover: #0000cc;
+                    --border-color: #000000;
+                    --code-bg: #e0e0e0;
+                    --code-text: #000000;
+                    --header-bg: #000000;
+                    --shadow: rgba(0,0,0,0.3);
+                }
+                * { box-sizing: border-box; }
+                body { 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    margin: 0;
+                    padding: 0;
+                    line-height: 1.6;
+                }
+                .header {
+                    background: var(--header-bg);
+                    color: white;
+                    padding: 20px;
+                    box-shadow: 0 2px 10px var(--shadow);
+                }
+                .header-content {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    gap: 15px;
+                }
                 .header h1 { margin: 0; font-size: 1.8em; }
-                .nav-links a { color: white; text-decoration: none; margin-left: 20px; opacity: 0.9; }
+                .nav-links { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+                .nav-links a {
+                    color: white;
+                    text-decoration: none;
+                    opacity: 0.9;
+                    transition: opacity 0.2s;
+                }
                 .nav-links a:hover { opacity: 1; }
-                .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-                .markdown-body { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                .back-link { display: inline-block; margin-bottom: 20px; color: #667eea; text-decoration: none; }
-                .back-link:hover { text-decoration: underline; }
-                /* Contrast fix for light mode - WCAG 4.5:1 compliance */
-                @media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
-                    .markdown-body { color: #24292f !important; }
-                    .markdown-body p, .markdown-body li, .markdown-body td, .markdown-body th, .markdown-body dd, .markdown-body dt { color: #24292f !important; }
-                    .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 { color: #1f2328 !important; }
-                    .markdown-body a { color: #0969da !important; }
-                    .markdown-body code { color: #1f2328 !important; background-color: rgba(175,184,193,0.2) !important; }
-                    .markdown-body pre code { color: #e6edf3 !important; }
-                    .markdown-body blockquote { color: #59636e !important; }
-                    .markdown-body strong, .markdown-body b { color: #1f2328 !important; }
+                .theme-selector {
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    padding: 5px 10px;
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 5px;
+                }
+                .theme-btn {
+                    background: none;
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    font-size: 0.85em;
+                    transition: all 0.2s;
+                }
+                .theme-btn:hover { background: rgba(255,255,255,0.2); }
+                .theme-btn.active {
+                    background: rgba(255,255,255,0.3);
+                    border-color: rgba(255,255,255,0.6);
+                }
+                .container {
+                    max-width: 1200px;
+                    margin: 40px auto;
+                    padding: 0 20px;
+                }
+                .back-link {
+                    display: inline-block;
+                    margin-bottom: 20px;
+                    color: var(--link-color);
+                    text-decoration: none;
+                }
+                .back-link:hover {
+                    text-decoration: underline;
+                    color: var(--link-hover);
+                }
+                .markdown-body {
+                    background: var(--bg-primary);
+                    padding: 40px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px var(--shadow);
+                    color: var(--text-primary);
+                }
+                .markdown-body h1, .markdown-body h2, .markdown-body h3,
+                .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+                    color: var(--text-primary);
+                    margin-top: 24px;
+                    margin-bottom: 16px;
+                    font-weight: 600;
+                    line-height: 1.25;
+                }
+                .markdown-body h1 { font-size: 2em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+                .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+                .markdown-body h3 { font-size: 1.25em; }
+                .markdown-body p, .markdown-body li, .markdown-body td, .markdown-body th {
+                    color: var(--text-primary);
+                }
+                .markdown-body a {
+                    color: var(--link-color);
+                    text-decoration: none;
+                }
+                .markdown-body a:hover {
+                    text-decoration: underline;
+                    color: var(--link-hover);
+                }
+                .markdown-body code {
+                    background: var(--code-bg);
+                    color: var(--code-text);
+                    padding: 0.2em 0.4em;
+                    border-radius: 3px;
+                    font-family: 'Courier New', Consolas, monospace;
+                    font-size: 0.85em;
+                }
+                .markdown-body pre {
+                    background: #2d2d2d;
+                    color: #f8f8f2;
+                    padding: 16px;
+                    border-radius: 6px;
+                    overflow-x: auto;
+                    line-height: 1.45;
+                }
+                .markdown-body pre code {
+                    background: none;
+                    color: inherit;
+                    padding: 0;
+                }
+                .markdown-body blockquote {
+                    color: var(--text-secondary);
+                    border-left: 4px solid var(--border-color);
+                    padding-left: 16px;
+                    margin: 16px 0;
+                }
+                .markdown-body ul, .markdown-body ol { padding-left: 2em; }
+                .markdown-body table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 16px 0;
+                }
+                .markdown-body th, .markdown-body td {
+                    border: 1px solid var(--border-color);
+                    padding: 8px 12px;
+                }
+                .markdown-body th {
+                    background: var(--bg-secondary);
+                    font-weight: 600;
+                }
+                .markdown-body img { max-width: 100%; height: auto; }
+                .markdown-body hr {
+                    border: none;
+                    border-top: 1px solid var(--border-color);
+                    margin: 24px 0;
+                }
+                .markdown-body strong, .markdown-body b {
+                    color: var(--text-primary);
+                    font-weight: 600;
                 }
             </style>
         </head>
@@ -104,6 +274,11 @@ jobs:
                         <a href="index.html">Home</a>
                         <a href="api/">API Reference</a>
                         <a href="https://github.com/schivei/ddap">GitHub</a>
+                        <div class="theme-selector">
+                            <button class="theme-btn" data-theme="light" title="Light theme">☀️</button>
+                            <button class="theme-btn" data-theme="dark" title="Dark theme">🌙</button>
+                            <button class="theme-btn" data-theme="high-contrast" title="High contrast theme">◐</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,9 +287,79 @@ jobs:
                 <div class="markdown-body" id="content">Loading...</div>
             </div>
             <script>
+                // Theme management
+                function setTheme(theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('ddap-theme', theme);
+                    document.querySelectorAll('.theme-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+                    });
+                }
+                
+                // Initialize theme
+                const savedTheme = localStorage.getItem('ddap-theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const systemPrefersContrast = window.matchMedia('(prefers-contrast: more)').matches;
+                const initialTheme = savedTheme || (systemPrefersContrast ? 'high-contrast' : (systemPrefersDark ? 'dark' : 'light'));
+                setTheme(initialTheme);
+                
+                // Theme button listeners
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.addEventListener('click', () => setTheme(btn.getAttribute('data-theme')));
+                });
+                
+                // Listen to system theme changes
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('ddap-theme')) {
+                        setTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+                
+                // Simple markdown parser
+                function parseMarkdown(md) {
+                    let html = md
+                        // Headers
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                        // Bold
+                        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                        // Italic
+                        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                        // Code blocks
+                        .replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
+                        // Inline code
+                        .replace(/`([^`]+)`/gim, '<code>$1</code>')
+                        // Links
+                        .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2">$1</a>')
+                        // Blockquotes
+                        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+                        // Horizontal rule
+                        .replace(/^\-\-\-$/gim, '<hr>')
+                        // Line breaks
+                        .replace(/\n\n/gim, '</p><p>')
+                        // Lists
+                        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                        .replace(/^- (.*$)/gim, '<li>$1</li>')
+                        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+                    
+                    // Wrap lists
+                    html = html.replace(/(<li>.*<\/li>)/gis, '<ul>$1</ul>');
+                    // Wrap text in paragraphs
+                    html = '<p>' + html + '</p>';
+                    // Clean up
+                    html = html.replace(/<p><\/p>/g, '').replace(/<p>(<h[1-6]>)/g, '$1').replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+                    html = html.replace(/<p>(<pre>)/g, '$1').replace(/(<\/pre>)<\/p>/g, '$1');
+                    html = html.replace(/<p>(<ul>)/g, '$1').replace(/(<\/ul>)<\/p>/g, '$1');
+                    html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
+                    
+                    return html;
+                }
+                
+                // Load markdown content
                 fetch('MDFILE.md')
                     .then(r => r.ok ? r.text() : Promise.reject())
-                    .then(md => { document.getElementById('content').innerHTML = marked.parse(md); })
+                    .then(md => { document.getElementById('content').innerHTML = parseMarkdown(md); })
                     .catch(() => { document.getElementById('content').innerHTML = '<h1>Error</h1><p>Could not load document.</p>'; });
             </script>
         </body>
@@ -128,39 +373,124 @@ jobs:
       run: |
         cat > docs/_site/index.html <<'INDEXEOF'
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="en" data-theme="light">
         <head>
             <title>DDAP Documentation - Dynamic Data API Provider</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <meta name="description" content="DDAP automatically generates REST, gRPC, and GraphQL APIs from your database schema">
             <style>
+                :root[data-theme="light"] {
+                    --bg-page: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    --bg-container: #ffffff;
+                    --bg-header: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    --bg-card: #f8f9fa;
+                    --bg-footer: #f8f9fa;
+                    --text-primary: #24292f;
+                    --text-secondary: #57606a;
+                    --text-footer: #666;
+                    --text-white: #ffffff;
+                    --accent-color: #667eea;
+                    --accent-hover: #764ba2;
+                    --link-color: #667eea;
+                    --shadow: rgba(0,0,0,0.2);
+                    --shadow-card: rgba(0,0,0,0.1);
+                    --code-bg: #f4f4f4;
+                    --pre-bg: #2d2d2d;
+                    --pre-text: #f8f8f2;
+                }
+                :root[data-theme="dark"] {
+                    --bg-page: linear-gradient(135deg, #1a1f36 0%, #1e1533 100%);
+                    --bg-container: #0d1117;
+                    --bg-header: linear-gradient(135deg, #4a5fa8 0%, #5a3c72 100%);
+                    --bg-card: #161b22;
+                    --bg-footer: #161b22;
+                    --text-primary: #e6edf3;
+                    --text-secondary: #8d96a0;
+                    --text-footer: #8d96a0;
+                    --text-white: #ffffff;
+                    --accent-color: #58a6ff;
+                    --accent-hover: #79c0ff;
+                    --link-color: #58a6ff;
+                    --shadow: rgba(0,0,0,0.6);
+                    --shadow-card: rgba(0,0,0,0.4);
+                    --code-bg: #1c2128;
+                    --pre-bg: #1c2128;
+                    --pre-text: #e6edf3;
+                }
+                :root[data-theme="high-contrast"] {
+                    --bg-page: #000000;
+                    --bg-container: #ffffff;
+                    --bg-header: #000000;
+                    --bg-card: #f0f0f0;
+                    --bg-footer: #f0f0f0;
+                    --text-primary: #000000;
+                    --text-secondary: #000000;
+                    --text-footer: #000000;
+                    --text-white: #ffffff;
+                    --accent-color: #0000ee;
+                    --accent-hover: #0000cc;
+                    --link-color: #0000ee;
+                    --shadow: rgba(0,0,0,0.5);
+                    --shadow-card: rgba(0,0,0,0.3);
+                    --code-bg: #e0e0e0;
+                    --pre-bg: #000000;
+                    --pre-text: #ffffff;
+                }
+                
                 * { box-sizing: border-box; margin: 0; padding: 0; }
                 body { 
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                     line-height: 1.6;
-                    color: #24292f;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: var(--text-primary);
+                    background: var(--bg-page);
                     min-height: 100vh;
                     padding: 20px;
+                    transition: background 0.3s ease, color 0.3s ease;
                 }
                 .container {
                     max-width: 900px;
                     margin: 0 auto;
-                    background: white;
+                    background: var(--bg-container);
                     border-radius: 10px;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    box-shadow: 0 10px 40px var(--shadow);
                     overflow: hidden;
                 }
                 .header {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
+                    background: var(--bg-header);
+                    color: var(--text-white);
                     padding: 40px;
                     text-align: center;
+                    position: relative;
                 }
                 .header h1 { font-size: 2.5em; margin-bottom: 10px; }
                 .header p { font-size: 1.2em; opacity: 0.9; }
-                .content { padding: 40px; }
+                .theme-selector {
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
+                    display: flex;
+                    gap: 8px;
+                    background: rgba(255,255,255,0.1);
+                    padding: 5px;
+                    border-radius: 5px;
+                }
+                .theme-btn {
+                    background: none;
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: var(--text-white);
+                    padding: 8px 12px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    font-size: 1.1em;
+                    transition: all 0.2s;
+                }
+                .theme-btn:hover { background: rgba(255,255,255,0.2); }
+                .theme-btn.active {
+                    background: rgba(255,255,255,0.3);
+                    border-color: rgba(255,255,255,0.6);
+                }
+                .content { padding: 40px; background: var(--bg-container); }
                 .nav-section {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -169,34 +499,34 @@ jobs:
                 }
                 .nav-card {
                     padding: 25px;
-                    background: #f8f9fa;
+                    background: var(--bg-card);
                     border-radius: 8px;
-                    border-left: 4px solid #667eea;
+                    border-left: 4px solid var(--accent-color);
                     transition: transform 0.2s, box-shadow 0.2s;
                 }
                 .nav-card:hover {
                     transform: translateY(-5px);
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                    box-shadow: 0 5px 20px var(--shadow-card);
                 }
-                .nav-card h3 { color: #667eea; margin-bottom: 10px; font-size: 1.3em; }
-                .nav-card p { color: #57606a; margin-bottom: 15px; }
+                .nav-card h3 { color: var(--accent-color); margin-bottom: 10px; font-size: 1.3em; }
+                .nav-card p { color: var(--text-secondary); margin-bottom: 15px; }
                 .nav-card a {
                     display: inline-block;
                     padding: 8px 16px;
-                    background: #667eea;
-                    color: white;
+                    background: var(--accent-color);
+                    color: var(--text-white);
                     text-decoration: none;
                     border-radius: 5px;
                     font-size: 0.9em;
                     transition: background 0.2s;
                 }
-                .nav-card a:hover { background: #764ba2; }
+                .nav-card a:hover { background: var(--accent-hover); }
                 .section { margin: 30px 0; }
                 .section h2 {
-                    color: #667eea;
+                    color: var(--accent-color);
                     margin-bottom: 15px;
                     padding-bottom: 10px;
-                    border-bottom: 2px solid #f0f0f0;
+                    border-bottom: 2px solid var(--bg-card);
                 }
                 .features {
                     display: grid;
@@ -206,21 +536,23 @@ jobs:
                 }
                 .feature {
                     padding: 15px;
-                    background: #f8f9fa;
+                    background: var(--bg-card);
                     border-radius: 5px;
                     text-align: center;
                 }
-                .feature strong { color: #667eea; display: block; margin-bottom: 5px; }
+                .feature strong { color: var(--accent-color); display: block; margin-bottom: 5px; }
+                .feature p { color: var(--text-secondary); }
                 code {
-                    background: #f4f4f4;
+                    background: var(--code-bg);
+                    color: var(--text-primary);
                     padding: 2px 6px;
                     border-radius: 3px;
                     font-family: 'Courier New', monospace;
                     font-size: 0.9em;
                 }
                 pre {
-                    background: #2d2d2d;
-                    color: #f8f8f2;
+                    background: var(--pre-bg);
+                    color: var(--pre-text);
                     padding: 20px;
                     border-radius: 5px;
                     overflow-x: auto;
@@ -232,15 +564,32 @@ jobs:
                 footer {
                     text-align: center;
                     padding: 20px;
-                    background: #f8f9fa;
-                    color: #666;
+                    background: var(--bg-footer);
+                    color: var(--text-footer);
                     font-size: 0.9em;
                 }
+                ul { list-style: none; padding: 0; }
+                li {
+                    padding: 10px;
+                    background: var(--bg-card);
+                    margin: 5px 0;
+                    border-radius: 5px;
+                }
+                li a {
+                    color: var(--link-color);
+                    text-decoration: none;
+                }
+                li a:hover { text-decoration: underline; }
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
+                    <div class="theme-selector">
+                        <button class="theme-btn" data-theme="light" title="Light theme">☀️</button>
+                        <button class="theme-btn" data-theme="dark" title="Dark theme">🌙</button>
+                        <button class="theme-btn" data-theme="high-contrast" title="High contrast theme">◐</button>
+                    </div>
                     <h1>🚀 DDAP</h1>
                     <p>Dynamic Data API Provider for .NET</p>
                 </div>
@@ -327,38 +676,28 @@ jobs:
                         <h2>⚡ Quick Start</h2>
                         <p>Install the packages:</p>
                         <pre><code>dotnet add package Ddap.Core
-        dotnet add package Ddap.Data.Dapper.SqlServer
-        dotnet add package Ddap.Rest
-        dotnet add package Ddap.GraphQL</code></pre>
+dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Rest
+dotnet add package Ddap.GraphQL</code></pre>
                         
                         <p>Configure in Program.cs:</p>
                         <pre><code>builder.Services
-            .AddDdap(options => {
-                options.ConnectionString = "Server=localhost;Database=MyDb;...";
-            })
-            .AddSqlServerDapper()
-            .AddRest()
-            .AddGraphQL();</code></pre>
+    .AddDdap(options => {
+        options.ConnectionString = "Server=localhost;Database=MyDb;...";
+    })
+    .AddSqlServerDapper()
+    .AddRest()
+    .AddGraphQL();</code></pre>
                     </div>
 
                     <div class="section">
                         <h2>🔗 Additional Resources</h2>
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
-                                <a href="https://github.com/schivei/ddap" style="color: #667eea; text-decoration: none;">📂 GitHub Repository</a>
-                            </li>
-                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
-                                <a href="https://github.com/schivei/ddap/tree/main/examples" style="color: #667eea; text-decoration: none;">💡 Example Projects</a>
-                            </li>
-                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
-                                <a href="https://www.nuget.org/packages?q=ddap" style="color: #667eea; text-decoration: none;">📦 NuGet Packages</a>
-                            </li>
-                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
-                                <a href="README.html" style="color: #667eea; text-decoration: none;">📖 README</a>
-                            </li>
-                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
-                                <a href="CONTRIBUTING.html" style="color: #667eea; text-decoration: none;">🤝 Contributing Guide</a>
-                            </li>
+                        <ul>
+                            <li><a href="https://github.com/schivei/ddap">📂 GitHub Repository</a></li>
+                            <li><a href="https://github.com/schivei/ddap/tree/main/examples">💡 Example Projects</a></li>
+                            <li><a href="https://www.nuget.org/packages?q=ddap">📦 NuGet Packages</a></li>
+                            <li><a href="README.html">📖 README</a></li>
+                            <li><a href="CONTRIBUTING.html">🤝 Contributing Guide</a></li>
                         </ul>
                     </div>
                 </div>
@@ -368,6 +707,38 @@ jobs:
                     <p>Built with ❤️ for the .NET community</p>
                 </footer>
             </div>
+            
+            <script>
+                function setTheme(theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('ddap-theme', theme);
+                    document.querySelectorAll('.theme-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+                    });
+                }
+                
+                const savedTheme = localStorage.getItem('ddap-theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const systemPrefersContrast = window.matchMedia('(prefers-contrast: more)').matches;
+                const initialTheme = savedTheme || (systemPrefersContrast ? 'high-contrast' : (systemPrefersDark ? 'dark' : 'light'));
+                setTheme(initialTheme);
+                
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.addEventListener('click', () => setTheme(btn.getAttribute('data-theme')));
+                });
+                
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('ddap-theme')) {
+                        setTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+                
+                window.matchMedia('(prefers-contrast: more)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('ddap-theme') && e.matches) {
+                        setTheme('high-contrast');
+                    }
+                });
+            </script>
         </body>
         </html>
         INDEXEOF
