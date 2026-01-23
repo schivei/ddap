@@ -360,8 +360,8 @@ public class YamlOutputFormatterTests
         var formatter = new YamlOutputFormatter();
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            formatter.WriteResponseBodyAsync(null!, Encoding.UTF8));
+        var act = async () => await formatter.WriteResponseBodyAsync(null!, Encoding.UTF8);
+        await act.Should().ThrowAsync<ArgumentNullException>();
     }
 
     [Fact]
