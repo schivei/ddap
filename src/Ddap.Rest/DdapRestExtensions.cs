@@ -25,7 +25,7 @@ public static class DdapRestExtensions
     ///     options.ConnectionString = "...";
     /// })
     /// .AddRest();
-    /// 
+    ///
     /// // Client can request different formats:
     /// // Accept: application/json (default)
     /// // Accept: application/xml
@@ -48,7 +48,8 @@ public static class DdapRestExtensions
             // Use Newtonsoft.Json for JSON serialization (instead of System.Text.Json)
             .AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.ContractResolver =
+                    new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.Formatting = Formatting.Indented;
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -75,7 +76,7 @@ public static class DdapRestExtensions
     ///     .AddGrpc()
     ///     .AddRest()
     ///     .WithGrpcIntegration();
-    /// 
+    ///
     /// // REST endpoints will now derive from gRPC services
     /// </code>
     /// </example>

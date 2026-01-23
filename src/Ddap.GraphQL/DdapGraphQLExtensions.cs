@@ -25,10 +25,7 @@ public static class DdapGraphQLExtensions
     public static IDdapBuilder AddGraphQL(this IDdapBuilder builder)
     {
         // Register GraphQL services
-        builder
-            .Services.AddGraphQLServer()
-            .AddQueryType<Query>()
-            .AddMutationType<Mutation>();
+        builder.Services.AddGraphQLServer().AddQueryType<Query>().AddMutationType<Mutation>();
 
         return builder;
     }

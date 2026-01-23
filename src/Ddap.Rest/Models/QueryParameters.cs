@@ -7,7 +7,7 @@ namespace Ddap.Rest.Models;
 /// <code>
 /// // Query string example:
 /// // GET /api/entity?pageNumber=1&amp;pageSize=20&amp;filter=status eq 'active'&amp;orderBy=createdDate desc
-/// 
+///
 /// // Usage in controller:
 /// [HttpGet]
 /// public async Task&lt;IActionResult&gt; GetEntities([FromQuery] QueryParameters parameters)
@@ -48,11 +48,11 @@ public class QueryParameters
     /// "name eq 'John'"
     /// "age gt 18"
     /// "status ne 'inactive'"
-    /// 
+    ///
     /// // Complex filters with AND/OR:
     /// "name eq 'John' and age gt 18"
     /// "status eq 'active' or status eq 'pending'"
-    /// 
+    ///
     /// // Contains operation:
     /// "name contains 'Smith'"
     /// </code>

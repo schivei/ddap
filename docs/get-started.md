@@ -245,10 +245,10 @@ Now that you have DDAP running, explore these topics:
 
 ## Example Application
 
-Check out the complete example application at [`examples/Ddap.Example.Api`](../examples/Ddap.Example.Api) for a working reference implementation.
+Check out the complete example application at [`examples/Ddap.Example.Api`](https://github.com/schivei/ddap/tree/main/examples/Ddap.Example.Api) for a working reference implementation.
 
 ## Need Help?
 
 - **Documentation**: [https://schivei.github.io/ddap](https://schivei.github.io/ddap)
 - **Issues**: [GitHub Issues](https://github.com/schivei/ddap/issues)
-- **Contributing**: See [CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Contributing**: See [CONTRIBUTING.md](https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md)

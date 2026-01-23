@@ -1,6 +1,6 @@
 <Project>
   <!-- Common MSBuild targets for all projects -->
-  
+
   <PropertyGroup>
     <GeneratedCodePattern>*.g.cs</GeneratedCodePattern>
   </PropertyGroup>
@@ -16,7 +16,38 @@
   </ItemGroup>
 
   <!-- CSharpier Integration -->
-  <Target Name="FormatCode" AfterTargets="BeforeBuild" Condition="'$(Configuration)' == 'Debug'">
-    <Exec Command="dotnet csharpier --check ." ContinueOnError="true" IgnoreExitCode="true" />
+  <!-- Only run formatting once at the solution level (when building the first project) -->
+  <PropertyGroup>
+    <FormatCodeOnce Condition="'$(FormatCodeOnce)' == ''">true</FormatCodeOnce>
+  </PropertyGroup>
+
+  <!-- Restore tools before formatting -->
+  <Target
+    Name="RestoreTools"
+    BeforeTargets="FormatCode"
+    Condition="'$(Configuration)' == 'Debug' AND '$(FormatCodeOnce)' == 'true' AND '$(BuildingInsideVisualStudio)' != 'true'"
+  >
+    <Exec
+      Command="dotnet tool restore"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+      ContinueOnError="true"
+    />
+  </Target>
+
+  <!-- Format code in Debug mode at solution root -->
+  <Target
+    Name="FormatCode"
+    BeforeTargets="Build"
+    Condition="'$(Configuration)' == 'Debug' AND '$(FormatCodeOnce)' == 'true' AND '$(BuildingInsideVisualStudio)' != 'true'"
+  >
+    <PropertyGroup>
+      <FormatCodeOnce>false</FormatCodeOnce>
+    </PropertyGroup>
+    <Exec
+      Command="dotnet csharpier format ."
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+      ContinueOnError="true"
+      IgnoreExitCode="true"
+    />
   </Target>
 </Project>

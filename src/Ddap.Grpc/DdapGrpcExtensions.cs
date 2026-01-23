@@ -20,7 +20,7 @@ public static class DdapGrpcExtensions
     ///     options.ConnectionString = "...";
     /// })
     /// .AddGrpc();
-    /// 
+    ///
     /// // Download .proto files:
     /// // GET /proto - all entities
     /// // GET /proto/User - specific entity

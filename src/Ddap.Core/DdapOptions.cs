@@ -55,5 +55,5 @@ public enum DatabaseProvider
     /// <summary>
     /// PostgreSQL database.
     /// </summary>
-    PostgreSQL
+    PostgreSQL,
 }

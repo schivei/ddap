@@ -22,7 +22,7 @@ public static class DdapDataExtensions
             DatabaseProvider.PostgreSQL => typeof(PostgreSqlDataProvider),
             _ => throw new NotSupportedException(
                 $"Database provider '{builder.Options.Provider}' is not supported"
-            )
+            ),
         };
 
         builder.Services.AddSingleton(typeof(IDataProvider), provider);

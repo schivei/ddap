@@ -17,10 +17,12 @@ internal class EntityConfiguration : IEntityConfiguration
     public required IReadOnlyList<IPropertyConfiguration> Properties { get; init; }
 
     /// <inheritdoc/>
-    public IReadOnlyList<IIndexConfiguration> Indexes { get; init; } = Array.Empty<IIndexConfiguration>();
+    public IReadOnlyList<IIndexConfiguration> Indexes { get; init; } =
+        Array.Empty<IIndexConfiguration>();
 
     /// <inheritdoc/>
-    public IReadOnlyList<IRelationshipConfiguration> Relationships { get; init; } = Array.Empty<IRelationshipConfiguration>();
+    public IReadOnlyList<IRelationshipConfiguration> Relationships { get; init; } =
+        Array.Empty<IRelationshipConfiguration>();
 }
 
 /// <summary>

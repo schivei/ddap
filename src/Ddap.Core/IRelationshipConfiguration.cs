@@ -54,5 +54,5 @@ public enum RelationshipType
     /// <summary>
     /// Many-to-many relationship.
     /// </summary>
-    ManyToMany
+    ManyToMany,
 }

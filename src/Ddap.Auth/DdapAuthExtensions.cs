@@ -1,8 +1,8 @@
+using System.Text;
 using Ddap.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Ddap.Auth;
 
@@ -29,10 +29,10 @@ public static class DdapAuthExtensions
     /// })
     /// .AddDdapAuthentication("https://myapp.com", "ddap-api", "your-256-bit-secret")
     /// .AddDdapAuthorization();
-    /// 
+    ///
     /// // Development:
     /// .AddDdapAuthentication("https://myapp.com", "ddap-api", "your-256-bit-secret", requireHttpsMetadata: false)
-    /// 
+    ///
     /// // In controllers:
     /// [DdapAuthorize(DdapAuthorizationPolicies.Read)]
     /// public async Task&lt;IActionResult&gt; GetData() { }
@@ -43,12 +43,13 @@ public static class DdapAuthExtensions
         string issuer,
         string audience,
         string signingKey,
-        bool requireHttpsMetadata = true)
+        bool requireHttpsMetadata = true
+    )
     {
         var key = Encoding.UTF8.GetBytes(signingKey);
 
-        builder.Services
-            .AddAuthentication(options =>
+        builder
+            .Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -66,7 +67,7 @@ public static class DdapAuthExtensions
                     ValidIssuer = issuer,
                     ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
                 };
             });
 
@@ -86,7 +87,7 @@ public static class DdapAuthExtensions
     /// })
     /// .AddDdapAuthentication("issuer", "audience", "key")
     /// .AddDdapAuthorization();
-    /// 
+    ///
     /// // Use policies in controllers:
     /// [DdapAuthorize(DdapAuthorizationPolicies.Admin)]
     /// public async Task&lt;IActionResult&gt; DeleteEntity() { }
@@ -96,17 +97,24 @@ public static class DdapAuthExtensions
     {
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy(Policies.DdapAuthorizationPolicies.Read, policy =>
-                policy.RequireAuthenticatedUser()
-                      .RequireClaim("permission", "read", "write", "admin"));
+            options.AddPolicy(
+                Policies.DdapAuthorizationPolicies.Read,
+                policy =>
+                    policy
+                        .RequireAuthenticatedUser()
+                        .RequireClaim("permission", "read", "write", "admin")
+            );
 
-            options.AddPolicy(Policies.DdapAuthorizationPolicies.Write, policy =>
-                policy.RequireAuthenticatedUser()
-                      .RequireClaim("permission", "write", "admin"));
+            options.AddPolicy(
+                Policies.DdapAuthorizationPolicies.Write,
+                policy =>
+                    policy.RequireAuthenticatedUser().RequireClaim("permission", "write", "admin")
+            );
 
-            options.AddPolicy(Policies.DdapAuthorizationPolicies.Admin, policy =>
-                policy.RequireAuthenticatedUser()
-                      .RequireClaim("permission", "admin"));
+            options.AddPolicy(
+                Policies.DdapAuthorizationPolicies.Admin,
+                policy => policy.RequireAuthenticatedUser().RequireClaim("permission", "admin")
+            );
         });
 
         return builder;

@@ -10,13 +10,13 @@ namespace Ddap.Rest.Filters;
 /// <example>
 /// <code>
 /// var query = dbContext.Users.AsQueryable();
-/// 
+///
 /// // Apply filter: "age gt 18 and status eq 'active'"
 /// query = QueryFilterBuilder.ApplyFilter(query, "age gt 18 and status eq 'active'");
-/// 
+///
 /// // Apply sorting: "name desc"
 /// query = QueryFilterBuilder.ApplyOrdering(query, "name desc");
-/// 
+///
 /// var results = await query.ToListAsync();
 /// </code>
 /// </example>
@@ -82,7 +82,10 @@ public static class QueryFilterBuilder
             var direction = parts.Length > 1 ? parts[1].ToLower() : "asc";
 
             var parameter = Expression.Parameter(typeof(T), "x");
-            var property = typeof(T).GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            var property = typeof(T).GetProperty(
+                propertyName,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance
+            );
 
             if (property == null)
                 continue;
@@ -90,26 +93,33 @@ public static class QueryFilterBuilder
             var propertyAccess = Expression.MakeMemberAccess(parameter, property);
             var orderByLambda = Expression.Lambda(propertyAccess, parameter);
 
-            var methodName = orderedQuery == null
-                ? (direction == "desc" ? "OrderByDescending" : "OrderBy")
-                : (direction == "desc" ? "ThenByDescending" : "ThenBy");
+            var methodName =
+                orderedQuery == null
+                    ? (direction == "desc" ? "OrderByDescending" : "OrderBy")
+                    : (direction == "desc" ? "ThenByDescending" : "ThenBy");
 
             var resultExpression = Expression.Call(
                 typeof(Queryable),
                 methodName,
                 new Type[] { typeof(T), property.PropertyType },
                 orderedQuery?.Expression ?? query.Expression,
-                Expression.Quote(orderByLambda));
+                Expression.Quote(orderByLambda)
+            );
 
-            orderedQuery = orderedQuery == null
-                ? (IOrderedQueryable<T>)query.Provider.CreateQuery<T>(resultExpression)
-                : (IOrderedQueryable<T>)orderedQuery.Provider.CreateQuery<T>(resultExpression);
+            orderedQuery =
+                orderedQuery == null
+                    ? (IOrderedQueryable<T>)query.Provider.CreateQuery<T>(resultExpression)
+                    : (IOrderedQueryable<T>)orderedQuery.Provider.CreateQuery<T>(resultExpression);
         }
 
         return orderedQuery ?? query;
     }
 
-    private static Expression ParseFilterExpression(string filter, ParameterExpression parameter, Type entityType)
+    private static Expression ParseFilterExpression(
+        string filter,
+        ParameterExpression parameter,
+        Type entityType
+    )
     {
         filter = filter.Trim();
 
@@ -126,7 +136,11 @@ public static class QueryFilterBuilder
         if (andIndex != -1)
         {
             var left = ParseFilterExpression(filter.Substring(0, andIndex), parameter, entityType);
-            var right = ParseFilterExpression(filter.Substring(andIndex + 5), parameter, entityType);
+            var right = ParseFilterExpression(
+                filter.Substring(andIndex + 5),
+                parameter,
+                entityType
+            );
             return Expression.AndAlso(left, right);
         }
 
@@ -134,20 +148,29 @@ public static class QueryFilterBuilder
         return ParseComparison(filter, parameter, entityType);
     }
 
-    private static Expression ParseComparison(string expression, ParameterExpression parameter, Type entityType)
+    private static Expression ParseComparison(
+        string expression,
+        ParameterExpression parameter,
+        Type entityType
+    )
     {
         var operators = new[] { " eq ", " ne ", " gt ", " ge ", " lt ", " le ", " contains " };
-        
+
         foreach (var op in operators)
         {
             var index = expression.IndexOf(op, StringComparison.OrdinalIgnoreCase);
-            if (index == -1) continue;
+            if (index == -1)
+                continue;
 
             var propertyName = expression.Substring(0, index).Trim();
             var valueStr = expression.Substring(index + op.Length).Trim().Trim('\'', '"');
 
-            var property = entityType.GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-            if (property == null) continue;
+            var property = entityType.GetProperty(
+                propertyName,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance
+            );
+            if (property == null)
+                continue;
 
             var propertyAccess = Expression.MakeMemberAccess(parameter, property);
             var value = ConvertValue(valueStr, property.PropertyType);
@@ -161,8 +184,12 @@ public static class QueryFilterBuilder
                 "ge" => Expression.GreaterThanOrEqual(propertyAccess, constant),
                 "lt" => Expression.LessThan(propertyAccess, constant),
                 "le" => Expression.LessThanOrEqual(propertyAccess, constant),
-                "contains" => Expression.Call(propertyAccess, typeof(string).GetMethod("Contains", new[] { typeof(string) })!, constant),
-                _ => Expression.Constant(true)
+                "contains" => Expression.Call(
+                    propertyAccess,
+                    typeof(string).GetMethod("Contains", new[] { typeof(string) })!,
+                    constant
+                ),
+                _ => Expression.Constant(true),
             };
         }
 
@@ -174,10 +201,15 @@ public static class QueryFilterBuilder
         var level = 0;
         for (int i = 0; i < expression.Length; i++)
         {
-            if (expression[i] == '(') level++;
-            if (expression[i] == ')') level--;
-            if (level == 0 && i + op.Length <= expression.Length &&
-                expression.Substring(i, op.Length).Equals(op, StringComparison.OrdinalIgnoreCase))
+            if (expression[i] == '(')
+                level++;
+            if (expression[i] == ')')
+                level--;
+            if (
+                level == 0
+                && i + op.Length <= expression.Length
+                && expression.Substring(i, op.Length).Equals(op, StringComparison.OrdinalIgnoreCase)
+            )
             {
                 return i;
             }

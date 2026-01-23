@@ -1,0 +1,31 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Restore .NET tools
+echo "Restoring .NET tools..."
+dotnet tool restore
+
+# Format code with CSharpier
+echo "Running CSharpier to format code..."
+dotnet csharpier format .
+
+# Check if there are any changes after formatting
+if [ -n "$(git diff --name-only)" ]; then
+  echo "Code was reformatted. Automatically staging formatted files..."
+  git add -u
+fi
+
+# Restore project dependencies
+echo "Restoring .NET project dependencies..."
+dotnet restore Ddap.slnx
+# Run tests
+echo "Running unit tests..."
+dotnet test Ddap.slnx --configuration Release --verbosity minimal --no-restore
+
+# Check test result
+if [ $? -ne 0 ]; then
+  echo "Tests failed. Commit aborted."
+  exit 1
+fi
+
+echo "All checks passed!"

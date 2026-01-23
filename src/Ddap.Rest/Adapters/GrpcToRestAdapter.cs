@@ -1,6 +1,6 @@
+using System.Reflection;
 using Ddap.Core;
 using Grpc.Core;
-using System.Reflection;
 
 namespace Ddap.Rest.Adapters;
 
@@ -15,7 +15,7 @@ namespace Ddap.Rest.Adapters;
 ///     .AddGrpc()
 ///     .AddRest()
 ///     .WithGrpcIntegration();
-/// 
+///
 /// // Now REST endpoints will automatically use gRPC service implementations
 /// </code>
 /// </example>
@@ -33,7 +33,8 @@ public class GrpcToRestAdapter
     public async Task<TResponse> InvokeGrpcMethodAsync<TRequest, TResponse>(
         object serviceInstance,
         string methodName,
-        TRequest request)
+        TRequest request
+    )
         where TRequest : class
         where TResponse : class
     {
@@ -42,14 +43,17 @@ public class GrpcToRestAdapter
 
         if (method == null)
         {
-            throw new InvalidOperationException($"Method '{methodName}' not found on service '{serviceType.Name}'");
+            throw new InvalidOperationException(
+                $"Method '{methodName}' not found on service '{serviceType.Name}'"
+            );
         }
 
         // Check if method has ServerCallContext parameter
         var parameters = method.GetParameters();
-        var result = parameters.Length == 2 && parameters[1].ParameterType == typeof(ServerCallContext)
-            ? method.Invoke(serviceInstance, new object[] { request, null! })
-            : method.Invoke(serviceInstance, new object[] { request });
+        var result =
+            parameters.Length == 2 && parameters[1].ParameterType == typeof(ServerCallContext)
+                ? method.Invoke(serviceInstance, new object[] { request, null! })
+                : method.Invoke(serviceInstance, new object[] { request });
 
         if (result is Task<TResponse> taskResult)
         {
@@ -80,7 +84,7 @@ public class GrpcToRestAdapter
             "POST" => "Create",
             "PUT" => "Update",
             "DELETE" => "Delete",
-            _ => throw new NotSupportedException($"HTTP method '{httpMethod}' is not supported")
+            _ => throw new NotSupportedException($"HTTP method '{httpMethod}' is not supported"),
         };
     }
 
@@ -97,7 +101,8 @@ public class GrpcToRestAdapter
         string? id = null,
         object? data = null,
         int? pageNumber = null,
-        int? pageSize = null)
+        int? pageSize = null
+    )
         where TRequest : class, new()
     {
         var request = new TRequest();
@@ -105,25 +110,37 @@ public class GrpcToRestAdapter
 
         if (id != null)
         {
-            var idProperty = requestType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var idProperty = requestType.GetProperty(
+                "Id",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
             idProperty?.SetValue(request, id);
         }
 
         if (data != null)
         {
-            var entityProperty = requestType.GetProperty("Entity", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var entityProperty = requestType.GetProperty(
+                "Entity",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
             entityProperty?.SetValue(request, data);
         }
 
         if (pageNumber.HasValue)
         {
-            var pageNumberProperty = requestType.GetProperty("PageNumber", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var pageNumberProperty = requestType.GetProperty(
+                "PageNumber",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
             pageNumberProperty?.SetValue(request, pageNumber.Value);
         }
 
         if (pageSize.HasValue)
         {
-            var pageSizeProperty = requestType.GetProperty("PageSize", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var pageSizeProperty = requestType.GetProperty(
+                "PageSize",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+            );
             pageSizeProperty?.SetValue(request, pageSize.Value);
         }
 

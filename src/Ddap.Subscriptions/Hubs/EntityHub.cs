@@ -12,19 +12,19 @@ namespace Ddap.Subscriptions.Hubs;
 /// const connection = new signalR.HubConnectionBuilder()
 ///     .withUrl("/entityhub")
 ///     .build();
-/// 
+///
 /// connection.on("EntityCreated", (entityName, entityId, data) => {
 ///     console.log(`Entity ${entityName} created:`, entityId, data);
 /// });
-/// 
+///
 /// connection.on("EntityUpdated", (entityName, entityId, data) => {
 ///     console.log(`Entity ${entityName} updated:`, entityId, data);
 /// });
-/// 
+///
 /// connection.on("EntityDeleted", (entityName, entityId) => {
 ///     console.log(`Entity ${entityName} deleted:`, entityId);
 /// });
-/// 
+///
 /// await connection.start();
 /// await connection.invoke("SubscribeToEntity", "User");
 /// </code>
@@ -80,7 +80,9 @@ public class EntityHub : Hub
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task NotifyEntityCreated(string entityName, string entityId, object data)
     {
-        await Clients.Group($"entity_{entityName}").SendAsync("EntityCreated", entityName, entityId, data);
+        await Clients
+            .Group($"entity_{entityName}")
+            .SendAsync("EntityCreated", entityName, entityId, data);
     }
 
     /// <summary>
@@ -92,7 +94,9 @@ public class EntityHub : Hub
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task NotifyEntityUpdated(string entityName, string entityId, object data)
     {
-        await Clients.Group($"entity_{entityName}").SendAsync("EntityUpdated", entityName, entityId, data);
+        await Clients
+            .Group($"entity_{entityName}")
+            .SendAsync("EntityUpdated", entityName, entityId, data);
     }
 
     /// <summary>
@@ -103,7 +107,9 @@ public class EntityHub : Hub
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task NotifyEntityDeleted(string entityName, string entityId)
     {
-        await Clients.Group($"entity_{entityName}").SendAsync("EntityDeleted", entityName, entityId);
+        await Clients
+            .Group($"entity_{entityName}")
+            .SendAsync("EntityDeleted", entityName, entityId);
     }
 
     /// <inheritdoc/>

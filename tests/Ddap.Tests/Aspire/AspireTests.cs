@@ -18,10 +18,9 @@ public class DdapAspireExtensionsTests
     public void AddDdapApi_Should_Create_DdapResource()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
 
         // Act
         var resource = builder.AddDdapApi("test-api");
@@ -36,10 +35,9 @@ public class DdapAspireExtensionsTests
     public void AddDdapApi_Should_Return_Resource_Builder()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
 
         // Act
         var resource = builder.AddDdapApi("test-api");
@@ -55,10 +53,9 @@ public class DdapAspireExtensionsTests
     public void AddDdapApi_Should_Handle_Various_Names(string name)
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
 
         // Act
         var resource = builder.AddDdapApi(name);
@@ -71,10 +68,9 @@ public class DdapAspireExtensionsTests
     public void WithRestApi_Should_Enable_Rest()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -88,10 +84,9 @@ public class DdapAspireExtensionsTests
     public void WithRestApi_Should_Return_Builder_For_Chaining()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -105,10 +100,9 @@ public class DdapAspireExtensionsTests
     public void WithRestApi_With_Port_Should_Enable_Rest()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -122,10 +116,9 @@ public class DdapAspireExtensionsTests
     public void WithGraphQL_Should_Enable_GraphQL()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -140,10 +133,9 @@ public class DdapAspireExtensionsTests
     public void WithGraphQL_Should_Set_Custom_Path()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -158,10 +150,9 @@ public class DdapAspireExtensionsTests
     public void WithGraphQL_Should_Return_Builder_For_Chaining()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -175,10 +166,9 @@ public class DdapAspireExtensionsTests
     public void WithGrpc_Should_Enable_Grpc()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -192,10 +182,9 @@ public class DdapAspireExtensionsTests
     public void WithGrpc_With_Port_Should_Enable_Grpc()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -209,10 +198,9 @@ public class DdapAspireExtensionsTests
     public void WithGrpc_Should_Return_Builder_For_Chaining()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -226,10 +214,9 @@ public class DdapAspireExtensionsTests
     public void WithAutoRefresh_Should_Enable_Auto_Refresh()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -244,10 +231,9 @@ public class DdapAspireExtensionsTests
     public void WithAutoRefresh_Should_Set_Custom_Interval()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -262,10 +248,9 @@ public class DdapAspireExtensionsTests
     public void WithAutoRefresh_Should_Return_Builder_For_Chaining()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
         var resource = builder.AddDdapApi("test-api");
 
         // Act
@@ -279,13 +264,13 @@ public class DdapAspireExtensionsTests
     public void Should_Support_Method_Chaining()
     {
         // Arrange
-        var builder = DistributedApplication.CreateBuilder(new DistributedApplicationOptions
-        {
-            Args = Array.Empty<string>()
-        });
+        var builder = DistributedApplication.CreateBuilder(
+            new DistributedApplicationOptions { Args = Array.Empty<string>() }
+        );
 
         // Act
-        var resource = builder.AddDdapApi("test-api")
+        var resource = builder
+            .AddDdapApi("test-api")
             .WithRestApi()
             .WithGraphQL()
             .WithGrpc()
@@ -383,7 +368,7 @@ public class DdapResourceTests
             EnableGrpc = true,
             AutoRefresh = true,
             GraphQLPath = "/api/gql",
-            RefreshIntervalSeconds = 60
+            RefreshIntervalSeconds = 60,
         };
 
         // Assert
@@ -414,10 +399,12 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:database", "Server=localhost;Database=Test;" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    { "ConnectionStrings:database", "Server=localhost;Database=Test;" },
+                }
+            )
             .Build();
 
         // Act
@@ -434,10 +421,12 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:database", "Server=localhost;Database=Test;" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    { "ConnectionStrings:database", "Server=localhost;Database=Test;" },
+                }
+            )
             .Build();
 
         // Act
@@ -453,10 +442,12 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:DefaultConnection", "Server=localhost;Database=Default;" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    { "ConnectionStrings:DefaultConnection", "Server=localhost;Database=Default;" },
+                }
+            )
             .Build();
 
         // Act
@@ -475,7 +466,8 @@ public class DdapServiceExtensionsTests
 
         // Act & Assert
         var act = () => services.AddDdapForAspire(configuration);
-        act.Should().Throw<InvalidOperationException>()
+        act.Should()
+            .Throw<InvalidOperationException>()
             .WithMessage("*No database connection string found*");
     }
 
@@ -485,10 +477,9 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:database", "test" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?> { { "ConnectionStrings:database", "test" } }
+            )
             .Build();
 
         // Act
@@ -504,10 +495,9 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:database", "test" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?> { { "ConnectionStrings:database", "test" } }
+            )
             .Build();
 
         // Act
@@ -523,10 +513,9 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:database", "test" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?> { { "ConnectionStrings:database", "test" } }
+            )
             .Build();
 
         // Act
@@ -542,10 +531,9 @@ public class DdapServiceExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:database", "test" }
-            })
+            .AddInMemoryCollection(
+                new Dictionary<string, string?> { { "ConnectionStrings:database", "test" } }
+            )
             .Build();
 
         // Act

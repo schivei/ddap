@@ -123,7 +123,7 @@ public class EntityServiceTests
         {
             CreateTestEntity("Entity1", "dbo"),
             CreateTestEntity("Entity2", "schema1"),
-            CreateTestEntity("Entity3", null)
+            CreateTestEntity("Entity3", null),
         };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
@@ -157,10 +157,7 @@ public class EntityServiceTests
     public void GetEntities_Should_Call_Repository_Once()
     {
         // Arrange
-        var entities = new List<IEntityConfiguration>
-        {
-            CreateTestEntity("Entity1", "dbo")
-        };
+        var entities = new List<IEntityConfiguration> { CreateTestEntity("Entity1", "dbo") };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
@@ -177,7 +174,7 @@ public class EntityServiceTests
         var entities = new List<IEntityConfiguration>
         {
             CreateTestEntity("Entity1", "dbo"),
-            CreateTestEntity("Entity2", "schema1")
+            CreateTestEntity("Entity2", "schema1"),
         };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
@@ -197,10 +194,7 @@ public class EntityServiceTests
     public void GetEntities_Should_Handle_Various_Entity_Names(string entityName)
     {
         // Arrange
-        var entities = new List<IEntityConfiguration>
-        {
-            CreateTestEntity(entityName, "dbo")
-        };
+        var entities = new List<IEntityConfiguration> { CreateTestEntity(entityName, "dbo") };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
@@ -214,7 +208,8 @@ public class EntityServiceTests
     public void GetEntities_Should_Handle_Large_Number_Of_Entities()
     {
         // Arrange
-        var entities = Enumerable.Range(1, 1000)
+        var entities = Enumerable
+            .Range(1, 1000)
             .Select(i => CreateTestEntity($"Entity{i}", "dbo"))
             .ToList();
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
@@ -233,7 +228,7 @@ public class EntityServiceTests
         var entities = new List<IEntityConfiguration>
         {
             CreateTestEntity("Entity1", null),
-            CreateTestEntity("Entity2", "dbo")
+            CreateTestEntity("Entity2", "dbo"),
         };
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
@@ -259,7 +254,9 @@ public class EntityServiceTests
         var mockEntity = new Mock<IEntityConfiguration>();
         mockEntity.Setup(e => e.EntityName).Returns(name);
         mockEntity.Setup(e => e.SchemaName).Returns(schema);
-        mockEntity.Setup(e => e.Properties).Returns(new List<IPropertyConfiguration> { mockProp.Object });
+        mockEntity
+            .Setup(e => e.Properties)
+            .Returns(new List<IPropertyConfiguration> { mockProp.Object });
         mockEntity.Setup(e => e.Indexes).Returns(new List<IIndexConfiguration>());
         mockEntity.Setup(e => e.Relationships).Returns(new List<IRelationshipConfiguration>());
         return mockEntity.Object;
@@ -330,7 +327,7 @@ public class EntityListResponseTests
         // Arrange
         var response = new EntityListResponse
         {
-            Entities = new List<string> { "Entity1", "Entity2" }
+            Entities = new List<string> { "Entity1", "Entity2" },
         };
 
         // Act

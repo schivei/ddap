@@ -1,5 +1,5 @@
-using Ddap.Core;
 using System.Text;
+using Ddap.Core;
 
 namespace Ddap.Grpc;
 
@@ -10,7 +10,7 @@ namespace Ddap.Grpc;
 /// <code>
 /// var generator = new ProtoGenerator();
 /// var protoContent = generator.GenerateProtoFile(entityConfig);
-/// 
+///
 /// // Save to file or return to client
 /// File.WriteAllText("entity.proto", protoContent);
 /// </code>
@@ -25,7 +25,7 @@ public class ProtoGenerator
     public string GenerateProtoFile(IEntityConfiguration entity)
     {
         var sb = new StringBuilder();
-        
+
         sb.AppendLine("syntax = \"proto3\";");
         sb.AppendLine();
         sb.AppendLine($"option csharp_namespace = \"Ddap.Grpc.Generated\";");
@@ -89,9 +89,15 @@ public class ProtoGenerator
         // Generate service
         sb.AppendLine($"service {entity.EntityName}Service {{");
         sb.AppendLine($"  rpc Get(Get{entity.EntityName}Request) returns ({entity.EntityName});");
-        sb.AppendLine($"  rpc List(List{entity.EntityName}Request) returns (List{entity.EntityName}Response);");
-        sb.AppendLine($"  rpc Create(Create{entity.EntityName}Request) returns ({entity.EntityName});");
-        sb.AppendLine($"  rpc Update(Update{entity.EntityName}Request) returns ({entity.EntityName});");
+        sb.AppendLine(
+            $"  rpc List(List{entity.EntityName}Request) returns (List{entity.EntityName}Response);"
+        );
+        sb.AppendLine(
+            $"  rpc Create(Create{entity.EntityName}Request) returns ({entity.EntityName});"
+        );
+        sb.AppendLine(
+            $"  rpc Update(Update{entity.EntityName}Request) returns ({entity.EntityName});"
+        );
         sb.AppendLine($"  rpc Delete(Delete{entity.EntityName}Request) returns (Empty);");
         sb.AppendLine("}");
 
@@ -152,7 +158,7 @@ public class ProtoGenerator
             "Guid" => "string",
             "Byte" => "int32",
             "Int16" => "int32",
-            _ => "string"
+            _ => "string",
         };
     }
 

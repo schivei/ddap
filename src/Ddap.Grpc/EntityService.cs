@@ -37,7 +37,7 @@ public partial class EntityService
         var entities = _entityRepository.GetAllEntities();
         var response = new EntityListResponse
         {
-            Entities = entities.Select(e => e.EntityName).ToList()
+            Entities = entities.Select(e => e.EntityName).ToList(),
         };
 
         return response;

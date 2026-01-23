@@ -9,23 +9,23 @@ namespace Ddap.Rest.Models;
 /// public async Task&lt;PagedResult&lt;User&gt;&gt; GetUsersAsync(QueryParameters parameters)
 /// {
 ///     var query = _context.Users.AsQueryable();
-///     
+///
 ///     // Apply filtering
 ///     if (!string.IsNullOrEmpty(parameters.Filter))
 ///     {
 ///         query = QueryFilterBuilder.ApplyFilter(query, parameters.Filter);
 ///     }
-///     
+///
 ///     // Get total count
 ///     var totalCount = await query.CountAsync();
-///     
+///
 ///     // Apply sorting and pagination
 ///     var items = await query
 ///         .OrderBy(parameters.OrderBy ?? "id")
 ///         .Skip((parameters.PageNumber - 1) * parameters.PageSize)
 ///         .Take(parameters.PageSize)
 ///         .ToListAsync();
-///     
+///
 ///     return new PagedResult&lt;User&gt;(items, totalCount, parameters.PageNumber, parameters.PageSize);
 /// }
 /// </code>

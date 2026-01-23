@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="..\Ddap.Core\Ddap.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting" Version="10.0.*" />
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="10.0.*" />
+    <PackageReference Include="Aspire.Hosting" Version="13.1.*" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.*" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
   </ItemGroup>
 
@@ -15,5 +14,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
 </Project>

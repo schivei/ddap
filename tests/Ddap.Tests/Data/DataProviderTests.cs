@@ -1,7 +1,7 @@
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
 using Ddap.Data.Dapper.MySQL;
 using Ddap.Data.Dapper.PostgreSQL;
+using Ddap.Data.Dapper.SqlServer;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -67,9 +67,10 @@ public class SqlServerDataProviderExtensionsTests
 
         // Assert
         var hostedService = services.FirstOrDefault(sd =>
-            sd.ServiceType == typeof(IHostedService) &&
-            sd.ImplementationType != null &&
-            sd.ImplementationType.Name == "EntityLoaderHostedService");
+            sd.ServiceType == typeof(IHostedService)
+            && sd.ImplementationType != null
+            && sd.ImplementationType.Name == "EntityLoaderHostedService"
+        );
         hostedService.Should().NotBeNull();
     }
 
@@ -196,9 +197,10 @@ public class MySqlDataProviderExtensionsTests
 
         // Assert
         var hostedService = services.FirstOrDefault(sd =>
-            sd.ServiceType == typeof(IHostedService) &&
-            sd.ImplementationType != null &&
-            sd.ImplementationType.Name == "EntityLoaderHostedService");
+            sd.ServiceType == typeof(IHostedService)
+            && sd.ImplementationType != null
+            && sd.ImplementationType.Name == "EntityLoaderHostedService"
+        );
         hostedService.Should().NotBeNull();
     }
 
@@ -325,9 +327,10 @@ public class PostgreSqlDataProviderExtensionsTests
 
         // Assert
         var hostedService = services.FirstOrDefault(sd =>
-            sd.ServiceType == typeof(IHostedService) &&
-            sd.ImplementationType != null &&
-            sd.ImplementationType.Name == "EntityLoaderHostedService");
+            sd.ServiceType == typeof(IHostedService)
+            && sd.ImplementationType != null
+            && sd.ImplementationType.Name == "EntityLoaderHostedService"
+        );
         hostedService.Should().NotBeNull();
     }
 
@@ -416,9 +419,13 @@ public class DataProviderComparisonTests
         postgreSqlBuilder.AddPostgreSqlDapper();
 
         // Assert
-        var sqlServerProvider = sqlServerServices.BuildServiceProvider().GetService<IDataProvider>();
+        var sqlServerProvider = sqlServerServices
+            .BuildServiceProvider()
+            .GetService<IDataProvider>();
         var mySqlProvider = mySqlServices.BuildServiceProvider().GetService<IDataProvider>();
-        var postgreSqlProvider = postgreSqlServices.BuildServiceProvider().GetService<IDataProvider>();
+        var postgreSqlProvider = postgreSqlServices
+            .BuildServiceProvider()
+            .GetService<IDataProvider>();
 
         sqlServerProvider.Should().NotBeNull();
         mySqlProvider.Should().NotBeNull();
@@ -466,9 +473,13 @@ public class DataProviderComparisonTests
         postgreSqlBuilder.AddPostgreSqlDapper();
 
         // Assert
-        var sqlServerProvider = sqlServerServices.BuildServiceProvider().GetService<IDataProvider>();
+        var sqlServerProvider = sqlServerServices
+            .BuildServiceProvider()
+            .GetService<IDataProvider>();
         var mySqlProvider = mySqlServices.BuildServiceProvider().GetService<IDataProvider>();
-        var postgreSqlProvider = postgreSqlServices.BuildServiceProvider().GetService<IDataProvider>();
+        var postgreSqlProvider = postgreSqlServices
+            .BuildServiceProvider()
+            .GetService<IDataProvider>();
 
         sqlServerProvider.Should().BeOfType<SqlServerDataProvider>();
         mySqlProvider.Should().BeOfType<MySqlDataProvider>();

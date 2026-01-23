@@ -25,15 +25,12 @@ public partial class Query
     public IEnumerable<EntityMetadata> GetEntities([Service] IEntityRepository entityRepository)
     {
         var entities = entityRepository.GetAllEntities();
-        return entities.Select(
-            e =>
-                new EntityMetadata
-                {
-                    Name = e.EntityName,
-                    Schema = e.SchemaName,
-                    PropertyCount = e.Properties.Count
-                }
-        );
+        return entities.Select(e => new EntityMetadata
+        {
+            Name = e.EntityName,
+            Schema = e.SchemaName,
+            PropertyCount = e.Properties.Count,
+        });
     }
 
     /// <summary>
@@ -55,7 +52,7 @@ public partial class Query
         {
             Name = entity.EntityName,
             Schema = entity.SchemaName,
-            PropertyCount = entity.Properties.Count
+            PropertyCount = entity.Properties.Count,
         };
     }
 }
