@@ -19,14 +19,19 @@ public static class DdapAuthExtensions
     /// <param name="issuer">The JWT token issuer.</param>
     /// <param name="audience">The JWT token audience.</param>
     /// <param name="signingKey">The secret key used for JWT signing.</param>
+    /// <param name="requireHttpsMetadata">Whether to require HTTPS for metadata. Default is true. Set to false for development.</param>
     /// <returns>The DDAP builder for chaining.</returns>
     /// <example>
     /// <code>
+    /// // Production:
     /// services.AddDdap(options => {
     ///     options.ConnectionString = "...";
     /// })
     /// .AddDdapAuthentication("https://myapp.com", "ddap-api", "your-256-bit-secret")
     /// .AddDdapAuthorization();
+    /// 
+    /// // Development:
+    /// .AddDdapAuthentication("https://myapp.com", "ddap-api", "your-256-bit-secret", requireHttpsMetadata: false)
     /// 
     /// // In controllers:
     /// [DdapAuthorize(DdapAuthorizationPolicies.Read)]
@@ -37,7 +42,8 @@ public static class DdapAuthExtensions
         this IDdapBuilder builder,
         string issuer,
         string audience,
-        string signingKey)
+        string signingKey,
+        bool requireHttpsMetadata = true)
     {
         var key = Encoding.UTF8.GetBytes(signingKey);
 
@@ -49,7 +55,7 @@ public static class DdapAuthExtensions
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = true;
+                options.RequireHttpsMetadata = requireHttpsMetadata;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {

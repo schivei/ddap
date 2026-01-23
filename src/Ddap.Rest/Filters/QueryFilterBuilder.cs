@@ -47,8 +47,9 @@ public static class QueryFilterBuilder
             var lambda = Expression.Lambda<Func<T, bool>>(expression, parameter);
             return query.Where(lambda);
         }
-        catch
+        catch (Exception)
         {
+            // Return unfiltered query if filter expression is invalid
             return query;
         }
     }

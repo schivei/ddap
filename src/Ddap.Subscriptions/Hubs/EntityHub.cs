@@ -32,7 +32,7 @@ namespace Ddap.Subscriptions.Hubs;
 public class EntityHub : Hub
 {
     private readonly Dictionary<string, HashSet<string>> _subscriptions = new();
-    private static readonly object _lock = new();
+    private readonly object _lock = new();
 
     /// <summary>
     /// Subscribes the current connection to changes for a specific entity type.
