@@ -1,0 +1,22 @@
+<Project>
+  <!-- Common MSBuild targets for all projects -->
+  
+  <PropertyGroup>
+    <GeneratedCodePattern>*.g.cs</GeneratedCodePattern>
+  </PropertyGroup>
+
+  <!-- Exclude generated files from code coverage -->
+  <ItemGroup>
+    <Compile Update="**\*.g.cs">
+      <ExcludeFromCodeCoverage>true</ExcludeFromCodeCoverage>
+    </Compile>
+    <Compile Update="**\Generated\**\*.cs">
+      <ExcludeFromCodeCoverage>true</ExcludeFromCodeCoverage>
+    </Compile>
+  </ItemGroup>
+
+  <!-- CSharpier Integration -->
+  <Target Name="FormatCode" AfterTargets="BeforeBuild" Condition="'$(Configuration)' == 'Debug'">
+    <Exec Command="dotnet csharpier --check ." ContinueOnError="true" IgnoreExitCode="true" />
+  </Target>
+</Project>

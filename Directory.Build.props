@@ -1,0 +1,45 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>schivei</Authors>
+    <Company>schivei</Company>
+    <Product>DDAP - Dynamic Data API Provider</Product>
+    <Copyright>Copyright © 2026 schivei</Copyright>
+    <PackageProjectUrl>https://github.com/schivei/ddap</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/schivei/ddap</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    
+    <!-- Version Configuration -->
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)' != 'Release'">preview-$([System.DateTime]::UtcNow.ToString(yyyyMMdd-HHmmss))</VersionSuffix>
+    
+    <!-- Code Coverage Exclusions -->
+    <ExcludeFromCodeCoverage>true</ExcludeFromCodeCoverage>
+    
+    <!-- Package Information -->
+    <PackageTags>ddap;dynamic;api;data;provider;rest;grpc;graphql;efcore;dapper</PackageTags>
+    <Description>Dynamic Data API Provider - Automatically generate REST, gRPC, and GraphQL APIs from your database schema</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Condition="Exists('$(MSBuildThisFileDirectory)README.md')" />
+  </ItemGroup>
+
+  <!-- Source Generator Configuration -->
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude generated files from code coverage -->
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+</Project>
