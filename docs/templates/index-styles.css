@@ -104,6 +104,11 @@
             transition: all 0.2s;
         }
         .theme-btn:hover { background: rgba(255,255,255,0.2); }
+        .theme-btn:focus, .theme-btn:focus-visible {
+            outline: 2px solid rgba(255,255,255,0.8);
+            outline-offset: 2px;
+            background: rgba(255,255,255,0.25);
+        }
         .theme-btn.active {
             background: rgba(255,255,255,0.3);
             border-color: rgba(255,255,255,0.6);
