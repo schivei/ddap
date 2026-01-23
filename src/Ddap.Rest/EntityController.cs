@@ -1,4 +1,5 @@
 using Ddap.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ddap.Rest;
@@ -6,6 +7,8 @@ namespace Ddap.Rest;
 /// <summary>
 /// Base controller for dynamically generated entity endpoints.
 /// This class is partial to allow for extensibility.
+/// Supports content negotiation - responses can be in JSON (default), XML, or YAML format
+/// based on the Accept header in the request.
 /// </summary>
 /// <example>
 /// To extend this controller, create a partial class:
@@ -15,9 +18,25 @@ namespace Ddap.Rest;
 ///     // Add custom methods here
 /// }
 /// </code>
+/// 
+/// To request different formats:
+/// <code>
+/// // JSON (default with Newtonsoft.Json)
+/// GET /api/entity
+/// Accept: application/json
+/// 
+/// // XML
+/// GET /api/entity
+/// Accept: application/xml
+/// 
+/// // YAML
+/// GET /api/entity
+/// Accept: application/yaml
+/// </code>
 /// </example>
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json", "application/xml", "application/yaml")]
 public partial class EntityController : ControllerBase
 {
     private readonly IEntityRepository _entityRepository;

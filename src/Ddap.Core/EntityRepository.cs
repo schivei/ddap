@@ -6,7 +6,7 @@ namespace Ddap.Core;
 /// Default implementation of <see cref="IEntityRepository"/>.
 /// Stores entity configurations in memory.
 /// </summary>
-internal class EntityRepository : IEntityRepository
+public class EntityRepository : IEntityRepository
 {
     private readonly ConcurrentDictionary<string, IEntityConfiguration> _entities = new();
 
@@ -33,7 +33,7 @@ internal class EntityRepository : IEntityRepository
     /// Adds or updates an entity configuration in the repository.
     /// </summary>
     /// <param name="entity">The entity configuration to add or update.</param>
-    internal void AddOrUpdateEntity(IEntityConfiguration entity)
+    public void AddOrUpdateEntity(IEntityConfiguration entity)
     {
         _entities.AddOrUpdate(entity.EntityName, entity, (_, _) => entity);
     }
@@ -41,7 +41,7 @@ internal class EntityRepository : IEntityRepository
     /// <summary>
     /// Clears all entity configurations from the repository.
     /// </summary>
-    internal void Clear()
+    public void Clear()
     {
         _entities.Clear();
     }
