@@ -20,7 +20,7 @@
   <PropertyGroup>
     <FormatCodeOnce Condition="'$(FormatCodeOnce)' == ''">true</FormatCodeOnce>
   </PropertyGroup>
-  
+
   <!-- Restore tools before formatting -->
   <Target
     Name="RestoreTools"
