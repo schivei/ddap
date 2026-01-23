@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-    <title>DDAP Documentation - Dynamic Data API Provider</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="DDAP automatically generates REST, gRPC, and GraphQL APIs from your database schema">
-    <style>
         :root[data-theme="light"] {
             --bg-page: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --bg-container: #ffffff;
@@ -333,37 +325,3 @@ options.ConnectionString = "Server=localhost;Database=MyDb;...";
             <p>Built with ❤️ for the .NET community</p>
         </footer>
     </div>
-    
-    <script>
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('ddap-theme', theme);
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-            });
-        }
-        
-        const savedTheme = localStorage.getItem('ddap-theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const systemPrefersContrast = window.matchMedia('(prefers-contrast: more)').matches;
-        const initialTheme = savedTheme || (systemPrefersContrast ? 'high-contrast' : (systemPrefersDark ? 'dark' : 'light'));
-        setTheme(initialTheme);
-        
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.addEventListener('click', () => setTheme(btn.getAttribute('data-theme')));
-        });
-        
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('ddap-theme')) {
-                setTheme(e.matches ? 'dark' : 'light');
-            }
-        });
-        
-        window.matchMedia('(prefers-contrast: more)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('ddap-theme')) {
-                setTheme(e.matches ? 'high-contrast' : 'light');
-            }
-        });
-    </script>
-</body>
-</html>

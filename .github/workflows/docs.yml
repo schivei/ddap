@@ -60,18 +60,17 @@ jobs:
 
       - name: Create HTML wrappers for markdown files
         run: |
+          chmod +x docs/templates/build-docs.sh
           for mdfile in docs/*.md; do
             if [ -f "$mdfile" ]; then
               basename=$(basename "$mdfile" .md)
-              sed "s/{{MDFILE}}/${basename}/g" \
-                docs/templates/doc-page.tpl.html > \
-                "docs/_site/${basename}.html"
+              docs/templates/build-docs.sh docs/_site "${basename}"
             fi
           done
 
       - name: Create index page
         run: |
-          cp docs/templates/index.tpl.html docs/_site/index.html
+          docs/templates/build-docs.sh docs/_site index
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3

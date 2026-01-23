@@ -1,0 +1,125 @@
+    <div class="container">
+        <div class="header">
+            <div class="theme-selector">
+                <button class="theme-btn" data-theme="light" title="Light theme">☀️</button>
+                <button class="theme-btn" data-theme="dark" title="Dark theme">🌙</button>
+                <button class="theme-btn" data-theme="high-contrast" title="High contrast theme">◐</button>
+            </div>
+            <h1>🚀 DDAP</h1>
+            <p>Dynamic Data API Provider for .NET</p>
+        </div>
+        
+        <div class="content">
+            <div class="badges">
+                <a href="https://github.com/schivei/ddap/actions"><img src="https://github.com/schivei/ddap/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
+                <a href="https://www.nuget.org/packages?q=ddap"><img src="https://img.shields.io/nuget/v/Ddap.Core.svg" alt="NuGet"></a>
+                <a href="https://github.com/schivei/ddap/blob/main/LICENSE"><img src="https://img.shields.io/github/license/schivei/ddap" alt="License"></a>
+            </div>
+
+            <div class="section">
+                <h2>📚 Documentation Guides</h2>
+                <div class="nav-section">
+                    <div class="nav-card">
+                        <h3>🎯 Get Started</h3>
+                        <p>Learn the basics and create your first DDAP API in minutes</p>
+                        <a href="get-started.html">Start Tutorial →</a>
+                    </div>
+                    <div class="nav-card">
+                        <h3>📖 API Reference</h3>
+                        <p>Complete API documentation generated from XML comments</p>
+                        <a href="api/">Browse API →</a>
+                    </div>
+                    <div class="nav-card">
+                        <h3>🏗️ Architecture</h3>
+                        <p>Understand DDAP's design, components, and how everything works together</p>
+                        <a href="architecture.html">View Architecture →</a>
+                    </div>
+                    <div class="nav-card">
+                        <h3>🔧 Advanced Usage</h3>
+                        <p>Extensibility, custom endpoints, and advanced patterns</p>
+                        <a href="advanced.html">Advanced Guide →</a>
+                    </div>
+                    <div class="nav-card">
+                        <h3>🗄️ Database Providers</h3>
+                        <p>SQL Server, MySQL, PostgreSQL, and Entity Framework support</p>
+                        <a href="database-providers.html">Database Docs →</a>
+                    </div>
+                    <div class="nav-card">
+                        <h3>🌐 API Providers</h3>
+                        <p>REST, gRPC, and GraphQL API implementation details</p>
+                        <a href="api-providers.html">API Docs →</a>
+                    </div>
+                    <div class="nav-card">
+                        <h3>🐛 Troubleshooting</h3>
+                        <p>Common issues, solutions, and debugging tips</p>
+                        <a href="troubleshooting.html">Get Help →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>✨ Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <strong>🚀 Auto API Generation</strong>
+                        <p>Load database schema and create endpoints automatically</p>
+                    </div>
+                    <div class="feature">
+                        <strong>🗄️ Multi-Database</strong>
+                        <p>SQL Server, MySQL, PostgreSQL</p>
+                    </div>
+                    <div class="feature">
+                        <strong>🌐 Multi-Protocol</strong>
+                        <p>REST, gRPC, GraphQL</p>
+                    </div>
+                    <div class="feature">
+                        <strong>📋 Content Negotiation</strong>
+                        <p>JSON, XML, YAML support</p>
+                    </div>
+                    <div class="feature">
+                        <strong>🔧 Extensible</strong>
+                        <p>Partial classes for customization</p>
+                    </div>
+                    <div class="feature">
+                        <strong>📦 Modular</strong>
+                        <p>Separate libraries per provider</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚡ Quick Start</h2>
+                <p>Install the packages:</p>
+                <pre><code>dotnet add package Ddap.Core
+dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Rest
+dotnet add package Ddap.GraphQL</code></pre>
+                
+                <p>Configure in Program.cs:</p>
+                <pre><code>builder.Services
+    .AddDdap(options => {
+options.ConnectionString = "Server=localhost;Database=MyDb;...";
+    })
+    .AddSqlServerDapper()
+    .AddRest()
+    .AddGraphQL();</code></pre>
+            </div>
+
+            <div class="section">
+                <h2>🔗 Additional Resources</h2>
+                <ul>
+                    <li><a href="https://github.com/schivei/ddap">📂 GitHub Repository</a></li>
+                    <li><a href="https://github.com/schivei/ddap/tree/main/examples">💡 Example Projects</a></li>
+                    <li><a href="https://www.nuget.org/packages?q=ddap">📦 NuGet Packages</a></li>
+                    <li><a href="README.html">📖 README</a></li>
+                    <li><a href="CONTRIBUTING.html">🤝 Contributing Guide</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer>
+            <p>DDAP - Dynamic Data API Provider | MIT License | © 2026</p>
+            <p>Built with ❤️ for the .NET community</p>
+        </footer>
+    </div>
+    
