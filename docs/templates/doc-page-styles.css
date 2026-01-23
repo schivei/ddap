@@ -172,6 +172,46 @@
             color: inherit;
             padding: 0;
         }
+        /* Syntax highlighting */
+        .markdown-body pre code .hl-keyword {
+            color: #c678dd;
+            font-weight: 600;
+        }
+        .markdown-body pre code .hl-string {
+            color: #98c379;
+        }
+        .markdown-body pre code .hl-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+        .markdown-body pre code .hl-number {
+            color: #d19a66;
+        }
+        :root[data-theme="light"] .markdown-body pre code .hl-keyword {
+            color: #a626a4;
+        }
+        :root[data-theme="light"] .markdown-body pre code .hl-string {
+            color: #50a14f;
+        }
+        :root[data-theme="light"] .markdown-body pre code .hl-comment {
+            color: #a0a1a7;
+        }
+        :root[data-theme="light"] .markdown-body pre code .hl-number {
+            color: #986801;
+        }
+        :root[data-theme="high-contrast"] .markdown-body pre code .hl-keyword {
+            color: #ff00ff;
+            font-weight: 700;
+        }
+        :root[data-theme="high-contrast"] .markdown-body pre code .hl-string {
+            color: #00ff00;
+        }
+        :root[data-theme="high-contrast"] .markdown-body pre code .hl-comment {
+            color: #808080;
+        }
+        :root[data-theme="high-contrast"] .markdown-body pre code .hl-number {
+            color: #ffff00;
+        }
         .markdown-body blockquote {
             color: var(--text-secondary);
             border-left: 4px solid var(--border-color);

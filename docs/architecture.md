@@ -6,28 +6,56 @@ This document provides an overview of DDAP's architecture, design principles, an
 
 DDAP follows a modular, layered architecture with clear separation of concerns:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    API Layer                            │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
-│  │   REST   │  │  GraphQL │  │   gRPC   │             │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘             │
-└───────┼────────────┼─────────────┼────────────────────┘
-        │            │             │
-┌───────┴────────────┴─────────────┴────────────────────┐
-│                    Core Layer                          │
-│  ┌──────────────────────────────────────────────┐     │
-│  │         Entity Repository & Configuration     │     │
-│  └───────────────────┬──────────────────────────┘     │
-└────────────────────┼───────────────────────────────────┘
-                     │
-┌────────────────────┴───────────────────────────────────┐
-│                 Data Provider Layer                     │
-│  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌─────────┐ │
-│  │SqlServer│  │  MySQL  │  │PostgreSQL│  │Entity   │ │
-│  │(Dapper) │  │(Dapper) │  │(Dapper)  │  │Framework│ │
-│  └─────────┘  └─────────┘  └──────────┘  └─────────┘ │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph API["API Layer"]
+        REST[REST API]
+        GraphQL[GraphQL API]
+        gRPC[gRPC API]
+    end
+    
+    subgraph Core["Core Layer"]
+        Repository[Entity Repository & Configuration]
+        EntityConfig[Entity Configuration]
+        PropertyConfig[Property Configuration]
+    end
+    
+    subgraph DataProvider["Data Provider Layer"]
+        SqlServerDapper[SQL Server<br/>Dapper]
+        MySQLDapper[MySQL<br/>Dapper]
+        PostgreSQLDapper[PostgreSQL<br/>Dapper]
+        EF[Entity<br/>Framework]
+    end
+    
+    subgraph Database["Database"]
+        MSSQL[(SQL Server)]
+        MySQL[(MySQL)]
+        PostgreSQL[(PostgreSQL)]
+    end
+    
+    REST --> Repository
+    GraphQL --> Repository
+    gRPC --> Repository
+    
+    Repository --> EntityConfig
+    Repository --> PropertyConfig
+    
+    Repository --> SqlServerDapper
+    Repository --> MySQLDapper
+    Repository --> PostgreSQLDapper
+    Repository --> EF
+    
+    SqlServerDapper --> MSSQL
+    MySQLDapper --> MySQL
+    PostgreSQLDapper --> PostgreSQL
+    EF --> MSSQL
+    EF --> MySQL
+    EF --> PostgreSQL
+    
+    style API fill:#667eea,stroke:#333,stroke-width:2px,color:#fff
+    style Core fill:#764ba2,stroke:#333,stroke-width:2px,color:#fff
+    style DataProvider fill:#f093fb,stroke:#333,stroke-width:2px,color:#fff
+    style Database fill:#4facfe,stroke:#333,stroke-width:2px,color:#fff
 ```
 
 ## Core Concepts

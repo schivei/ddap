@@ -1,20 +1,20 @@
 - name: Home
-  href: index.html
+  href: index.md
 - name: Getting Started
-  href: get-started.html
+  href: get-started.md
 - name: Architecture
-  href: architecture.html
+  href: architecture.md
 - name: Advanced Usage
-  href: advanced.html
+  href: advanced.md
 - name: Database Providers
-  href: database-providers.html
+  href: database-providers.md
 - name: API Providers
-  href: api-providers.html
+  href: api-providers.md
 - name: Troubleshooting
-  href: troubleshooting.html
+  href: troubleshooting.md
 - name: API Reference
   href: api/
 - name: Contributing
-  href: CONTRIBUTING.html
+  href: https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md
 - name: GitHub
   href: https://github.com/schivei/ddap

@@ -36,9 +36,9 @@ Browse the API documentation by namespace:
 
 To understand how to use these APIs, check out our guides:
 
-- [Getting Started](../get-started.html)
-- [Architecture Overview](../architecture.html)
-- [Advanced Usage](../advanced.html)
+- [Getting Started](get-started.md)
+- [Architecture Overview](architecture.md)
+- [Advanced Usage](advanced.md)
 
 ## Contributing
 

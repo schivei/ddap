@@ -1,3 +1,12 @@
+        // Initialize Mermaid
+        if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({ 
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose'
+            });
+        }
+        
         // Theme management
         const VALID_THEMES = ['light', 'dark', 'high-contrast'];
         
@@ -60,6 +69,91 @@
             }
         });
         
+        // Simple syntax highlighter
+        function highlightCode(code, language) {
+            // Escape HTML first
+            code = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            // Special handling for mermaid - don't apply syntax highlighting
+            if (language && language.toLowerCase() === 'mermaid') {
+                return code;
+            }
+            
+            if (!language) return code;
+            
+            // Create a safe version to work with
+            const parts = [];
+            let current = code;
+            
+            // Extract strings first and replace with placeholders
+            const stringMatches = [];
+            current = current.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, (match, p1) => {
+                const index = stringMatches.length;
+                stringMatches.push('<span class="hl-string">' + p1 + '</span>');
+                return '___STRING_' + index + '___';
+            });
+            
+            // Extract and highlight comments
+            const commentMatches = [];
+            if (['csharp', 'javascript', 'typescript', 'java'].includes(language.toLowerCase())) {
+                current = current.replace(/(\/\/.*$)/gm, (match, p1) => {
+                    const index = commentMatches.length;
+                    commentMatches.push('<span class="hl-comment">' + p1 + '</span>');
+                    return '___COMMENT_' + index + '___';
+                });
+                current = current.replace(/(\/\*[\s\S]*?\*\/)/g, (match, p1) => {
+                    const index = commentMatches.length;
+                    commentMatches.push('<span class="hl-comment">' + p1 + '</span>');
+                    return '___COMMENT_' + index + '___';
+                });
+            }
+            
+            if (language.toLowerCase() === 'python') {
+                current = current.replace(/(#.*$)/gm, (match, p1) => {
+                    const index = commentMatches.length;
+                    commentMatches.push('<span class="hl-comment">' + p1 + '</span>');
+                    return '___COMMENT_' + index + '___';
+                });
+            }
+            
+            // Keywords for different languages
+            const keywords = {
+                csharp: ['public', 'private', 'protected', 'internal', 'static', 'readonly', 'const', 'class', 'interface', 'struct', 'enum', 'namespace', 'using', 'var', 'void', 'string', 'int', 'bool', 'double', 'float', 'long', 'decimal', 'if', 'else', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'new', 'this', 'base', 'null', 'true', 'false', 'async', 'await', 'Task', 'IEnumerable', 'List', 'Dictionary', 'override', 'virtual', 'abstract', 'sealed', 'partial', 'get', 'set', 'value'],
+                javascript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'async', 'await', 'class', 'extends', 'import', 'export', 'from', 'default', 'new', 'this', 'null', 'undefined', 'true', 'false', 'typeof', 'instanceof'],
+                typescript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'async', 'await', 'class', 'extends', 'import', 'export', 'from', 'default', 'new', 'this', 'null', 'undefined', 'true', 'false', 'typeof', 'instanceof', 'interface', 'type', 'enum', 'public', 'private', 'protected', 'readonly'],
+                python: ['def', 'class', 'if', 'elif', 'else', 'for', 'while', 'return', 'import', 'from', 'as', 'try', 'except', 'finally', 'with', 'lambda', 'None', 'True', 'False', 'and', 'or', 'not', 'in', 'is', 'async', 'await'],
+                java: ['public', 'private', 'protected', 'static', 'final', 'class', 'interface', 'extends', 'implements', 'import', 'package', 'void', 'int', 'String', 'boolean', 'double', 'float', 'long', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'new', 'this', 'null', 'true', 'false'],
+                sql: ['SELECT', 'FROM', 'WHERE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP', 'TABLE', 'INDEX', 'VIEW', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'AND', 'OR', 'NOT', 'NULL', 'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES'],
+                bash: ['if', 'then', 'else', 'elif', 'fi', 'for', 'while', 'do', 'done', 'case', 'esac', 'function', 'return', 'exit', 'echo', 'cd', 'ls', 'grep', 'sed', 'awk', 'export'],
+                sh: ['if', 'then', 'else', 'elif', 'fi', 'for', 'while', 'do', 'done', 'case', 'esac', 'function', 'return', 'exit', 'echo', 'cd', 'ls', 'grep', 'sed', 'awk', 'export']
+            };
+            
+            const langKeywords = keywords[language.toLowerCase()] || [];
+            
+            // Highlight keywords
+            langKeywords.forEach(keyword => {
+                // Escape special regex characters in the keyword
+                const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp('\\b(' + escapedKeyword + ')\\b', 'g');
+                current = current.replace(regex, '<span class="hl-keyword">$1</span>');
+            });
+            
+            // Highlight numbers
+            current = current.replace(/\b(\d+\.?\d*)\b/g, '<span class="hl-number">$1</span>');
+            
+            // Restore comments
+            commentMatches.forEach((comment, index) => {
+                current = current.replace('___COMMENT_' + index + '___', comment);
+            });
+            
+            // Restore strings
+            stringMatches.forEach((str, index) => {
+                current = current.replace('___STRING_' + index + '___', str);
+            });
+            
+            return current;
+        }
+        
         // Simple markdown parser
         function parseMarkdown(md) {
             // Split into lines for better processing
@@ -68,6 +162,7 @@
             let inList = false;
             let inCodeBlock = false;
             let codeBlock = '';
+            let codeLanguage = '';
             
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
@@ -77,9 +172,19 @@
                     if (!inCodeBlock) {
                         inCodeBlock = true;
                         codeBlock = '';
+                        // Extract language from ```language
+                        codeLanguage = line.trim().substring(3).trim();
                     } else {
-                        html += '<pre><code>' + codeBlock + '</code></pre>';
+                        // Check if it's a mermaid diagram
+                        if (codeLanguage && codeLanguage.toLowerCase() === 'mermaid') {
+                            html += '<div class="mermaid">' + codeBlock.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+                        } else {
+                            // Apply syntax highlighting based on language
+                            const highlightedCode = highlightCode(codeBlock, codeLanguage);
+                            html += '<pre><code class="language-' + (codeLanguage || 'plaintext') + '">' + highlightedCode + '</code></pre>';
+                        }
                         inCodeBlock = false;
+                        codeLanguage = '';
                     }
                     continue;
                 }
@@ -147,6 +252,14 @@
         // Load markdown content
         fetch('{{MDFILE}}.md')
             .then(r => r.ok ? r.text() : Promise.reject())
-            .then(md => { document.getElementById('content').innerHTML = parseMarkdown(md); })
+            .then(md => { 
+                document.getElementById('content').innerHTML = parseMarkdown(md);
+                // Render mermaid diagrams after content is loaded
+                if (typeof mermaid !== 'undefined') {
+                    mermaid.run({
+                        querySelector: '.mermaid'
+                    }).catch(err => console.error('Mermaid rendering error:', err));
+                }
+            })
             .catch(() => { document.getElementById('content').innerHTML = '<h1>Error</h1><p>Could not load document.</p>'; });
     </script>
