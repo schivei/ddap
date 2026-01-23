@@ -15,6 +15,9 @@ if [ -n "$(git diff --name-only)" ]; then
   git add -u
 fi
 
+# Restore project dependencies
+echo "Restoring .NET project dependencies..."
+dotnet restore Ddap.slnx
 # Run tests
 echo "Running unit tests..."
 dotnet test Ddap.slnx --configuration Release --verbosity minimal --no-restore
