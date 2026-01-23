@@ -217,7 +217,31 @@ The project includes GitHub Actions workflows for:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- How to report bugs
+- How to suggest enhancements
+- Development setup
+- Pull request process
+- Coding standards
+- Testing guidelines
+
+Quick start for contributors:
+
+```bash
+# Fork and clone the repository
+git clone https://github.com/YOUR-USERNAME/ddap.git
+cd ddap
+
+# Install dependencies
+dotnet restore
+
+# Build the solution
+dotnet build
+
+# Run tests
+dotnet test
+```
 
 ## License
 
@@ -234,8 +258,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Documentation
 
+### 📚 Comprehensive Guides
+
+- **[Getting Started](docs/get-started.md)** - Quick start guide and basic setup
+- **[Architecture](docs/architecture.md)** - Understand DDAP's design and components
+- **[Advanced Usage](docs/advanced.md)** - Extensibility, custom endpoints, and patterns
+- **[Database Providers](docs/database-providers.md)** - SQL Server, MySQL, PostgreSQL, EF Core
+- **[API Providers](docs/api-providers.md)** - REST, gRPC, and GraphQL documentation
+- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
+
+### 🌐 Online Documentation
+
 Full documentation is available at [https://schivei.github.io/ddap](https://schivei.github.io/ddap)
+
+## Examples
+
+Check out the [example application](examples/Ddap.Example.Api) for a complete working implementation showcasing:
+- Multiple database providers
+- REST, gRPC, and GraphQL APIs
+- Content negotiation (JSON, XML, YAML)
+- Custom endpoint extensions
 
 ## Support
 
 For issues, questions, or feature requests, please [open an issue](https://github.com/schivei/ddap/issues) on GitHub.
+
+### Getting Help
+
+- **📖 Documentation:** Check the [docs](docs/) directory
+- **💬 Discussions:** [GitHub Discussions](https://github.com/schivei/ddap/discussions)
+- **🐛 Bug Reports:** [GitHub Issues](https://github.com/schivei/ddap/issues)
+- **💡 Feature Requests:** [GitHub Issues](https://github.com/schivei/ddap/issues) with enhancement label

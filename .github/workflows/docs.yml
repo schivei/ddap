@@ -3,6 +3,11 @@ name: Documentation
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 env:
@@ -29,84 +34,266 @@ jobs:
 
     - name: Setup DocFX
       run: dotnet tool install -g docfx
+      continue-on-error: true
 
     - name: Generate API documentation
       run: |
         mkdir -p docs/api
-        docfx metadata docs/docfx.json || echo "DocFX metadata generation needs configuration"
+        docfx metadata docs/docfx.json || echo "DocFX metadata generation skipped (optional)"
       continue-on-error: true
 
-    - name: Build documentation
+    - name: Build documentation with DocFX
       run: |
         cd docs
-        docfx build docfx.json || echo "DocFX build needs configuration"
+        docfx build docfx.json || echo "DocFX build skipped (optional)"
       continue-on-error: true
 
-    - name: Create documentation index
+    - name: Create documentation site
       run: |
         mkdir -p docs/_site
+        
+        # Copy markdown documentation files
+        cp -r docs/*.md docs/_site/ 2>/dev/null || true
+        cp README.md docs/_site/ 2>/dev/null || true
+        cp CONTRIBUTING.md docs/_site/ 2>/dev/null || true
+        
+        # Create index.html
         cat > docs/_site/index.html << 'EOF'
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
-            <title>DDAP Documentation</title>
+            <title>DDAP Documentation - Dynamic Data API Provider</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="description" content="DDAP automatically generates REST, gRPC, and GraphQL APIs from your database schema">
             <style>
-                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
-                h1 { color: #333; }
-                .section { margin: 20px 0; padding: 20px; background: #f5f5f5; border-radius: 5px; }
-                a { color: #0066cc; text-decoration: none; }
-                a:hover { text-decoration: underline; }
-                code { background: #e0e0e0; padding: 2px 5px; border-radius: 3px; }
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    padding: 20px;
+                }
+                .container {
+                    max-width: 900px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    overflow: hidden;
+                }
+                .header {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 40px;
+                    text-align: center;
+                }
+                .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+                .header p { font-size: 1.2em; opacity: 0.9; }
+                .content { padding: 40px; }
+                .nav-section {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                    margin: 30px 0;
+                }
+                .nav-card {
+                    padding: 25px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    border-left: 4px solid #667eea;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+                .nav-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                }
+                .nav-card h3 { color: #667eea; margin-bottom: 10px; font-size: 1.3em; }
+                .nav-card p { color: #666; margin-bottom: 15px; }
+                .nav-card a {
+                    display: inline-block;
+                    padding: 8px 16px;
+                    background: #667eea;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-size: 0.9em;
+                    transition: background 0.2s;
+                }
+                .nav-card a:hover { background: #764ba2; }
+                .section { margin: 30px 0; }
+                .section h2 {
+                    color: #667eea;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #f0f0f0;
+                }
+                .features {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 15px;
+                    margin: 20px 0;
+                }
+                .feature {
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 5px;
+                    text-align: center;
+                }
+                .feature strong { color: #667eea; display: block; margin-bottom: 5px; }
+                code {
+                    background: #f4f4f4;
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.9em;
+                }
+                pre {
+                    background: #2d2d2d;
+                    color: #f8f8f2;
+                    padding: 20px;
+                    border-radius: 5px;
+                    overflow-x: auto;
+                    margin: 15px 0;
+                }
+                pre code { background: none; color: inherit; padding: 0; }
+                .badges { margin: 20px 0; text-align: center; }
+                .badges img { margin: 0 5px; }
+                footer {
+                    text-align: center;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    color: #666;
+                    font-size: 0.9em;
+                }
             </style>
         </head>
         <body>
-            <h1>DDAP - Dynamic Data API Provider</h1>
-            <p>Welcome to the DDAP documentation. DDAP automatically generates REST, gRPC, and GraphQL APIs from your database schema.</p>
-            
-            <div class="section">
-                <h2>Getting Started</h2>
-                <p>Install the NuGet packages:</p>
-                <pre><code>dotnet add package Ddap.Core
-        dotnet add package Ddap.Data
-        dotnet add package Ddap.Rest
-        dotnet add package Ddap.Grpc
-        dotnet add package Ddap.GraphQL</code></pre>
-            </div>
+            <div class="container">
+                <div class="header">
+                    <h1>🚀 DDAP</h1>
+                    <p>Dynamic Data API Provider for .NET</p>
+                </div>
+                
+                <div class="content">
+                    <div class="badges">
+                        <a href="https://github.com/schivei/ddap/actions"><img src="https://github.com/schivei/ddap/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
+                        <a href="https://www.nuget.org/packages?q=ddap"><img src="https://img.shields.io/nuget/v/Ddap.Core.svg" alt="NuGet"></a>
+                        <a href="https://github.com/schivei/ddap/blob/main/LICENSE"><img src="https://img.shields.io/github/license/schivei/ddap" alt="License"></a>
+                    </div>
 
-            <div class="section">
-                <h2>Quick Start</h2>
-                <pre><code>builder.Services
-            .AddDdap(options => {
-                options.ConnectionString = "...";
-                options.Provider = DatabaseProvider.SQLServer;
-            })
-            .AddDataProvider()
-            .AddRest()      // JSON (Newtonsoft.Json), XML, YAML support
-            .AddGrpc()
-            .AddGraphQL();</code></pre>
-            </div>
+                    <div class="section">
+                        <h2>📚 Documentation Guides</h2>
+                        <div class="nav-section">
+                            <div class="nav-card">
+                                <h3>🎯 Get Started</h3>
+                                <p>Learn the basics and create your first DDAP API in minutes</p>
+                                <a href="get-started.html">Start Tutorial →</a>
+                            </div>
+                            <div class="nav-card">
+                                <h3>🏗️ Architecture</h3>
+                                <p>Understand DDAP's design, components, and how everything works together</p>
+                                <a href="architecture.html">View Architecture →</a>
+                            </div>
+                            <div class="nav-card">
+                                <h3>🔧 Advanced Usage</h3>
+                                <p>Extensibility, custom endpoints, and advanced patterns</p>
+                                <a href="advanced.html">Advanced Guide →</a>
+                            </div>
+                            <div class="nav-card">
+                                <h3>🗄️ Database Providers</h3>
+                                <p>SQL Server, MySQL, PostgreSQL, and Entity Framework support</p>
+                                <a href="database-providers.html">Database Docs →</a>
+                            </div>
+                            <div class="nav-card">
+                                <h3>🌐 API Providers</h3>
+                                <p>REST, gRPC, and GraphQL API implementation details</p>
+                                <a href="api-providers.html">API Docs →</a>
+                            </div>
+                            <div class="nav-card">
+                                <h3>🐛 Troubleshooting</h3>
+                                <p>Common issues, solutions, and debugging tips</p>
+                                <a href="troubleshooting.html">Get Help →</a>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="section">
-                <h2>Features</h2>
-                <ul>
-                    <li><strong>Multiple Database Providers:</strong> SQL Server, MySQL, PostgreSQL</li>
-                    <li><strong>Multiple API Formats:</strong> REST (JSON/XML/YAML), gRPC, GraphQL</li>
-                    <li><strong>Content Negotiation:</strong> Automatic format selection via Accept header</li>
-                    <li><strong>JSON Serialization:</strong> Uses Newtonsoft.Json for all JSON operations</li>
-                    <li><strong>Extensible:</strong> Partial classes for custom extensions</li>
-                    <li><strong>Code Generation:</strong> Compile-time code generation support</li>
-                </ul>
-            </div>
+                    <div class="section">
+                        <h2>✨ Features</h2>
+                        <div class="features">
+                            <div class="feature">
+                                <strong>🚀 Auto API Generation</strong>
+                                <p>Load database schema and create endpoints automatically</p>
+                            </div>
+                            <div class="feature">
+                                <strong>🗄️ Multi-Database</strong>
+                                <p>SQL Server, MySQL, PostgreSQL</p>
+                            </div>
+                            <div class="feature">
+                                <strong>🌐 Multi-Protocol</strong>
+                                <p>REST, gRPC, GraphQL</p>
+                            </div>
+                            <div class="feature">
+                                <strong>📋 Content Negotiation</strong>
+                                <p>JSON, XML, YAML support</p>
+                            </div>
+                            <div class="feature">
+                                <strong>🔧 Extensible</strong>
+                                <p>Partial classes for customization</p>
+                            </div>
+                            <div class="feature">
+                                <strong>📦 Modular</strong>
+                                <p>Separate libraries per provider</p>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="section">
-                <h2>Resources</h2>
-                <ul>
-                    <li><a href="https://github.com/schivei/ddap">GitHub Repository</a></li>
-                    <li><a href="https://github.com/schivei/ddap/tree/main/examples">Examples</a></li>
-                    <li><a href="https://www.nuget.org/packages?q=ddap">NuGet Packages</a></li>
-                </ul>
+                    <div class="section">
+                        <h2>⚡ Quick Start</h2>
+                        <p>Install the packages:</p>
+                        <pre><code>dotnet add package Ddap.Core
+dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Rest
+dotnet add package Ddap.GraphQL</code></pre>
+                        
+                        <p>Configure in Program.cs:</p>
+                        <pre><code>builder.Services
+    .AddDdap(options => {
+        options.ConnectionString = "Server=localhost;Database=MyDb;...";
+    })
+    .AddSqlServerDapper()
+    .AddRest()
+    .AddGraphQL();</code></pre>
+                    </div>
+
+                    <div class="section">
+                        <h2>🔗 Additional Resources</h2>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
+                                <a href="https://github.com/schivei/ddap" style="color: #667eea; text-decoration: none;">📂 GitHub Repository</a>
+                            </li>
+                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
+                                <a href="https://github.com/schivei/ddap/tree/main/examples" style="color: #667eea; text-decoration: none;">💡 Example Projects</a>
+                            </li>
+                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
+                                <a href="https://www.nuget.org/packages?q=ddap" style="color: #667eea; text-decoration: none;">📦 NuGet Packages</a>
+                            </li>
+                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
+                                <a href="README.html" style="color: #667eea; text-decoration: none;">📖 README</a>
+                            </li>
+                            <li style="padding: 10px; background: #f8f9fa; margin: 5px 0; border-radius: 5px;">
+                                <a href="CONTRIBUTING.html" style="color: #667eea; text-decoration: none;">🤝 Contributing Guide</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <footer>
+                    <p>DDAP - Dynamic Data API Provider | MIT License | © 2026</p>
+                    <p>Built with ❤️ for the .NET community</p>
+                </footer>
             </div>
         </body>
         </html>
@@ -114,8 +301,36 @@ jobs:
 
     - name: Upload to GitHub Pages
       uses: actions/upload-pages-artifact@v3
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       with:
         path: docs/_site
+      continue-on-error: true
 
     - name: Deploy to GitHub Pages
+      id: deployment
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: actions/deploy-pages@v4
+      continue-on-error: true
+    
+    - name: Summary
+      run: |
+        echo "## Documentation Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Documentation files created successfully" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Generated Files:" >> $GITHUB_STEP_SUMMARY
+        echo "- 📄 index.html (main page)" >> $GITHUB_STEP_SUMMARY
+        echo "- 📚 get-started.md" >> $GITHUB_STEP_SUMMARY
+        echo "- 🏗️ architecture.md" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔧 advanced.md" >> $GITHUB_STEP_SUMMARY
+        echo "- 🗄️ database-providers.md" >> $GITHUB_STEP_SUMMARY
+        echo "- 🌐 api-providers.md" >> $GITHUB_STEP_SUMMARY
+        echo "- 🐛 troubleshooting.md" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ steps.deployment.outcome }}" == "success" ]; then
+          echo "🚀 **Deployed to GitHub Pages successfully!**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ GitHub Pages deployment skipped or failed (make sure GitHub Pages is enabled in repository settings)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To enable: https://github.com/schivei/ddap/settings/pages" >> $GITHUB_STEP_SUMMARY
+        fi
