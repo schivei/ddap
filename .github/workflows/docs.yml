@@ -82,6 +82,8 @@ jobs:
                     --border-color: #d0d7de;
                     --code-bg: rgba(175,184,193,0.2);
                     --code-text: #1f2328;
+                    --pre-bg: #2d2d2d;
+                    --pre-text: #f8f8f2;
                     --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     --shadow: rgba(0,0,0,0.1);
                 }
@@ -96,6 +98,8 @@ jobs:
                     --border-color: #30363d;
                     --code-bg: rgba(110,118,129,0.2);
                     --code-text: #e6edf3;
+                    --pre-bg: #1c2128;
+                    --pre-text: #e6edf3;
                     --header-bg: linear-gradient(135deg, #4a5fa8 0%, #5a3c72 100%);
                     --shadow: rgba(0,0,0,0.5);
                 }
@@ -110,6 +114,8 @@ jobs:
                     --border-color: #000000;
                     --code-bg: #e0e0e0;
                     --code-text: #000000;
+                    --pre-bg: #000000;
+                    --pre-text: #ffffff;
                     --header-bg: #000000;
                     --shadow: rgba(0,0,0,0.3);
                 }
@@ -222,8 +228,8 @@ jobs:
                     font-size: 0.85em;
                 }
                 .markdown-body pre {
-                    background: #2d2d2d;
-                    color: #f8f8f2;
+                    background: var(--pre-bg);
+                    color: var(--pre-text);
                     padding: 16px;
                     border-radius: 6px;
                     overflow-x: auto;
@@ -317,41 +323,84 @@ jobs:
                 
                 // Simple markdown parser
                 function parseMarkdown(md) {
-                    let html = md
-                        // Headers
-                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                        // Bold
-                        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-                        // Italic
-                        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-                        // Code blocks
-                        .replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
-                        // Inline code
-                        .replace(/`([^`]+)`/gim, '<code>$1</code>')
-                        // Links
-                        .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2">$1</a>')
-                        // Blockquotes
-                        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
-                        // Horizontal rule
-                        .replace(/^\-\-\-$/gim, '<hr>')
-                        // Line breaks
-                        .replace(/\n\n/gim, '</p><p>')
-                        // Lists
-                        .replace(/^\* (.*$)/gim, '<li>$1</li>')
-                        .replace(/^- (.*$)/gim, '<li>$1</li>')
-                        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+                    // Split into lines for better processing
+                    const lines = md.split('\n');
+                    let html = '';
+                    let inList = false;
+                    let inCodeBlock = false;
+                    let codeBlock = '';
                     
-                    // Wrap lists
-                    html = html.replace(/(<li>.*<\/li>)/gis, '<ul>$1</ul>');
-                    // Wrap text in paragraphs
+                    for (let i = 0; i < lines.length; i++) {
+                        let line = lines[i];
+                        
+                        // Handle code blocks
+                        if (line.trim().startsWith('```')) {
+                            if (!inCodeBlock) {
+                                inCodeBlock = true;
+                                codeBlock = '';
+                            } else {
+                                html += '<pre><code>' + codeBlock + '</code></pre>';
+                                inCodeBlock = false;
+                            }
+                            continue;
+                        }
+                        
+                        if (inCodeBlock) {
+                            codeBlock += line + '\n';
+                            continue;
+                        }
+                        
+                        // Handle lists
+                        if (line.match(/^[\*\-] /) || line.match(/^\d+\. /)) {
+                            if (!inList) {
+                                html += '<ul>';
+                                inList = true;
+                            }
+                            line = line.replace(/^[\*\-] (.*)$/, '<li>$1</li>');
+                            line = line.replace(/^\d+\. (.*)$/, '<li>$1</li>');
+                            html += line;
+                            continue;
+                        } else if (inList) {
+                            html += '</ul>';
+                            inList = false;
+                        }
+                        
+                        // Headers
+                        if (line.match(/^### /)) {
+                            html += line.replace(/^### (.*)$/, '<h3>$1</h3>');
+                        } else if (line.match(/^## /)) {
+                            html += line.replace(/^## (.*)$/, '<h2>$1</h2>');
+                        } else if (line.match(/^# /)) {
+                            html += line.replace(/^# (.*)$/, '<h1>$1</h1>');
+                        } else if (line.match(/^---$/)) {
+                            html += '<hr>';
+                        } else if (line.match(/^> /)) {
+                            html += line.replace(/^> (.*)$/, '<blockquote>$1</blockquote>');
+                        } else if (line.trim() === '') {
+                            html += '</p><p>';
+                        } else {
+                            html += line + ' ';
+                        }
+                    }
+                    
+                    if (inList) html += '</ul>';
+                    
+                    // Wrap in paragraphs
                     html = '<p>' + html + '</p>';
+                    
+                    // Inline formatting
+                    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+                    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+                    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+                    
                     // Clean up
-                    html = html.replace(/<p><\/p>/g, '').replace(/<p>(<h[1-6]>)/g, '$1').replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+                    html = html.replace(/<p><\/p>/g, '');
+                    html = html.replace(/<p>(<h[1-6]>)/g, '$1').replace(/(<\/h[1-6]>)<\/p>/g, '$1');
                     html = html.replace(/<p>(<pre>)/g, '$1').replace(/(<\/pre>)<\/p>/g, '$1');
                     html = html.replace(/<p>(<ul>)/g, '$1').replace(/(<\/ul>)<\/p>/g, '$1');
                     html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
+                    html = html.replace(/<p>(<blockquote>)/g, '$1').replace(/(<\/blockquote>)<\/p>/g, '$1');
                     
                     return html;
                 }
@@ -734,8 +783,8 @@ dotnet add package Ddap.GraphQL</code></pre>
                 });
                 
                 window.matchMedia('(prefers-contrast: more)').addEventListener('change', (e) => {
-                    if (!localStorage.getItem('ddap-theme') && e.matches) {
-                        setTheme('high-contrast');
+                    if (!localStorage.getItem('ddap-theme')) {
+                        setTheme(e.matches ? 'high-contrast' : 'light');
                     }
                 });
             </script>
