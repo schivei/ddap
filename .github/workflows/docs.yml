@@ -53,25 +53,11 @@ jobs:
           docfx build docs/docfx.json
         continue-on-error: false
 
-      - name: Copy markdown files
+      - name: Copy markdown files to _site
         run: |
           cp docs/*.md docs/_site/ 2>/dev/null || true
           cp README.md docs/_site/ 2>/dev/null || true
           cp CONTRIBUTING.md docs/_site/ 2>/dev/null || true
-
-      - name: Create HTML wrappers for markdown files
-        run: |
-          chmod +x docs/templates/build-docs.sh
-          for mdfile in docs/*.md; do
-            if [ -f "$mdfile" ]; then
-              basename=$(basename "$mdfile" .md)
-              docs/templates/build-docs.sh docs/_site "${basename}"
-            fi
-          done
-
-      - name: Create index page
-        run: |
-          docs/templates/build-docs.sh docs/_site index
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3

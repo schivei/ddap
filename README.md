@@ -9,8 +9,8 @@
 ## Features
 
 - 🚀 **Automatic API Generation**: Load database schema and automatically create API endpoints
-- 🗄️ **Multiple Database Support**: SQL Server, MySQL, PostgreSQL
-- 🌐 **Multiple API Protocols**: REST, gRPC, GraphQL
+- 🗄️ **Multiple Database Options**: Supports SQL Server, MySQL, and PostgreSQL (one at a time)
+- 🌐 **Multiple API Protocols**: REST, gRPC, GraphQL simultaneously
 - 📋 **Content Negotiation**: REST APIs support JSON (Newtonsoft.Json), XML, and YAML
 - 🔧 **Extensible**: Partial classes for custom controllers, services, queries, and mutations
 - 📦 **Modular**: Separate libraries for each provider
@@ -31,7 +31,7 @@ Choose the packages you need based on your database and API requirements:
 # Core (always required)
 dotnet add package Ddap.Core
 
-# Database Providers (choose one or more):
+# Database Providers (choose one):
 dotnet add package Ddap.Data.Dapper.SqlServer      # SQL Server with Dapper
 dotnet add package Ddap.Data.Dapper.MySQL          # MySQL with Dapper
 dotnet add package Ddap.Data.Dapper.PostgreSQL     # PostgreSQL with Dapper

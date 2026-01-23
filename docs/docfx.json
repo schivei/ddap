@@ -58,6 +58,12 @@
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
+    "markdownEngineProperties": {
+      "markdigExtensions": [
+        "advanced",
+        "diagrams"
+      ]
+    },
     "keepFileLink": false,
     "disableGitFeatures": false,
     "globalMetadata": {
