@@ -22,37 +22,47 @@
 
 ### Installation
 
+Choose the packages you need based on your database and API requirements:
+
 ```bash
+# Core (always required)
 dotnet add package Ddap.Core
-dotnet add package Ddap.Data
-dotnet add package Ddap.Rest
-dotnet add package Ddap.Grpc
-dotnet add package Ddap.GraphQL
+
+# Database Providers (choose one or more):
+dotnet add package Ddap.Data.Dapper.SqlServer      # SQL Server with Dapper
+dotnet add package Ddap.Data.Dapper.MySQL          # MySQL with Dapper
+dotnet add package Ddap.Data.Dapper.PostgreSQL     # PostgreSQL with Dapper
+dotnet add package Ddap.Data.EntityFramework       # Entity Framework Core (database-agnostic)
+
+# API Providers (choose one or more):
+dotnet add package Ddap.Rest                       # REST API (JSON/XML/YAML)
+dotnet add package Ddap.Grpc                       # gRPC
+dotnet add package Ddap.GraphQL                    # GraphQL
 ```
 
 ### Configuration
 
+Choose your database provider and configure DDAP:
+
+#### SQL Server with Dapper
 ```csharp
 using Ddap.Core;
-using Ddap.Data;
+using Ddap.Data.Dapper.SqlServer;
 using Ddap.Rest;
 using Ddap.Grpc;
 using Ddap.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure DDAP with multiple providers
 builder.Services
     .AddDdap(options =>
     {
         options.ConnectionString = "Server=localhost;Database=MyDb;...";
-        options.Provider = DatabaseProvider.SQLServer;
-        options.LoadOnStartup = true;
     })
-    .AddDataProvider()  // Load entities from database
-    .AddRest()          // Enable REST API (JSON/XML/YAML)
-    .AddGrpc()          // Enable gRPC
-    .AddGraphQL();      // Enable GraphQL
+    .AddSqlServerDapper()  // SQL Server with Dapper
+    .AddRest()             // Enable REST API (JSON/XML/YAML)
+    .AddGrpc()             // Enable gRPC
+    .AddGraphQL();         // Enable GraphQL
 
 var app = builder.Build();
 
@@ -61,6 +71,34 @@ app.MapControllers();
 app.MapGraphQL("/graphql");
 
 app.Run();
+```
+
+#### MySQL with Dapper
+```csharp
+using Ddap.Data.Dapper.MySQL;
+
+builder.Services
+    .AddDdap(options =>
+    {
+        options.ConnectionString = "Server=localhost;Database=MyDb;User=root;Password=...";
+    })
+    .AddMySqlDapper()      // MySQL with Dapper
+    .AddRest()
+    .AddGraphQL();
+```
+
+#### PostgreSQL with Dapper
+```csharp
+using Ddap.Data.Dapper.PostgreSQL;
+
+builder.Services
+    .AddDdap(options =>
+    {
+        options.ConnectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=...";
+    })
+    .AddPostgreSqlDapper()  // PostgreSQL with Dapper
+    .AddRest()
+    .AddGrpc();
 ```
 
 ## Content Negotiation (REST API)
@@ -137,18 +175,23 @@ public partial class Query
 ```
 ddap/
 ├── src/
-│   ├── Ddap.Core/           # Core abstractions and interfaces
-│   ├── Ddap.Data/           # Data providers (EFCore/Dapper)
-│   ├── Ddap.Memory/         # In-memory entity management
-│   ├── Ddap.CodeGen/        # Source generators
-│   ├── Ddap.Rest/           # REST API provider (JSON/XML/YAML)
-│   ├── Ddap.Grpc/           # gRPC provider
-│   └── Ddap.GraphQL/        # GraphQL provider
+│   ├── Ddap.Core/                      # Core abstractions and interfaces
+│   │   └── Internals/                  # Internal implementation classes
+│   ├── Ddap.Data/                      # Legacy data provider (deprecated)
+│   ├── Ddap.Data.EntityFramework/      # EF Core provider (database-agnostic)
+│   ├── Ddap.Data.Dapper.SqlServer/     # SQL Server with Dapper
+│   ├── Ddap.Data.Dapper.MySQL/         # MySQL with Dapper
+│   ├── Ddap.Data.Dapper.PostgreSQL/    # PostgreSQL with Dapper
+│   ├── Ddap.Memory/                    # In-memory entity management
+│   ├── Ddap.CodeGen/                   # Source generators
+│   ├── Ddap.Rest/                      # REST API provider (JSON/XML/YAML)
+│   ├── Ddap.Grpc/                      # gRPC provider
+│   └── Ddap.GraphQL/                   # GraphQL provider
 ├── tests/
-│   └── Ddap.Tests/          # Unit and integration tests
+│   └── Ddap.Tests/                     # Unit and integration tests
 ├── examples/
-│   └── Ddap.Example.Api/    # Example application
-└── docs/                    # Documentation
+│   └── Ddap.Example.Api/               # Example application
+└── docs/                               # Documentation
 ```
 
 ## Database Support

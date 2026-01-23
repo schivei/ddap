@@ -8,14 +8,60 @@ This example demonstrates how to use DDAP (Dynamic Data API Provider) to automat
 - **Multiple API Providers**: REST, gRPC, and GraphQL
 - **Content Negotiation**: Supports JSON (Newtonsoft.Json), XML, and YAML output formats
 - **Extensible**: Partial classes allow custom extensions
+- **Modular Database Providers**: Choose your database provider (SQL Server, MySQL, PostgreSQL)
 
 ## Getting Started
 
 1. Update the connection string in `appsettings.json` to point to your database
-2. Run the application: `dotnet run`
-3. Access the APIs:
+2. Choose your database provider (this example uses SQL Server with Dapper)
+3. Run the application: `dotnet run`
+4. Access the APIs:
    - REST: `http://localhost:5000/api/entity`
    - GraphQL: `http://localhost:5000/graphql`
+
+## Database Provider Options
+
+DDAP now supports modular database providers. Choose the one that fits your needs:
+
+### SQL Server with Dapper
+```csharp
+using Ddap.Data.Dapper.SqlServer;
+
+services.AddDdap(options => {
+    options.ConnectionString = "Server=localhost;Database=MyDb;...";
+})
+.AddSqlServerDapper();
+```
+
+### MySQL with Dapper
+```csharp
+using Ddap.Data.Dapper.MySQL;
+
+services.AddDdap(options => {
+    options.ConnectionString = "Server=localhost;Database=MyDb;User=root;Password=...";
+})
+.AddMySqlDapper();
+```
+
+### PostgreSQL with Dapper
+```csharp
+using Ddap.Data.Dapper.PostgreSQL;
+
+services.AddDdap(options => {
+    options.ConnectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=...";
+})
+.AddPostgreSqlDapper();
+```
+
+### Entity Framework Core (Database Agnostic)
+```csharp
+using Ddap.Data.EntityFramework;
+
+services.AddDdap(options => {
+    options.ConnectionString = "...";
+})
+.AddEntityFramework();
+```
 
 ## REST API Examples
 
@@ -66,9 +112,29 @@ query {
 ## Configuration
 
 The DDAP configuration in `Program.cs` shows:
-- How to configure the database provider (SQL Server, MySQL, PostgreSQL)
+- How to choose a database provider (SQL Server, MySQL, PostgreSQL)
 - How to enable multiple API providers
 - How to chain provider configurations
+
+## Package Requirements
+
+Install the packages you need:
+
+```bash
+# Core (always required)
+dotnet add package Ddap.Core
+
+# Choose your database provider:
+dotnet add package Ddap.Data.Dapper.SqlServer     # For SQL Server
+dotnet add package Ddap.Data.Dapper.MySQL         # For MySQL
+dotnet add package Ddap.Data.Dapper.PostgreSQL    # For PostgreSQL
+dotnet add package Ddap.Data.EntityFramework      # For EF Core
+
+# Choose your API providers:
+dotnet add package Ddap.Rest                       # REST with JSON/XML/YAML
+dotnet add package Ddap.Grpc                       # gRPC
+dotnet add package Ddap.GraphQL                    # GraphQL
+```
 
 ## Extending the API
 
@@ -86,3 +152,10 @@ public partial class EntityController
     }
 }
 ```
+
+## Internal Organization
+
+The new modular structure means:
+- Each database provider is in its own NuGet package
+- Internal implementation classes are in `Internals/` folders
+- Choose only the providers you need to minimize dependencies

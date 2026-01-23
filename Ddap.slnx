@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Ddap.Aspire/Ddap.Aspire.csproj" />
     <Project Path="src/Ddap.CodeGen/Ddap.CodeGen.csproj" />
     <Project Path="src/Ddap.Core/Ddap.Core.csproj" />
     <Project Path="src/Ddap.Data.Dapper.MySQL/Ddap.Data.Dapper.MySQL.csproj" />

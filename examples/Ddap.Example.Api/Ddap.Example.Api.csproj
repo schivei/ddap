@@ -2,10 +2,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ddap.Core\Ddap.Core.csproj" />
-    <ProjectReference Include="..\..\src\Ddap.Data\Ddap.Data.csproj" />
     <ProjectReference Include="..\..\src\Ddap.Rest\Ddap.Rest.csproj" />
     <ProjectReference Include="..\..\src\Ddap.Grpc\Ddap.Grpc.csproj" />
     <ProjectReference Include="..\..\src\Ddap.GraphQL\Ddap.GraphQL.csproj" />
+    <ProjectReference Include="..\..\src\Ddap.Data.Dapper.SqlServer\Ddap.Data.Dapper.SqlServer.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
