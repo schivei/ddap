@@ -1,0 +1,37 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Aspire
+  commentId: N:Ddap.Aspire
+  id: Ddap.Aspire
+  children:
+  - Ddap.Aspire.DdapAspireExtensions
+  - Ddap.Aspire.DdapResource
+  - Ddap.Aspire.DdapServiceExtensions
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Aspire
+  nameWithType: Ddap.Aspire
+  fullName: Ddap.Aspire
+  type: Namespace
+  assemblies:
+  - Ddap.Aspire
+references:
+- uid: Ddap.Aspire.DdapAspireExtensions
+  commentId: T:Ddap.Aspire.DdapAspireExtensions
+  href: Ddap.Aspire.DdapAspireExtensions.html
+  name: DdapAspireExtensions
+  nameWithType: DdapAspireExtensions
+  fullName: Ddap.Aspire.DdapAspireExtensions
+- uid: Ddap.Aspire.DdapResource
+  commentId: T:Ddap.Aspire.DdapResource
+  href: Ddap.Aspire.DdapResource.html
+  name: DdapResource
+  nameWithType: DdapResource
+  fullName: Ddap.Aspire.DdapResource
+- uid: Ddap.Aspire.DdapServiceExtensions
+  commentId: T:Ddap.Aspire.DdapServiceExtensions
+  href: Ddap.Aspire.DdapServiceExtensions.html
+  name: DdapServiceExtensions
+  nameWithType: DdapServiceExtensions
+  fullName: Ddap.Aspire.DdapServiceExtensions

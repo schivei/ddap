@@ -1,0 +1,23 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Auth.Attributes
+  commentId: N:Ddap.Auth.Attributes
+  id: Ddap.Auth.Attributes
+  children:
+  - Ddap.Auth.Attributes.DdapAuthorizeAttribute
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Auth.Attributes
+  nameWithType: Ddap.Auth.Attributes
+  fullName: Ddap.Auth.Attributes
+  type: Namespace
+  assemblies:
+  - Ddap.Auth
+references:
+- uid: Ddap.Auth.Attributes.DdapAuthorizeAttribute
+  commentId: T:Ddap.Auth.Attributes.DdapAuthorizeAttribute
+  href: Ddap.Auth.Attributes.DdapAuthorizeAttribute.html
+  name: DdapAuthorizeAttribute
+  nameWithType: DdapAuthorizeAttribute
+  fullName: Ddap.Auth.Attributes.DdapAuthorizeAttribute

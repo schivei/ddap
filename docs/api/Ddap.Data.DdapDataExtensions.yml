@@ -1,0 +1,372 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Data.DdapDataExtensions
+  commentId: T:Ddap.Data.DdapDataExtensions
+  id: DdapDataExtensions
+  parent: Ddap.Data
+  children:
+  - Ddap.Data.DdapDataExtensions.AddDataProvider(Ddap.Core.IDdapBuilder)
+  langs:
+  - csharp
+  - vb
+  name: DdapDataExtensions
+  nameWithType: DdapDataExtensions
+  fullName: Ddap.Data.DdapDataExtensions
+  type: Class
+  source:
+    remote:
+      path: src/Ddap.Data/DdapDataExtensions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: DdapDataExtensions
+    path: ../src/Ddap.Data/DdapDataExtensions.cs
+    startLine: 8
+  assemblies:
+  - Ddap.Data
+  namespace: Ddap.Data
+  summary: Provides extension methods for adding data providers to the DDAP builder.
+  example: []
+  syntax:
+    content: public static class DdapDataExtensions
+    content.vb: Public Module DdapDataExtensions
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Ddap.Data.DdapDataExtensions.AddDataProvider(Ddap.Core.IDdapBuilder)
+  commentId: M:Ddap.Data.DdapDataExtensions.AddDataProvider(Ddap.Core.IDdapBuilder)
+  id: AddDataProvider(Ddap.Core.IDdapBuilder)
+  isExtensionMethod: true
+  parent: Ddap.Data.DdapDataExtensions
+  langs:
+  - csharp
+  - vb
+  name: AddDataProvider(IDdapBuilder)
+  nameWithType: DdapDataExtensions.AddDataProvider(IDdapBuilder)
+  fullName: Ddap.Data.DdapDataExtensions.AddDataProvider(Ddap.Core.IDdapBuilder)
+  type: Method
+  source:
+    remote:
+      path: src/Ddap.Data/DdapDataExtensions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: AddDataProvider
+    path: ../src/Ddap.Data/DdapDataExtensions.cs
+    startLine: 15
+  assemblies:
+  - Ddap.Data
+  namespace: Ddap.Data
+  summary: Adds the appropriate data provider based on the configured database provider.
+  example: []
+  syntax:
+    content: public static IDdapBuilder AddDataProvider(this IDdapBuilder builder)
+    parameters:
+    - id: builder
+      type: Ddap.Core.IDdapBuilder
+      description: The DDAP builder.
+    return:
+      type: Ddap.Core.IDdapBuilder
+      description: The DDAP builder for chaining.
+    content.vb: Public Shared Function AddDataProvider(builder As IDdapBuilder) As IDdapBuilder
+  overload: Ddap.Data.DdapDataExtensions.AddDataProvider*
+references:
+- uid: Ddap.Data
+  commentId: N:Ddap.Data
+  href: Ddap.html
+  name: Ddap.Data
+  nameWithType: Ddap.Data
+  fullName: Ddap.Data
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Ddap.Data.DdapDataExtensions.AddDataProvider*
+  commentId: Overload:Ddap.Data.DdapDataExtensions.AddDataProvider
+  href: Ddap.Data.DdapDataExtensions.html#Ddap_Data_DdapDataExtensions_AddDataProvider_Ddap_Core_IDdapBuilder_
+  name: AddDataProvider
+  nameWithType: DdapDataExtensions.AddDataProvider
+  fullName: Ddap.Data.DdapDataExtensions.AddDataProvider
+- uid: Ddap.Core.IDdapBuilder
+  commentId: T:Ddap.Core.IDdapBuilder
+  parent: Ddap.Core
+  href: Ddap.Core.IDdapBuilder.html
+  name: IDdapBuilder
+  nameWithType: IDdapBuilder
+  fullName: Ddap.Core.IDdapBuilder
+- uid: Ddap.Core
+  commentId: N:Ddap.Core
+  href: Ddap.html
+  name: Ddap.Core
+  nameWithType: Ddap.Core
+  fullName: Ddap.Core
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html

@@ -1,0 +1,74 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Grpc
+  commentId: N:Ddap.Grpc
+  id: Ddap.Grpc
+  children:
+  - Ddap.Grpc.DdapGrpcExtensions
+  - Ddap.Grpc.EntityListResponse
+  - Ddap.Grpc.EntityService
+  - Ddap.Grpc.IGrpcServiceProvider
+  - Ddap.Grpc.ProtoGenerator
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Grpc
+  nameWithType: Ddap.Grpc
+  fullName: Ddap.Grpc
+  type: Namespace
+  assemblies:
+  - Ddap.Grpc
+references:
+- uid: Ddap.Grpc.DdapGrpcExtensions
+  commentId: T:Ddap.Grpc.DdapGrpcExtensions
+  href: Ddap.Grpc.DdapGrpcExtensions.html
+  name: DdapGrpcExtensions
+  nameWithType: DdapGrpcExtensions
+  fullName: Ddap.Grpc.DdapGrpcExtensions
+- uid: Ddap.Grpc.EntityService
+  commentId: T:Ddap.Grpc.EntityService
+  href: Ddap.Grpc.EntityService.html
+  name: EntityService
+  nameWithType: EntityService
+  fullName: Ddap.Grpc.EntityService
+- uid: Ddap.Grpc.EntityListResponse
+  commentId: T:Ddap.Grpc.EntityListResponse
+  parent: Ddap.Grpc
+  href: Ddap.Grpc.EntityListResponse.html
+  name: EntityListResponse
+  nameWithType: EntityListResponse
+  fullName: Ddap.Grpc.EntityListResponse
+- uid: Ddap.Grpc.IGrpcServiceProvider
+  commentId: T:Ddap.Grpc.IGrpcServiceProvider
+  href: Ddap.Grpc.IGrpcServiceProvider.html
+  name: IGrpcServiceProvider
+  nameWithType: IGrpcServiceProvider
+  fullName: Ddap.Grpc.IGrpcServiceProvider
+- uid: Ddap.Grpc.ProtoGenerator
+  commentId: T:Ddap.Grpc.ProtoGenerator
+  href: Ddap.Grpc.ProtoGenerator.html
+  name: ProtoGenerator
+  nameWithType: ProtoGenerator
+  fullName: Ddap.Grpc.ProtoGenerator
+- uid: Ddap.Grpc
+  commentId: N:Ddap.Grpc
+  href: Ddap.html
+  name: Ddap.Grpc
+  nameWithType: Ddap.Grpc
+  fullName: Ddap.Grpc
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Grpc
+    name: Grpc
+    href: Ddap.Grpc.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Grpc
+    name: Grpc
+    href: Ddap.Grpc.html

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class QueryFilterBuilder | DDAP - Dynamic Data API Provider </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class QueryFilterBuilder | DDAP - Dynamic Data API Provider ">
+      
+      <meta name="description" content="Builds dynamic LINQ queries from OData-like filter expressions. Supports basic comparison operators and logical operators.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/schivei/ddap/new/main/apiSpec/new?filename=Ddap_Rest_Filters_QueryFilterBuilder.md&amp;value=---%0Auid%3A%20Ddap.Rest.Filters.QueryFilterBuilder%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="DDAP">
+            DDAP
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Ddap.Rest.Filters.QueryFilterBuilder">
+
+
+
+  <h1 id="Ddap_Rest_Filters_QueryFilterBuilder" data-uid="Ddap.Rest.Filters.QueryFilterBuilder" class="text-break">
+Class QueryFilterBuilder  <a class="header-action link-secondary" title="View source" href="https://github.com/schivei/ddap/blob/copilot/fix-documentation-build-errors/src/Ddap.Rest/Filters/QueryFilterBuilder.cs/#L23"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="Ddap.html">Ddap</a>.<a class="xref" href="Ddap.Rest.html">Rest</a>.<a class="xref" href="Ddap.Rest.Filters.html">Filters</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>Ddap.Rest.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Builds dynamic LINQ queries from OData-like filter expressions.
+Supports basic comparison operators and logical operators.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class QueryFilterBuilder</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">QueryFilterBuilder</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+  <h2 id="Ddap_Rest_Filters_QueryFilterBuilder_examples">Examples</h2>
+  <pre><code class="lang-csharp">var query = dbContext.Users.AsQueryable();
+
+// Apply filter: "age gt 18 and status eq 'active'"
+query = QueryFilterBuilder.ApplyFilter(query, "age gt 18 and status eq 'active'");
+
+// Apply sorting: "name desc"
+query = QueryFilterBuilder.ApplyOrdering(query, "name desc");
+
+var results = await query.ToListAsync();</code></pre>
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Ddap_Rest_Filters_QueryFilterBuilder_ApplyFilter_" data-uid="Ddap.Rest.Filters.QueryFilterBuilder.ApplyFilter*"></a>
+
+  <h3 id="Ddap_Rest_Filters_QueryFilterBuilder_ApplyFilter__1_System_Linq_IQueryable___0__System_String_" data-uid="Ddap.Rest.Filters.QueryFilterBuilder.ApplyFilter``1(System.Linq.IQueryable{``0},System.String)">
+  ApplyFilter&lt;T&gt;(IQueryable&lt;T&gt;, string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/schivei/ddap/blob/copilot/fix-documentation-build-errors/src/Ddap.Rest/Filters/QueryFilterBuilder.cs/#L38"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Applies a filter expression to the queryable.
+Supports operators: eq, ne, gt, ge, lt, le, contains, and, or</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IQueryable&lt;T&gt; ApplyFilter&lt;T&gt;(IQueryable&lt;T&gt; query, string filterExpression)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>query</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1">IQueryable</a>&lt;T&gt;</dt>
+    <dd><p>The queryable to filter.</p>
+</dd>
+    <dt><code>filterExpression</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The filter expression.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1">IQueryable</a>&lt;T&gt;</dt>
+    <dd><p>The filtered queryable.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The entity type.</p>
+</dd>
+  </dl>
+
+
+
+
+
+  <h4 class="section" id="Ddap_Rest_Filters_QueryFilterBuilder_ApplyFilter__1_System_Linq_IQueryable___0__System_String__examples">Examples</h4>
+  <pre><code class="lang-csharp">var filtered = QueryFilterBuilder.ApplyFilter(users, "name eq 'John' and age gt 25");</code></pre>
+
+
+
+
+
+
+  <a id="Ddap_Rest_Filters_QueryFilterBuilder_ApplyOrdering_" data-uid="Ddap.Rest.Filters.QueryFilterBuilder.ApplyOrdering*"></a>
+
+  <h3 id="Ddap_Rest_Filters_QueryFilterBuilder_ApplyOrdering__1_System_Linq_IQueryable___0__System_String_" data-uid="Ddap.Rest.Filters.QueryFilterBuilder.ApplyOrdering``1(System.Linq.IQueryable{``0},System.String)">
+  ApplyOrdering&lt;T&gt;(IQueryable&lt;T&gt;, string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/schivei/ddap/blob/copilot/fix-documentation-build-errors/src/Ddap.Rest/Filters/QueryFilterBuilder.cs/#L70"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Applies ordering to the queryable.
+Supports single or multiple sort fields with asc/desc direction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IQueryable&lt;T&gt; ApplyOrdering&lt;T&gt;(IQueryable&lt;T&gt; query, string orderByExpression)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>query</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1">IQueryable</a>&lt;T&gt;</dt>
+    <dd><p>The queryable to sort.</p>
+</dd>
+    <dt><code>orderByExpression</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The order by expression.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1">IQueryable</a>&lt;T&gt;</dt>
+    <dd><p>The sorted queryable.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The entity type.</p>
+</dd>
+  </dl>
+
+
+
+
+
+  <h4 class="section" id="Ddap_Rest_Filters_QueryFilterBuilder_ApplyOrdering__1_System_Linq_IQueryable___0__System_String__examples">Examples</h4>
+  <pre><code class="lang-csharp">var sorted = QueryFilterBuilder.ApplyOrdering(users, "name asc, age desc");</code></pre>
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/schivei/ddap/blob/copilot/fix-documentation-build-errors/src/Ddap.Rest/Filters/QueryFilterBuilder.cs/#L23" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          DDAP - Dynamic Data API Provider | MIT License
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

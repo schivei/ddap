@@ -1,0 +1,30 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Data.Dapper.SqlServer
+  commentId: N:Ddap.Data.Dapper.SqlServer
+  id: Ddap.Data.Dapper.SqlServer
+  children:
+  - Ddap.Data.Dapper.SqlServer.DdapSqlServerExtensions
+  - Ddap.Data.Dapper.SqlServer.SqlServerDataProvider
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Data.Dapper.SqlServer
+  nameWithType: Ddap.Data.Dapper.SqlServer
+  fullName: Ddap.Data.Dapper.SqlServer
+  type: Namespace
+  assemblies:
+  - Ddap.Data.Dapper.SqlServer
+references:
+- uid: Ddap.Data.Dapper.SqlServer.DdapSqlServerExtensions
+  commentId: T:Ddap.Data.Dapper.SqlServer.DdapSqlServerExtensions
+  href: Ddap.Data.Dapper.SqlServer.DdapSqlServerExtensions.html
+  name: DdapSqlServerExtensions
+  nameWithType: DdapSqlServerExtensions
+  fullName: Ddap.Data.Dapper.SqlServer.DdapSqlServerExtensions
+- uid: Ddap.Data.Dapper.SqlServer.SqlServerDataProvider
+  commentId: T:Ddap.Data.Dapper.SqlServer.SqlServerDataProvider
+  href: Ddap.Data.Dapper.SqlServer.SqlServerDataProvider.html
+  name: SqlServerDataProvider
+  nameWithType: SqlServerDataProvider
+  fullName: Ddap.Data.Dapper.SqlServer.SqlServerDataProvider

@@ -1,0 +1,23 @@
+### YamlMime:ManagedReference
+items:
+- uid: Projects
+  commentId: N:Projects
+  id: Projects
+  children:
+  - Projects.Ddap_Aspire
+  langs:
+  - csharp
+  - vb
+  name: Projects
+  nameWithType: Projects
+  fullName: Projects
+  type: Namespace
+  assemblies:
+  - Ddap.Aspire
+references:
+- uid: Projects.Ddap_Aspire
+  commentId: T:Projects.Ddap_Aspire
+  href: Projects.Ddap_Aspire.html
+  name: Ddap_Aspire
+  nameWithType: Ddap_Aspire
+  fullName: Projects.Ddap_Aspire

@@ -1,0 +1,158 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Rest.IRestApiProvider
+  commentId: T:Ddap.Rest.IRestApiProvider
+  id: IRestApiProvider
+  parent: Ddap.Rest
+  children:
+  - Ddap.Rest.IRestApiProvider.BasePath
+  - Ddap.Rest.IRestApiProvider.IsEnabled
+  langs:
+  - csharp
+  - vb
+  name: IRestApiProvider
+  nameWithType: IRestApiProvider
+  fullName: Ddap.Rest.IRestApiProvider
+  type: Interface
+  source:
+    remote:
+      path: src/Ddap.Rest/IRestApiProvider.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: IRestApiProvider
+    path: ../src/Ddap.Rest/IRestApiProvider.cs
+    startLine: 5
+  assemblies:
+  - Ddap.Rest
+  namespace: Ddap.Rest
+  summary: Represents a provider for REST API functionality.
+  example: []
+  syntax:
+    content: public interface IRestApiProvider
+    content.vb: Public Interface IRestApiProvider
+- uid: Ddap.Rest.IRestApiProvider.IsEnabled
+  commentId: P:Ddap.Rest.IRestApiProvider.IsEnabled
+  id: IsEnabled
+  parent: Ddap.Rest.IRestApiProvider
+  langs:
+  - csharp
+  - vb
+  name: IsEnabled
+  nameWithType: IRestApiProvider.IsEnabled
+  fullName: Ddap.Rest.IRestApiProvider.IsEnabled
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Rest/IRestApiProvider.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: IsEnabled
+    path: ../src/Ddap.Rest/IRestApiProvider.cs
+    startLine: 10
+  assemblies:
+  - Ddap.Rest
+  namespace: Ddap.Rest
+  summary: Gets a value indicating whether the REST API is enabled.
+  example: []
+  syntax:
+    content: bool IsEnabled { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: ReadOnly Property IsEnabled As Boolean
+  overload: Ddap.Rest.IRestApiProvider.IsEnabled*
+- uid: Ddap.Rest.IRestApiProvider.BasePath
+  commentId: P:Ddap.Rest.IRestApiProvider.BasePath
+  id: BasePath
+  parent: Ddap.Rest.IRestApiProvider
+  langs:
+  - csharp
+  - vb
+  name: BasePath
+  nameWithType: IRestApiProvider.BasePath
+  fullName: Ddap.Rest.IRestApiProvider.BasePath
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Rest/IRestApiProvider.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: BasePath
+    path: ../src/Ddap.Rest/IRestApiProvider.cs
+    startLine: 15
+  assemblies:
+  - Ddap.Rest
+  namespace: Ddap.Rest
+  summary: Gets the base path for REST API endpoints.
+  example: []
+  syntax:
+    content: string BasePath { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: ReadOnly Property BasePath As String
+  overload: Ddap.Rest.IRestApiProvider.BasePath*
+references:
+- uid: Ddap.Rest
+  commentId: N:Ddap.Rest
+  href: Ddap.html
+  name: Ddap.Rest
+  nameWithType: Ddap.Rest
+  fullName: Ddap.Rest
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Rest
+    name: Rest
+    href: Ddap.Rest.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Rest
+    name: Rest
+    href: Ddap.Rest.html
+- uid: Ddap.Rest.IRestApiProvider.IsEnabled*
+  commentId: Overload:Ddap.Rest.IRestApiProvider.IsEnabled
+  href: Ddap.Rest.IRestApiProvider.html#Ddap_Rest_IRestApiProvider_IsEnabled
+  name: IsEnabled
+  nameWithType: IRestApiProvider.IsEnabled
+  fullName: Ddap.Rest.IRestApiProvider.IsEnabled
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Ddap.Rest.IRestApiProvider.BasePath*
+  commentId: Overload:Ddap.Rest.IRestApiProvider.BasePath
+  href: Ddap.Rest.IRestApiProvider.html#Ddap_Rest_IRestApiProvider_BasePath
+  name: BasePath
+  nameWithType: IRestApiProvider.BasePath
+  fullName: Ddap.Rest.IRestApiProvider.BasePath
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String

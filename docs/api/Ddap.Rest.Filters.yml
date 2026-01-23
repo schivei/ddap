@@ -1,0 +1,23 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Rest.Filters
+  commentId: N:Ddap.Rest.Filters
+  id: Ddap.Rest.Filters
+  children:
+  - Ddap.Rest.Filters.QueryFilterBuilder
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Rest.Filters
+  nameWithType: Ddap.Rest.Filters
+  fullName: Ddap.Rest.Filters
+  type: Namespace
+  assemblies:
+  - Ddap.Rest
+references:
+- uid: Ddap.Rest.Filters.QueryFilterBuilder
+  commentId: T:Ddap.Rest.Filters.QueryFilterBuilder
+  href: Ddap.Rest.Filters.QueryFilterBuilder.html
+  name: QueryFilterBuilder
+  nameWithType: QueryFilterBuilder
+  fullName: Ddap.Rest.Filters.QueryFilterBuilder

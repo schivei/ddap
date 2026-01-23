@@ -1,0 +1,428 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Core.IEntityConfiguration
+  commentId: T:Ddap.Core.IEntityConfiguration
+  id: IEntityConfiguration
+  parent: Ddap.Core
+  children:
+  - Ddap.Core.IEntityConfiguration.EntityName
+  - Ddap.Core.IEntityConfiguration.Indexes
+  - Ddap.Core.IEntityConfiguration.Properties
+  - Ddap.Core.IEntityConfiguration.Relationships
+  - Ddap.Core.IEntityConfiguration.SchemaName
+  langs:
+  - csharp
+  - vb
+  name: IEntityConfiguration
+  nameWithType: IEntityConfiguration
+  fullName: Ddap.Core.IEntityConfiguration
+  type: Interface
+  source:
+    remote:
+      path: src/Ddap.Core/IEntityConfiguration.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: IEntityConfiguration
+    path: ../src/Ddap.Core/IEntityConfiguration.cs
+    startLine: 6
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: >-
+    Represents the configuration for a database entity.
+
+    This interface defines the metadata and structure of entities loaded from the database.
+  example: []
+  syntax:
+    content: public interface IEntityConfiguration
+    content.vb: Public Interface IEntityConfiguration
+- uid: Ddap.Core.IEntityConfiguration.EntityName
+  commentId: P:Ddap.Core.IEntityConfiguration.EntityName
+  id: EntityName
+  parent: Ddap.Core.IEntityConfiguration
+  langs:
+  - csharp
+  - vb
+  name: EntityName
+  nameWithType: IEntityConfiguration.EntityName
+  fullName: Ddap.Core.IEntityConfiguration.EntityName
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IEntityConfiguration.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: EntityName
+    path: ../src/Ddap.Core/IEntityConfiguration.cs
+    startLine: 11
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the name of the entity (typically the table name).
+  example: []
+  syntax:
+    content: string EntityName { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: ReadOnly Property EntityName As String
+  overload: Ddap.Core.IEntityConfiguration.EntityName*
+- uid: Ddap.Core.IEntityConfiguration.SchemaName
+  commentId: P:Ddap.Core.IEntityConfiguration.SchemaName
+  id: SchemaName
+  parent: Ddap.Core.IEntityConfiguration
+  langs:
+  - csharp
+  - vb
+  name: SchemaName
+  nameWithType: IEntityConfiguration.SchemaName
+  fullName: Ddap.Core.IEntityConfiguration.SchemaName
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IEntityConfiguration.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: SchemaName
+    path: ../src/Ddap.Core/IEntityConfiguration.cs
+    startLine: 16
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the schema name where the entity is located.
+  example: []
+  syntax:
+    content: string? SchemaName { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: ReadOnly Property SchemaName As String
+  overload: Ddap.Core.IEntityConfiguration.SchemaName*
+- uid: Ddap.Core.IEntityConfiguration.Properties
+  commentId: P:Ddap.Core.IEntityConfiguration.Properties
+  id: Properties
+  parent: Ddap.Core.IEntityConfiguration
+  langs:
+  - csharp
+  - vb
+  name: Properties
+  nameWithType: IEntityConfiguration.Properties
+  fullName: Ddap.Core.IEntityConfiguration.Properties
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IEntityConfiguration.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: Properties
+    path: ../src/Ddap.Core/IEntityConfiguration.cs
+    startLine: 21
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the collection of properties/columns for this entity.
+  example: []
+  syntax:
+    content: IReadOnlyList<IPropertyConfiguration> Properties { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{Ddap.Core.IPropertyConfiguration}
+    content.vb: ReadOnly Property Properties As IReadOnlyList(Of IPropertyConfiguration)
+  overload: Ddap.Core.IEntityConfiguration.Properties*
+- uid: Ddap.Core.IEntityConfiguration.Indexes
+  commentId: P:Ddap.Core.IEntityConfiguration.Indexes
+  id: Indexes
+  parent: Ddap.Core.IEntityConfiguration
+  langs:
+  - csharp
+  - vb
+  name: Indexes
+  nameWithType: IEntityConfiguration.Indexes
+  fullName: Ddap.Core.IEntityConfiguration.Indexes
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IEntityConfiguration.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: Indexes
+    path: ../src/Ddap.Core/IEntityConfiguration.cs
+    startLine: 26
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the collection of indexes defined for this entity.
+  example: []
+  syntax:
+    content: IReadOnlyList<IIndexConfiguration> Indexes { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{Ddap.Core.IIndexConfiguration}
+    content.vb: ReadOnly Property Indexes As IReadOnlyList(Of IIndexConfiguration)
+  overload: Ddap.Core.IEntityConfiguration.Indexes*
+- uid: Ddap.Core.IEntityConfiguration.Relationships
+  commentId: P:Ddap.Core.IEntityConfiguration.Relationships
+  id: Relationships
+  parent: Ddap.Core.IEntityConfiguration
+  langs:
+  - csharp
+  - vb
+  name: Relationships
+  nameWithType: IEntityConfiguration.Relationships
+  fullName: Ddap.Core.IEntityConfiguration.Relationships
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IEntityConfiguration.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: Relationships
+    path: ../src/Ddap.Core/IEntityConfiguration.cs
+    startLine: 31
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the collection of relationships for this entity.
+  example: []
+  syntax:
+    content: IReadOnlyList<IRelationshipConfiguration> Relationships { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{Ddap.Core.IRelationshipConfiguration}
+    content.vb: ReadOnly Property Relationships As IReadOnlyList(Of IRelationshipConfiguration)
+  overload: Ddap.Core.IEntityConfiguration.Relationships*
+references:
+- uid: Ddap.Core
+  commentId: N:Ddap.Core
+  href: Ddap.html
+  name: Ddap.Core
+  nameWithType: Ddap.Core
+  fullName: Ddap.Core
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+- uid: Ddap.Core.IEntityConfiguration.EntityName*
+  commentId: Overload:Ddap.Core.IEntityConfiguration.EntityName
+  href: Ddap.Core.IEntityConfiguration.html#Ddap_Core_IEntityConfiguration_EntityName
+  name: EntityName
+  nameWithType: IEntityConfiguration.EntityName
+  fullName: Ddap.Core.IEntityConfiguration.EntityName
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Ddap.Core.IEntityConfiguration.SchemaName*
+  commentId: Overload:Ddap.Core.IEntityConfiguration.SchemaName
+  href: Ddap.Core.IEntityConfiguration.html#Ddap_Core_IEntityConfiguration_SchemaName
+  name: SchemaName
+  nameWithType: IEntityConfiguration.SchemaName
+  fullName: Ddap.Core.IEntityConfiguration.SchemaName
+- uid: Ddap.Core.IEntityConfiguration.Properties*
+  commentId: Overload:Ddap.Core.IEntityConfiguration.Properties
+  href: Ddap.Core.IEntityConfiguration.html#Ddap_Core_IEntityConfiguration_Properties
+  name: Properties
+  nameWithType: IEntityConfiguration.Properties
+  fullName: Ddap.Core.IEntityConfiguration.Properties
+- uid: System.Collections.Generic.IReadOnlyList{Ddap.Core.IPropertyConfiguration}
+  commentId: T:System.Collections.Generic.IReadOnlyList{Ddap.Core.IPropertyConfiguration}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<IPropertyConfiguration>
+  nameWithType: IReadOnlyList<IPropertyConfiguration>
+  fullName: System.Collections.Generic.IReadOnlyList<Ddap.Core.IPropertyConfiguration>
+  nameWithType.vb: IReadOnlyList(Of IPropertyConfiguration)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of Ddap.Core.IPropertyConfiguration)
+  name.vb: IReadOnlyList(Of IPropertyConfiguration)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: Ddap.Core.IPropertyConfiguration
+    name: IPropertyConfiguration
+    href: Ddap.Core.IPropertyConfiguration.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Ddap.Core.IPropertyConfiguration
+    name: IPropertyConfiguration
+    href: Ddap.Core.IPropertyConfiguration.html
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: Ddap.Core.IEntityConfiguration.Indexes*
+  commentId: Overload:Ddap.Core.IEntityConfiguration.Indexes
+  href: Ddap.Core.IEntityConfiguration.html#Ddap_Core_IEntityConfiguration_Indexes
+  name: Indexes
+  nameWithType: IEntityConfiguration.Indexes
+  fullName: Ddap.Core.IEntityConfiguration.Indexes
+- uid: System.Collections.Generic.IReadOnlyList{Ddap.Core.IIndexConfiguration}
+  commentId: T:System.Collections.Generic.IReadOnlyList{Ddap.Core.IIndexConfiguration}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<IIndexConfiguration>
+  nameWithType: IReadOnlyList<IIndexConfiguration>
+  fullName: System.Collections.Generic.IReadOnlyList<Ddap.Core.IIndexConfiguration>
+  nameWithType.vb: IReadOnlyList(Of IIndexConfiguration)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of Ddap.Core.IIndexConfiguration)
+  name.vb: IReadOnlyList(Of IIndexConfiguration)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: Ddap.Core.IIndexConfiguration
+    name: IIndexConfiguration
+    href: Ddap.Core.IIndexConfiguration.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Ddap.Core.IIndexConfiguration
+    name: IIndexConfiguration
+    href: Ddap.Core.IIndexConfiguration.html
+  - name: )
+- uid: Ddap.Core.IEntityConfiguration.Relationships*
+  commentId: Overload:Ddap.Core.IEntityConfiguration.Relationships
+  href: Ddap.Core.IEntityConfiguration.html#Ddap_Core_IEntityConfiguration_Relationships
+  name: Relationships
+  nameWithType: IEntityConfiguration.Relationships
+  fullName: Ddap.Core.IEntityConfiguration.Relationships
+- uid: System.Collections.Generic.IReadOnlyList{Ddap.Core.IRelationshipConfiguration}
+  commentId: T:System.Collections.Generic.IReadOnlyList{Ddap.Core.IRelationshipConfiguration}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<IRelationshipConfiguration>
+  nameWithType: IReadOnlyList<IRelationshipConfiguration>
+  fullName: System.Collections.Generic.IReadOnlyList<Ddap.Core.IRelationshipConfiguration>
+  nameWithType.vb: IReadOnlyList(Of IRelationshipConfiguration)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of Ddap.Core.IRelationshipConfiguration)
+  name.vb: IReadOnlyList(Of IRelationshipConfiguration)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: Ddap.Core.IRelationshipConfiguration
+    name: IRelationshipConfiguration
+    href: Ddap.Core.IRelationshipConfiguration.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Ddap.Core.IRelationshipConfiguration
+    name: IRelationshipConfiguration
+    href: Ddap.Core.IRelationshipConfiguration.html
+  - name: )

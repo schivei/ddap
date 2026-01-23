@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Advanced DDAP Usage | DDAP - Dynamic Data API Provider </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Advanced DDAP Usage | DDAP - Dynamic Data API Provider ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/schivei/ddap/blob/main/docs/advanced.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="DDAP">
+            DDAP
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="advanced-ddap-usage">Advanced DDAP Usage</h1>
+
+<p>This guide covers advanced patterns, extensibility, and best practices for using DDAP in production applications.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#extensibility">Extensibility</a></li>
+<li><a href="#custom-endpoints">Custom Endpoints</a></li>
+<li><a href="#custom-queries-and-mutations">Custom Queries and Mutations</a></li>
+<li><a href="#advanced-configuration">Advanced Configuration</a></li>
+<li><a href="#performance-optimization">Performance Optimization</a></li>
+<li><a href="#production-best-practices">Production Best Practices</a></li>
+<li><a href="#integration-patterns">Integration Patterns</a></li>
+</ul>
+<h2 id="extensibility">Extensibility</h2>
+<p>DDAP is designed to be extensible. All generated controllers, services, queries, and mutations are partial classes, allowing you to add custom logic without modifying generated code.</p>
+<h3 id="extending-rest-controllers">Extending REST Controllers</h3>
+<p>Add custom endpoints to the generated <code>EntityController</code>:</p>
+<pre><code class="lang-csharp">using Microsoft.AspNetCore.Mvc;
+using Ddap.Core;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [HttpGet(&quot;search&quot;)]
+    public async Task&lt;IActionResult&gt; SearchEntities([FromQuery] string query)
+    {
+        // Custom search logic
+        var results = await _repository.SearchAsync(query);
+        return Ok(results);
+    }
+
+    [HttpPost(&quot;{entityName}/bulk&quot;)]
+    public async Task&lt;IActionResult&gt; BulkCreate(string entityName, [FromBody] List&lt;object&gt; items)
+    {
+        // Custom bulk creation logic
+        foreach (var item in items)
+        {
+            // Process each item
+        }
+        return Ok();
+    }
+
+    [HttpGet(&quot;{entityName}/export&quot;)]
+    public async Task&lt;IActionResult&gt; Export(string entityName, [FromQuery] string format)
+    {
+        var entity = _repository.GetEntity(entityName);
+        if (entity == null)
+            return NotFound();
+
+        // Export logic based on format (CSV, Excel, etc.)
+        var data = await ExportData(entity, format);
+        return File(data, $&quot;application/{format}&quot;);
+    }
+}
+</code></pre>
+<h3 id="extending-graphql-queries">Extending GraphQL Queries</h3>
+<p>Add custom GraphQL queries:</p>
+<pre><code class="lang-csharp">using HotChocolate;
+using Ddap.Core;
+
+namespace Ddap.GraphQL;
+
+public partial class Query
+{
+    public async Task&lt;List&lt;EntityStatistics&gt;&gt; GetEntityStatistics(
+        [Service] IEntityRepository repository)
+    {
+        var stats = new List&lt;EntityStatistics&gt;();
+        
+        foreach (var entity in repository.Entities)
+        {
+            stats.Add(new EntityStatistics
+            {
+                EntityName = entity.Name,
+                PropertyCount = entity.Properties.Count,
+                IndexCount = entity.Indexes.Count,
+                RelationshipCount = entity.Relationships.Count
+            });
+        }
+        
+        return stats;
+    }
+
+    public string CustomQuery([Service] IEntityRepository repository) 
+    {
+        return $&quot;Total entities: {repository.Entities.Count}&quot;;
+    }
+}
+
+public class EntityStatistics
+{
+    public string EntityName { get; set; }
+    public int PropertyCount { get; set; }
+    public int IndexCount { get; set; }
+    public int RelationshipCount { get; set; }
+}
+</code></pre>
+<h3 id="extending-graphql-mutations">Extending GraphQL Mutations</h3>
+<p>Add custom mutations:</p>
+<pre><code class="lang-csharp">namespace Ddap.GraphQL;
+
+public partial class Mutation
+{
+    public async Task&lt;bool&gt; BulkImport(
+        string entityName, 
+        List&lt;Dictionary&lt;string, object&gt;&gt; data,
+        [Service] IEntityRepository repository)
+    {
+        var entity = repository.GetEntity(entityName);
+        if (entity == null)
+            return false;
+
+        // Custom bulk import logic
+        foreach (var item in data)
+        {
+            // Process each item
+        }
+
+        return true;
+    }
+}
+</code></pre>
+<h2 id="custom-endpoints">Custom Endpoints</h2>
+<h3 id="adding-authentication">Adding Authentication</h3>
+<p>Protect endpoints with authentication:</p>
+<pre><code class="lang-csharp">using Microsoft.AspNetCore.Authorization;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [Authorize]
+    [HttpGet(&quot;{entityName}/secure&quot;)]
+    public IActionResult SecureEndpoint(string entityName)
+    {
+        // Only authenticated users can access
+        var entity = _repository.GetEntity(entityName);
+        return Ok(entity);
+    }
+
+    [Authorize(Roles = &quot;Admin&quot;)]
+    [HttpDelete(&quot;{entityName}/all&quot;)]
+    public async Task&lt;IActionResult&gt; DeleteAll(string entityName)
+    {
+        // Only admins can delete all records
+        return Ok();
+    }
+}
+</code></pre>
+<h3 id="adding-validation">Adding Validation</h3>
+<p>Add custom validation logic:</p>
+<pre><code class="lang-csharp">namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [HttpPost(&quot;{entityName}&quot;)]
+    public async Task&lt;IActionResult&gt; CreateWithValidation(
+        string entityName, 
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        var entity = _repository.GetEntity(entityName);
+        if (entity == null)
+            return NotFound();
+
+        // Custom validation
+        var validationResult = ValidateData(entity, data);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        // Proceed with creation
+        return Created($&quot;/api/entity/{entityName}&quot;, data);
+    }
+
+    private ValidationResult ValidateData(
+        IEntityConfiguration entity, 
+        Dictionary&lt;string, object&gt; data)
+    {
+        var result = new ValidationResult();
+
+        // Check required fields
+        foreach (var property in entity.Properties)
+        {
+            if (property.IsRequired &amp;&amp; !data.ContainsKey(property.Name))
+            {
+                result.AddError($&quot;{property.Name} is required&quot;);
+            }
+        }
+
+        // Custom business rules
+        if (entity.Name == &quot;Users&quot; &amp;&amp; data.ContainsKey(&quot;Email&quot;))
+        {
+            var email = data[&quot;Email&quot;].ToString();
+            if (!IsValidEmail(email))
+            {
+                result.AddError(&quot;Invalid email format&quot;);
+            }
+        }
+
+        return result;
+    }
+}
+</code></pre>
+<h2 id="custom-queries-and-mutations">Custom Queries and Mutations</h2>
+<h3 id="complex-graphql-queries">Complex GraphQL Queries</h3>
+<p>Implement complex queries with relationships:</p>
+<pre><code class="lang-csharp">namespace Ddap.GraphQL;
+
+public partial class Query
+{
+    public async Task&lt;EntityDetails&gt; GetEntityDetails(
+        string entityName,
+        [Service] IEntityRepository repository)
+    {
+        var entity = repository.GetEntity(entityName);
+        if (entity == null)
+            throw new GraphQLException($&quot;Entity {entityName} not found&quot;);
+
+        return new EntityDetails
+        {
+            Name = entity.Name,
+            Schema = entity.Schema,
+            Properties = entity.Properties.Select(p =&gt; new PropertyDetails
+            {
+                Name = p.Name,
+                Type = p.DataType,
+                IsRequired = p.IsRequired,
+                IsPrimaryKey = p.IsPrimaryKey
+            }).ToList(),
+            Relationships = entity.Relationships.Select(r =&gt; new RelationshipDetails
+            {
+                Name = r.Name,
+                TargetEntity = r.TargetEntityName,
+                Type = r.RelationshipType.ToString()
+            }).ToList()
+        };
+    }
+}
+</code></pre>
+<h3 id="batch-operations">Batch Operations</h3>
+<p>Implement efficient batch operations:</p>
+<pre><code class="lang-csharp">namespace Ddap.GraphQL;
+
+public partial class Mutation
+{
+    public async Task&lt;BatchResult&gt; BatchOperation(
+        List&lt;BatchItem&gt; items,
+        [Service] IEntityRepository repository)
+    {
+        var result = new BatchResult();
+
+        foreach (var item in items)
+        {
+            try
+            {
+                switch (item.Operation)
+                {
+                    case &quot;CREATE&quot;:
+                        // Create logic
+                        result.SuccessCount++;
+                        break;
+                    case &quot;UPDATE&quot;:
+                        // Update logic
+                        result.SuccessCount++;
+                        break;
+                    case &quot;DELETE&quot;:
+                        // Delete logic
+                        result.SuccessCount++;
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Errors.Add($&quot;{item.Operation} failed: {ex.Message}&quot;);
+            }
+        }
+
+        return result;
+    }
+}
+
+public class BatchItem
+{
+    public string Operation { get; set; }
+    public string EntityName { get; set; }
+    public Dictionary&lt;string, object&gt; Data { get; set; }
+}
+
+public class BatchResult
+{
+    public int SuccessCount { get; set; }
+    public List&lt;string&gt; Errors { get; set; } = new();
+}
+</code></pre>
+<h2 id="advanced-configuration">Advanced Configuration</h2>
+<h3 id="custom-json-serialization">Custom JSON Serialization</h3>
+<p>Configure Newtonsoft.Json settings:</p>
+<pre><code class="lang-csharp">using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =&gt;
+    {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.DateFormatString = &quot;yyyy-MM-ddTHH:mm:ssZ&quot;;
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    });
+</code></pre>
+<h3 id="multiple-database-connections">Multiple Database Connections</h3>
+<p>Support multiple databases in one application:</p>
+<pre><code class="lang-csharp">builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString(&quot;PrimaryDb&quot;);
+    })
+    .AddSqlServerDapper()
+    .AddRest()
+    .AddGraphQL();
+
+// Second database
+builder.Services
+    .AddDdap(&quot;SecondaryDb&quot;, options =&gt;
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString(&quot;SecondaryDb&quot;);
+    })
+    .AddMySqlDapper()
+    .AddRest();
+</code></pre>
+<h3 id="environment-specific-configuration">Environment-Specific Configuration</h3>
+<p>Different configurations per environment:</p>
+<pre><code class="lang-csharp">var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services
+        .AddDdap(options =&gt;
+        {
+            options.ConnectionString = builder.Configuration.GetConnectionString(&quot;Development&quot;);
+            options.EnableDetailedErrors = true;
+        })
+        .AddSqlServerDapper()
+        .AddRest()
+        .AddGraphQL()
+        .AddGrpc();
+}
+else if (builder.Environment.IsProduction())
+{
+    builder.Services
+        .AddDdap(options =&gt;
+        {
+            options.ConnectionString = builder.Configuration.GetConnectionString(&quot;Production&quot;);
+            options.EnableDetailedErrors = false;
+        })
+        .AddSqlServerDapper()
+        .AddRest()
+        .AddGraphQL();
+}
+</code></pre>
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="caching-strategies">Caching Strategies</h3>
+<p>Implement caching for frequently accessed data:</p>
+<pre><code class="lang-csharp">using Microsoft.Extensions.Caching.Memory;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IMemoryCache _cache;
+
+    public EntityController(IEntityRepository repository, IMemoryCache cache)
+    {
+        _repository = repository;
+        _cache = cache;
+    }
+
+    [HttpGet(&quot;{entityName}/cached&quot;)]
+    public async Task&lt;IActionResult&gt; GetCached(string entityName)
+    {
+        var cacheKey = $&quot;entity_{entityName}&quot;;
+        
+        if (!_cache.TryGetValue(cacheKey, out IEntityConfiguration entity))
+        {
+            entity = _repository.GetEntity(entityName);
+            
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+            
+            _cache.Set(cacheKey, entity, cacheOptions);
+        }
+
+        return Ok(entity);
+    }
+}
+</code></pre>
+<h3 id="connection-pooling">Connection Pooling</h3>
+<p>Optimize database connections:</p>
+<pre><code class="lang-csharp">builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString(&quot;DefaultConnection&quot;);
+        options.MaxPoolSize = 100;
+        options.MinPoolSize = 10;
+        options.ConnectionTimeout = 30;
+    })
+    .AddSqlServerDapper();
+</code></pre>
+<h3 id="lazy-loading">Lazy Loading</h3>
+<p>Implement lazy loading for relationships:</p>
+<pre><code class="lang-csharp">public class EntityData
+{
+    public string Name { get; set; }
+    
+    private List&lt;RelatedEntity&gt; _relatedEntities;
+    public List&lt;RelatedEntity&gt; RelatedEntities
+    {
+        get
+        {
+            if (_relatedEntities == null)
+            {
+                // Load only when accessed
+                _relatedEntities = LoadRelatedEntities();
+            }
+            return _relatedEntities;
+        }
+    }
+}
+</code></pre>
+<h2 id="production-best-practices">Production Best Practices</h2>
+<h3 id="health-checks">Health Checks</h3>
+<p>Add health checks for monitoring:</p>
+<pre><code class="lang-csharp">builder.Services.AddHealthChecks()
+    .AddSqlServer(builder.Configuration.GetConnectionString(&quot;DefaultConnection&quot;));
+
+var app = builder.Build();
+
+app.MapHealthChecks(&quot;/health&quot;);
+</code></pre>
+<h3 id="logging">Logging</h3>
+<p>Configure structured logging:</p>
+<pre><code class="lang-csharp">using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(&quot;logs/ddap-.txt&quot;, rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+</code></pre>
+<h3 id="error-handling">Error Handling</h3>
+<p>Implement global error handling:</p>
+<pre><code class="lang-csharp">public class GlobalExceptionHandler : IExceptionHandler
+{
+    private readonly ILogger&lt;GlobalExceptionHandler&gt; _logger;
+
+    public GlobalExceptionHandler(ILogger&lt;GlobalExceptionHandler&gt; logger)
+    {
+        _logger = logger;
+    }
+
+    public async ValueTask&lt;bool&gt; TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogError(exception, &quot;An error occurred&quot;);
+
+        var response = new
+        {
+            Message = &quot;An error occurred while processing your request&quot;,
+            Details = exception.Message
+        };
+
+        httpContext.Response.StatusCode = 500;
+        await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+
+        return true;
+    }
+}
+
+builder.Services.AddExceptionHandler&lt;GlobalExceptionHandler&gt;();
+</code></pre>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<p>Implement rate limiting:</p>
+<pre><code class="lang-csharp">using AspNetCoreRateLimit;
+
+builder.Services.AddMemoryCache();
+builder.Services.Configure&lt;IpRateLimitOptions&gt;(builder.Configuration.GetSection(&quot;IpRateLimiting&quot;));
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton&lt;IRateLimitConfiguration, RateLimitConfiguration&gt;();
+
+var app = builder.Build();
+app.UseIpRateLimiting();
+</code></pre>
+<h3 id="cors-configuration">CORS Configuration</h3>
+<p>Configure CORS for cross-origin requests:</p>
+<pre><code class="lang-csharp">builder.Services.AddCors(options =&gt;
+{
+    options.AddPolicy(&quot;AllowSpecificOrigin&quot;,
+        policy =&gt;
+        {
+            policy.WithOrigins(&quot;https://example.com&quot;)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+var app = builder.Build();
+app.UseCors(&quot;AllowSpecificOrigin&quot;);
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="message-queue-integration">Message Queue Integration</h3>
+<p>Integrate with message queues for async processing:</p>
+<pre><code class="lang-csharp">using RabbitMQ.Client;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IConnection _connection;
+
+    [HttpPost(&quot;{entityName}/async&quot;)]
+    public async Task&lt;IActionResult&gt; CreateAsync(
+        string entityName, 
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        // Queue the operation
+        using var channel = _connection.CreateModel();
+        channel.QueueDeclare(queue: &quot;entity-operations&quot;, durable: true);
+        
+        var message = JsonConvert.SerializeObject(new
+        {
+            EntityName = entityName,
+            Operation = &quot;CREATE&quot;,
+            Data = data
+        });
+        
+        var body = Encoding.UTF8.GetBytes(message);
+        channel.BasicPublish(exchange: &quot;&quot;, routingKey: &quot;entity-operations&quot;, body: body);
+        
+        return Accepted();
+    }
+}
+</code></pre>
+<h3 id="event-sourcing">Event Sourcing</h3>
+<p>Implement event sourcing pattern:</p>
+<pre><code class="lang-csharp">public interface IEventStore
+{
+    Task AppendAsync(string entityName, object @event);
+    Task&lt;List&lt;object&gt;&gt; GetEventsAsync(string entityName);
+}
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IEventStore _eventStore;
+
+    [HttpPost(&quot;{entityName}/with-events&quot;)]
+    public async Task&lt;IActionResult&gt; CreateWithEvents(
+        string entityName,
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        // Store event
+        await _eventStore.AppendAsync(entityName, new EntityCreatedEvent
+        {
+            EntityName = entityName,
+            Data = data,
+            Timestamp = DateTime.UtcNow
+        });
+
+        // Create entity
+        // ...
+
+        return Created($&quot;/api/entity/{entityName}&quot;, data);
+    }
+}
+</code></pre>
+<h3 id="webhook-notifications">Webhook Notifications</h3>
+<p>Send webhook notifications on entity changes:</p>
+<pre><code class="lang-csharp">public interface IWebhookService
+{
+    Task NotifyAsync(string eventType, object data);
+}
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IWebhookService _webhookService;
+
+    [HttpPost(&quot;{entityName}&quot;)]
+    public async Task&lt;IActionResult&gt; CreateWithWebhook(
+        string entityName,
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        // Create entity
+        // ...
+
+        // Send webhook notification
+        await _webhookService.NotifyAsync(&quot;entity.created&quot;, new
+        {
+            EntityName = entityName,
+            Data = data
+        });
+
+        return Created($&quot;/api/entity/{entityName}&quot;, data);
+    }
+}
+</code></pre>
+<h2 id="testing-custom-extensions">Testing Custom Extensions</h2>
+<h3 id="unit-testing-custom-endpoints">Unit Testing Custom Endpoints</h3>
+<pre><code class="lang-csharp">using Xunit;
+using Moq;
+
+public class EntityControllerTests
+{
+    [Fact]
+    public async Task CustomEndpoint_ReturnsOk()
+    {
+        // Arrange
+        var mockRepository = new Mock&lt;IEntityRepository&gt;();
+        var controller = new EntityController(mockRepository.Object);
+
+        // Act
+        var result = await controller.CustomEndpoint(&quot;test&quot;);
+
+        // Assert
+        Assert.IsType&lt;OkObjectResult&gt;(result);
+    }
+}
+</code></pre>
+<h3 id="integration-testing">Integration Testing</h3>
+<pre><code class="lang-csharp">using Microsoft.AspNetCore.Mvc.Testing;
+
+public class ApiIntegrationTests : IClassFixture&lt;WebApplicationFactory&lt;Program&gt;&gt;
+{
+    private readonly WebApplicationFactory&lt;Program&gt; _factory;
+
+    public ApiIntegrationTests(WebApplicationFactory&lt;Program&gt; factory)
+    {
+        _factory = factory;
+    }
+
+    [Fact]
+    public async Task CustomEndpoint_ReturnsSuccess()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.GetAsync(&quot;/api/entity/custom/test&quot;);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+    }
+}
+</code></pre>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li><a href="troubleshooting.html">Troubleshooting</a> - Common issues and solutions</li>
+<li><a href="database-providers.html">Database Providers</a> - Database-specific features</li>
+<li><a href="api-providers.html">API Providers</a> - API-specific features</li>
+</ul>
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/aspnet/core/">ASP.NET Core Best Practices</a></li>
+<li><a href="https://graphql.org/learn/best-practices/">GraphQL Best Practices</a></li>
+<li><a href="https://grpc.io/docs/guides/">gRPC Best Practices</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/schivei/ddap/blob/main/docs/advanced.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          DDAP - Dynamic Data API Provider | MIT License
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

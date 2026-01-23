@@ -1,0 +1,69 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Data.Dapper.MySQL
+  commentId: N:Ddap.Data.Dapper.MySQL
+  id: Ddap.Data.Dapper.MySQL
+  children:
+  - Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+  - Ddap.Data.Dapper.MySQL.MySqlDataProvider
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Data.Dapper.MySQL
+  nameWithType: Ddap.Data.Dapper.MySQL
+  fullName: Ddap.Data.Dapper.MySQL
+  type: Namespace
+  assemblies:
+  - Ddap.Data.Dapper.MySQL
+references:
+- uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+  commentId: T:Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+  parent: Ddap.Data.Dapper.MySQL
+  href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html
+  name: DdapMySqlExtensions
+  nameWithType: DdapMySqlExtensions
+  fullName: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+- uid: Ddap.Data.Dapper.MySQL.MySqlDataProvider
+  commentId: T:Ddap.Data.Dapper.MySQL.MySqlDataProvider
+  href: Ddap.Data.Dapper.MySQL.MySqlDataProvider.html
+  name: MySqlDataProvider
+  nameWithType: MySqlDataProvider
+  fullName: Ddap.Data.Dapper.MySQL.MySqlDataProvider
+- uid: Ddap.Data.Dapper.MySQL
+  commentId: N:Ddap.Data.Dapper.MySQL
+  href: Ddap.html
+  name: Ddap.Data.Dapper.MySQL
+  nameWithType: Ddap.Data.Dapper.MySQL
+  fullName: Ddap.Data.Dapper.MySQL
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  - name: .
+  - uid: Ddap.Data.Dapper
+    name: Dapper
+    href: Ddap.Data.Dapper.html
+  - name: .
+  - uid: Ddap.Data.Dapper.MySQL
+    name: MySQL
+    href: Ddap.Data.Dapper.MySQL.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  - name: .
+  - uid: Ddap.Data.Dapper
+    name: Dapper
+    href: Ddap.Data.Dapper.html
+  - name: .
+  - uid: Ddap.Data.Dapper.MySQL
+    name: MySQL
+    href: Ddap.Data.Dapper.MySQL.html

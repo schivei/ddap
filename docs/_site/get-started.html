@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Getting Started with DDAP | DDAP - Dynamic Data API Provider </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Getting Started with DDAP | DDAP - Dynamic Data API Provider ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/schivei/ddap/blob/main/docs/get-started.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="DDAP">
+            DDAP
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="getting-started-with-ddap">Getting Started with DDAP</h1>
+
+<p>Welcome to DDAP (Dynamic Data API Provider)! This guide will help you get started with creating automatic REST, gRPC, and GraphQL APIs from your database schema.</p>
+<h2 id="what-is-ddap">What is DDAP?</h2>
+<p>DDAP is a .NET 10 library that automatically generates APIs from your database schema. Point it at your database, and it will:</p>
+<ul>
+<li>Load your database metadata (tables, columns, relationships, indexes)</li>
+<li>Generate REST, gRPC, and/or GraphQL endpoints</li>
+<li>Support JSON, XML, and YAML content negotiation</li>
+<li>Provide extensibility through partial classes</li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before you begin, make sure you have:</p>
+<ul>
+<li><strong>.NET 10 SDK</strong> or later installed</li>
+<li>A database (SQL Server, MySQL, or PostgreSQL)</li>
+<li>Basic knowledge of ASP.NET Core</li>
+<li>Your database connection string</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="step-1-create-a-new-aspnet-core-project">Step 1: Create a New ASP.NET Core Project</h3>
+<pre><code class="lang-bash">dotnet new webapi -n MyDdapApi
+cd MyDdapApi
+</code></pre>
+<h3 id="step-2-install-ddap-packages">Step 2: Install DDAP Packages</h3>
+<p>Install the core package and your choice of providers:</p>
+<pre><code class="lang-bash"># Core package (required)
+dotnet add package Ddap.Core
+
+# Choose your database provider
+dotnet add package Ddap.Data.Dapper.SqlServer      # For SQL Server
+# OR
+dotnet add package Ddap.Data.Dapper.MySQL          # For MySQL
+# OR
+dotnet add package Ddap.Data.Dapper.PostgreSQL     # For PostgreSQL
+
+# Choose your API providers (one or more)
+dotnet add package Ddap.Rest                       # REST API
+dotnet add package Ddap.GraphQL                    # GraphQL
+dotnet add package Ddap.Grpc                       # gRPC
+</code></pre>
+<h3 id="step-3-configure-ddap-in-programcs">Step 3: Configure DDAP in Program.cs</h3>
+<p>Here's a minimal example using SQL Server:</p>
+<pre><code class="lang-csharp">using Ddap.Core;
+using Ddap.Data.Dapper.SqlServer;
+using Ddap.Rest;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure DDAP
+builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = &quot;Server=localhost;Database=MyDb;Integrated Security=true;&quot;;
+    })
+    .AddSqlServerDapper()  // Use SQL Server with Dapper
+    .AddRest();            // Enable REST API
+
+var app = builder.Build();
+
+app.UseRouting();
+app.MapControllers();
+
+app.Run();
+</code></pre>
+<h3 id="step-4-run-your-application">Step 4: Run Your Application</h3>
+<pre><code class="lang-bash">dotnet run
+</code></pre>
+<p>That's it! Your API is now running and automatically exposing your database entities.</p>
+<h2 id="testing-your-api">Testing Your API</h2>
+<p>Once your application is running, you can test the generated endpoints:</p>
+<h3 id="get-all-entities">Get All Entities</h3>
+<pre><code class="lang-bash">curl http://localhost:5000/api/entity
+</code></pre>
+<p>This returns metadata about all tables/entities in your database.</p>
+<h3 id="get-entity-metadata">Get Entity Metadata</h3>
+<pre><code class="lang-bash">curl http://localhost:5000/api/entity/Users/metadata
+</code></pre>
+<p>Replace <code>Users</code> with the name of any table in your database.</p>
+<h3 id="content-negotiation-rest">Content Negotiation (REST)</h3>
+<p>DDAP supports multiple output formats:</p>
+<pre><code class="lang-bash"># JSON (default - using Newtonsoft.Json)
+curl -H &quot;Accept: application/json&quot; http://localhost:5000/api/entity
+
+# XML
+curl -H &quot;Accept: application/xml&quot; http://localhost:5000/api/entity
+
+# YAML
+curl -H &quot;Accept: application/yaml&quot; http://localhost:5000/api/entity
+</code></pre>
+<h2 id="adding-more-api-providers">Adding More API Providers</h2>
+<p>DDAP supports multiple API protocols. You can add GraphQL and gRPC:</p>
+<pre><code class="lang-csharp">using Ddap.Core;
+using Ddap.Data.Dapper.SqlServer;
+using Ddap.Rest;
+using Ddap.GraphQL;
+using Ddap.Grpc;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = &quot;Server=localhost;Database=MyDb;...&quot;;
+    })
+    .AddSqlServerDapper()
+    .AddRest()      // REST API
+    .AddGraphQL()   // GraphQL
+    .AddGrpc();     // gRPC
+
+var app = builder.Build();
+
+app.UseRouting();
+app.MapControllers();
+app.MapGraphQL(&quot;/graphql&quot;);  // GraphQL endpoint
+
+app.Run();
+</code></pre>
+<h3 id="testing-graphql">Testing GraphQL</h3>
+<p>Navigate to <code>http://localhost:5000/graphql</code> in your browser to access the GraphQL playground, or use curl:</p>
+<pre><code class="lang-bash">curl -X POST http://localhost:5000/graphql \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;query&quot;: &quot;{ entities { name schema propertyCount } }&quot;}'
+</code></pre>
+<h2 id="using-different-database-providers">Using Different Database Providers</h2>
+<h3 id="mysql">MySQL</h3>
+<pre><code class="lang-csharp">using Ddap.Data.Dapper.MySQL;
+
+builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = &quot;Server=localhost;Database=MyDb;User=root;Password=secret;&quot;;
+    })
+    .AddMySqlDapper()
+    .AddRest();
+</code></pre>
+<h3 id="postgresql">PostgreSQL</h3>
+<pre><code class="lang-csharp">using Ddap.Data.Dapper.PostgreSQL;
+
+builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = &quot;Host=localhost;Database=MyDb;Username=postgres;Password=secret;&quot;;
+    })
+    .AddPostgreSqlDapper()
+    .AddRest();
+</code></pre>
+<h3 id="entity-framework-core">Entity Framework Core</h3>
+<p>For database-agnostic Entity Framework Core support:</p>
+<pre><code class="lang-csharp">using Ddap.Data.EntityFramework;
+
+builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = &quot;...&quot;;
+    })
+    .AddEntityFramework()
+    .AddRest();
+</code></pre>
+<h2 id="configuration-from-appsettingsjson">Configuration from appsettings.json</h2>
+<p>It's recommended to store your connection string in <code>appsettings.json</code>:</p>
+<pre><code class="lang-json">{
+  &quot;ConnectionStrings&quot;: {
+    &quot;DefaultConnection&quot;: &quot;Server=localhost;Database=MyDb;Integrated Security=true;&quot;
+  }
+}
+</code></pre>
+<p>Then reference it in your code:</p>
+<pre><code class="lang-csharp">builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString(&quot;DefaultConnection&quot;);
+    })
+    .AddSqlServerDapper()
+    .AddRest();
+</code></pre>
+<h2 id="next-steps">Next Steps</h2>
+<p>Now that you have DDAP running, explore these topics:</p>
+<ul>
+<li><strong><a href="architecture.html">Architecture</a></strong> - Learn about DDAP's architecture and design</li>
+<li><strong><a href="advanced.html">Advanced Usage</a></strong> - Extensibility, custom endpoints, and advanced patterns</li>
+<li><strong><a href="database-providers.html">Database Providers</a></strong> - Deep dive into database provider options</li>
+<li><strong><a href="api-providers.html">API Providers</a></strong> - Learn about REST, gRPC, and GraphQL providers</li>
+<li><strong><a href="troubleshooting.html">Troubleshooting</a></strong> - Common issues and solutions</li>
+</ul>
+<h2 id="example-application">Example Application</h2>
+<p>Check out the complete example application at <a href="../examples/Ddap.Example.Api"><code>examples/Ddap.Example.Api</code></a> for a working reference implementation.</p>
+<h2 id="need-help">Need Help?</h2>
+<ul>
+<li><strong>Documentation</strong>: <a href="https://schivei.github.io/ddap">https://schivei.github.io/ddap</a></li>
+<li><strong>Issues</strong>: <a href="https://github.com/schivei/ddap/issues">GitHub Issues</a></li>
+<li><strong>Contributing</strong>: See <a href="../CONTRIBUTING.md">CONTRIBUTING.md</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/schivei/ddap/blob/main/docs/get-started.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          DDAP - Dynamic Data API Provider | MIT License
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,298 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Core.IDataProvider
+  commentId: T:Ddap.Core.IDataProvider
+  id: IDataProvider
+  parent: Ddap.Core
+  children:
+  - Ddap.Core.IDataProvider.LoadEntitiesAsync(System.Threading.CancellationToken)
+  - Ddap.Core.IDataProvider.ProviderName
+  langs:
+  - csharp
+  - vb
+  name: IDataProvider
+  nameWithType: IDataProvider
+  fullName: Ddap.Core.IDataProvider
+  type: Interface
+  source:
+    remote:
+      path: src/Ddap.Core/IDataProvider.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: IDataProvider
+    path: ../src/Ddap.Core/IDataProvider.cs
+    startLine: 5
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Represents a data provider that loads entity configurations from a database.
+  example: []
+  syntax:
+    content: public interface IDataProvider
+    content.vb: Public Interface IDataProvider
+- uid: Ddap.Core.IDataProvider.LoadEntitiesAsync(System.Threading.CancellationToken)
+  commentId: M:Ddap.Core.IDataProvider.LoadEntitiesAsync(System.Threading.CancellationToken)
+  id: LoadEntitiesAsync(System.Threading.CancellationToken)
+  parent: Ddap.Core.IDataProvider
+  langs:
+  - csharp
+  - vb
+  name: LoadEntitiesAsync(CancellationToken)
+  nameWithType: IDataProvider.LoadEntitiesAsync(CancellationToken)
+  fullName: Ddap.Core.IDataProvider.LoadEntitiesAsync(System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/Ddap.Core/IDataProvider.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: LoadEntitiesAsync
+    path: ../src/Ddap.Core/IDataProvider.cs
+    startLine: 12
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Loads entity configurations from the database.
+  example: []
+  syntax:
+    content: Task<IReadOnlyList<IEntityConfiguration>> LoadEntitiesAsync(CancellationToken cancellationToken = default)
+    parameters:
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+      description: A token to cancel the operation.
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.IReadOnlyList{Ddap.Core.IEntityConfiguration}}
+      description: A task that represents the asynchronous operation, containing the loaded entity configurations.
+    content.vb: Function LoadEntitiesAsync(cancellationToken As CancellationToken = Nothing) As Task(Of IReadOnlyList(Of IEntityConfiguration))
+  overload: Ddap.Core.IDataProvider.LoadEntitiesAsync*
+- uid: Ddap.Core.IDataProvider.ProviderName
+  commentId: P:Ddap.Core.IDataProvider.ProviderName
+  id: ProviderName
+  parent: Ddap.Core.IDataProvider
+  langs:
+  - csharp
+  - vb
+  name: ProviderName
+  nameWithType: IDataProvider.ProviderName
+  fullName: Ddap.Core.IDataProvider.ProviderName
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IDataProvider.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: ProviderName
+    path: ../src/Ddap.Core/IDataProvider.cs
+    startLine: 19
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the database provider name (e.g., "MySQL", "PostgreSQL", "SQLServer").
+  example: []
+  syntax:
+    content: string ProviderName { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: ReadOnly Property ProviderName As String
+  overload: Ddap.Core.IDataProvider.ProviderName*
+references:
+- uid: Ddap.Core
+  commentId: N:Ddap.Core
+  href: Ddap.html
+  name: Ddap.Core
+  nameWithType: Ddap.Core
+  fullName: Ddap.Core
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+- uid: Ddap.Core.IDataProvider.LoadEntitiesAsync*
+  commentId: Overload:Ddap.Core.IDataProvider.LoadEntitiesAsync
+  href: Ddap.Core.IDataProvider.html#Ddap_Core_IDataProvider_LoadEntitiesAsync_System_Threading_CancellationToken_
+  name: LoadEntitiesAsync
+  nameWithType: IDataProvider.LoadEntitiesAsync
+  fullName: Ddap.Core.IDataProvider.LoadEntitiesAsync
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Threading.Tasks.Task{System.Collections.Generic.IReadOnlyList{Ddap.Core.IEntityConfiguration}}
+  commentId: T:System.Threading.Tasks.Task{System.Collections.Generic.IReadOnlyList{Ddap.Core.IEntityConfiguration}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<IReadOnlyList<IEntityConfiguration>>
+  nameWithType: Task<IReadOnlyList<IEntityConfiguration>>
+  fullName: System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<Ddap.Core.IEntityConfiguration>>
+  nameWithType.vb: Task(Of IReadOnlyList(Of IEntityConfiguration))
+  fullName.vb: System.Threading.Tasks.Task(Of System.Collections.Generic.IReadOnlyList(Of Ddap.Core.IEntityConfiguration))
+  name.vb: Task(Of IReadOnlyList(Of IEntityConfiguration))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: Ddap.Core.IEntityConfiguration
+    name: IEntityConfiguration
+    href: Ddap.Core.IEntityConfiguration.html
+  - name: '>'
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: Ddap.Core.IEntityConfiguration
+    name: IEntityConfiguration
+    href: Ddap.Core.IEntityConfiguration.html
+  - name: )
+  - name: )
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: TResult
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TResult
+  - name: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: Ddap.Core.IDataProvider.ProviderName*
+  commentId: Overload:Ddap.Core.IDataProvider.ProviderName
+  href: Ddap.Core.IDataProvider.html#Ddap_Core_IDataProvider_ProviderName
+  name: ProviderName
+  nameWithType: IDataProvider.ProviderName
+  fullName: Ddap.Core.IDataProvider.ProviderName
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System

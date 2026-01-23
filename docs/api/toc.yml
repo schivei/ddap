@@ -1,0 +1,231 @@
+### YamlMime:TableOfContent
+items:
+- uid: Ddap.Aspire
+  name: Ddap.Aspire
+  type: Namespace
+  items:
+  - uid: Ddap.Aspire.DdapAspireExtensions
+    name: DdapAspireExtensions
+    type: Class
+  - uid: Ddap.Aspire.DdapResource
+    name: DdapResource
+    type: Class
+  - uid: Ddap.Aspire.DdapServiceExtensions
+    name: DdapServiceExtensions
+    type: Class
+- uid: Ddap.Auth
+  name: Ddap.Auth
+  type: Namespace
+  items:
+  - uid: Ddap.Auth.DdapAuthExtensions
+    name: DdapAuthExtensions
+    type: Class
+- uid: Ddap.Auth.Attributes
+  name: Ddap.Auth.Attributes
+  type: Namespace
+  items:
+  - uid: Ddap.Auth.Attributes.DdapAuthorizeAttribute
+    name: DdapAuthorizeAttribute
+    type: Class
+- uid: Ddap.Auth.Policies
+  name: Ddap.Auth.Policies
+  type: Namespace
+  items:
+  - uid: Ddap.Auth.Policies.DdapAuthorizationPolicies
+    name: DdapAuthorizationPolicies
+    type: Class
+- uid: Ddap.Core
+  name: Ddap.Core
+  type: Namespace
+  items:
+  - uid: Ddap.Core.DatabaseProvider
+    name: DatabaseProvider
+    type: Enum
+  - uid: Ddap.Core.DdapOptions
+    name: DdapOptions
+    type: Class
+  - uid: Ddap.Core.DdapServiceCollectionExtensions
+    name: DdapServiceCollectionExtensions
+    type: Class
+  - uid: Ddap.Core.EntityRepository
+    name: EntityRepository
+    type: Class
+  - uid: Ddap.Core.IDataProvider
+    name: IDataProvider
+    type: Interface
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    type: Interface
+  - uid: Ddap.Core.IEntityConfiguration
+    name: IEntityConfiguration
+    type: Interface
+  - uid: Ddap.Core.IEntityRepository
+    name: IEntityRepository
+    type: Interface
+  - uid: Ddap.Core.IIndexConfiguration
+    name: IIndexConfiguration
+    type: Interface
+  - uid: Ddap.Core.IPropertyConfiguration
+    name: IPropertyConfiguration
+    type: Interface
+  - uid: Ddap.Core.IRelationshipConfiguration
+    name: IRelationshipConfiguration
+    type: Interface
+  - uid: Ddap.Core.RelationshipType
+    name: RelationshipType
+    type: Enum
+- uid: Ddap.Data
+  name: Ddap.Data
+  type: Namespace
+  items:
+  - uid: Ddap.Data.DdapDataExtensions
+    name: DdapDataExtensions
+    type: Class
+- uid: Ddap.Data.Dapper.MySQL
+  name: Ddap.Data.Dapper.MySQL
+  type: Namespace
+  items:
+  - uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+    name: DdapMySqlExtensions
+    type: Class
+  - uid: Ddap.Data.Dapper.MySQL.MySqlDataProvider
+    name: MySqlDataProvider
+    type: Class
+- uid: Ddap.Data.Dapper.PostgreSQL
+  name: Ddap.Data.Dapper.PostgreSQL
+  type: Namespace
+  items:
+  - uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions
+    name: DdapPostgreSqlExtensions
+    type: Class
+  - uid: Ddap.Data.Dapper.PostgreSQL.PostgreSqlDataProvider
+    name: PostgreSqlDataProvider
+    type: Class
+- uid: Ddap.Data.Dapper.SqlServer
+  name: Ddap.Data.Dapper.SqlServer
+  type: Namespace
+  items:
+  - uid: Ddap.Data.Dapper.SqlServer.DdapSqlServerExtensions
+    name: DdapSqlServerExtensions
+    type: Class
+  - uid: Ddap.Data.Dapper.SqlServer.SqlServerDataProvider
+    name: SqlServerDataProvider
+    type: Class
+- uid: Ddap.GraphQL
+  name: Ddap.GraphQL
+  type: Namespace
+  items:
+  - uid: Ddap.GraphQL.DdapGraphQLExtensions
+    name: DdapGraphQLExtensions
+    type: Class
+  - uid: Ddap.GraphQL.EntityMetadata
+    name: EntityMetadata
+    type: Class
+  - uid: Ddap.GraphQL.Mutation
+    name: Mutation
+    type: Class
+  - uid: Ddap.GraphQL.Query
+    name: Query
+    type: Class
+- uid: Ddap.Grpc
+  name: Ddap.Grpc
+  type: Namespace
+  items:
+  - uid: Ddap.Grpc.DdapGrpcExtensions
+    name: DdapGrpcExtensions
+    type: Class
+  - uid: Ddap.Grpc.EntityListResponse
+    name: EntityListResponse
+    type: Class
+  - uid: Ddap.Grpc.EntityService
+    name: EntityService
+    type: Class
+  - uid: Ddap.Grpc.IGrpcServiceProvider
+    name: IGrpcServiceProvider
+    type: Interface
+  - uid: Ddap.Grpc.ProtoGenerator
+    name: ProtoGenerator
+    type: Class
+- uid: Ddap.Grpc.Controllers
+  name: Ddap.Grpc.Controllers
+  type: Namespace
+  items:
+  - uid: Ddap.Grpc.Controllers.ProtoFileController
+    name: ProtoFileController
+    type: Class
+- uid: Ddap.Rest
+  name: Ddap.Rest
+  type: Namespace
+  items:
+  - uid: Ddap.Rest.DdapRestExtensions
+    name: DdapRestExtensions
+    type: Class
+  - uid: Ddap.Rest.EntityController
+    name: EntityController
+    type: Class
+  - uid: Ddap.Rest.IRestApiProvider
+    name: IRestApiProvider
+    type: Interface
+- uid: Ddap.Rest.Adapters
+  name: Ddap.Rest.Adapters
+  type: Namespace
+  items:
+  - uid: Ddap.Rest.Adapters.GrpcToRestAdapter
+    name: GrpcToRestAdapter
+    type: Class
+- uid: Ddap.Rest.Filters
+  name: Ddap.Rest.Filters
+  type: Namespace
+  items:
+  - uid: Ddap.Rest.Filters.QueryFilterBuilder
+    name: QueryFilterBuilder
+    type: Class
+- uid: Ddap.Rest.Formatters
+  name: Ddap.Rest.Formatters
+  type: Namespace
+  items:
+  - uid: Ddap.Rest.Formatters.YamlOutputFormatter
+    name: YamlOutputFormatter
+    type: Class
+- uid: Ddap.Rest.Models
+  name: Ddap.Rest.Models
+  type: Namespace
+  items:
+  - uid: Ddap.Rest.Models.PagedResult`1
+    name: PagedResult<T>
+    type: Class
+  - uid: Ddap.Rest.Models.QueryParameters
+    name: QueryParameters
+    type: Class
+- uid: Ddap.Subscriptions
+  name: Ddap.Subscriptions
+  type: Namespace
+  items:
+  - uid: Ddap.Subscriptions.DdapSubscriptionsExtensions
+    name: DdapSubscriptionsExtensions
+    type: Class
+- uid: Ddap.Subscriptions.Hubs
+  name: Ddap.Subscriptions.Hubs
+  type: Namespace
+  items:
+  - uid: Ddap.Subscriptions.Hubs.EntityHub
+    name: EntityHub
+    type: Class
+- uid: Ddap.Subscriptions.Subscriptions
+  name: Ddap.Subscriptions.Subscriptions
+  type: Namespace
+  items:
+  - uid: Ddap.Subscriptions.Subscriptions.EntityChangeNotification
+    name: EntityChangeNotification
+    type: Class
+  - uid: Ddap.Subscriptions.Subscriptions.EntitySubscription
+    name: EntitySubscription
+    type: Class
+- uid: Projects
+  name: Projects
+  type: Namespace
+  items:
+  - uid: Projects.Ddap_Aspire
+    name: Ddap_Aspire
+    type: Class
+memberLayout: SamePage

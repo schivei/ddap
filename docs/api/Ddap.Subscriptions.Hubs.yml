@@ -1,0 +1,23 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Subscriptions.Hubs
+  commentId: N:Ddap.Subscriptions.Hubs
+  id: Ddap.Subscriptions.Hubs
+  children:
+  - Ddap.Subscriptions.Hubs.EntityHub
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Subscriptions.Hubs
+  nameWithType: Ddap.Subscriptions.Hubs
+  fullName: Ddap.Subscriptions.Hubs
+  type: Namespace
+  assemblies:
+  - Ddap.Subscriptions
+references:
+- uid: Ddap.Subscriptions.Hubs.EntityHub
+  commentId: T:Ddap.Subscriptions.Hubs.EntityHub
+  href: Ddap.Subscriptions.Hubs.EntityHub.html
+  name: EntityHub
+  nameWithType: EntityHub
+  fullName: Ddap.Subscriptions.Hubs.EntityHub

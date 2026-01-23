@@ -1,0 +1,23 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Grpc.Controllers
+  commentId: N:Ddap.Grpc.Controllers
+  id: Ddap.Grpc.Controllers
+  children:
+  - Ddap.Grpc.Controllers.ProtoFileController
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Grpc.Controllers
+  nameWithType: Ddap.Grpc.Controllers
+  fullName: Ddap.Grpc.Controllers
+  type: Namespace
+  assemblies:
+  - Ddap.Grpc
+references:
+- uid: Ddap.Grpc.Controllers.ProtoFileController
+  commentId: T:Ddap.Grpc.Controllers.ProtoFileController
+  href: Ddap.Grpc.Controllers.ProtoFileController.html
+  name: ProtoFileController
+  nameWithType: ProtoFileController
+  fullName: Ddap.Grpc.Controllers.ProtoFileController

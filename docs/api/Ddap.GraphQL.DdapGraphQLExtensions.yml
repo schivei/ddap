@@ -1,0 +1,381 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.GraphQL.DdapGraphQLExtensions
+  commentId: T:Ddap.GraphQL.DdapGraphQLExtensions
+  id: DdapGraphQLExtensions
+  parent: Ddap.GraphQL
+  children:
+  - Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL(Ddap.Core.IDdapBuilder)
+  langs:
+  - csharp
+  - vb
+  name: DdapGraphQLExtensions
+  nameWithType: DdapGraphQLExtensions
+  fullName: Ddap.GraphQL.DdapGraphQLExtensions
+  type: Class
+  source:
+    remote:
+      path: src/Ddap.GraphQL/DdapGraphQLExtensions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: DdapGraphQLExtensions
+    path: ../src/Ddap.GraphQL/DdapGraphQLExtensions.cs
+    startLine: 8
+  assemblies:
+  - Ddap.GraphQL
+  namespace: Ddap.GraphQL
+  summary: Provides extension methods for adding GraphQL support to DDAP.
+  example: []
+  syntax:
+    content: public static class DdapGraphQLExtensions
+    content.vb: Public Module DdapGraphQLExtensions
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL(Ddap.Core.IDdapBuilder)
+  commentId: M:Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL(Ddap.Core.IDdapBuilder)
+  id: AddGraphQL(Ddap.Core.IDdapBuilder)
+  isExtensionMethod: true
+  parent: Ddap.GraphQL.DdapGraphQLExtensions
+  langs:
+  - csharp
+  - vb
+  name: AddGraphQL(IDdapBuilder)
+  nameWithType: DdapGraphQLExtensions.AddGraphQL(IDdapBuilder)
+  fullName: Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL(Ddap.Core.IDdapBuilder)
+  type: Method
+  source:
+    remote:
+      path: src/Ddap.GraphQL/DdapGraphQLExtensions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: AddGraphQL
+    path: ../src/Ddap.GraphQL/DdapGraphQLExtensions.cs
+    startLine: 24
+  assemblies:
+  - Ddap.GraphQL
+  namespace: Ddap.GraphQL
+  summary: >-
+    Adds GraphQL support to the DDAP builder.
+
+    This method configures GraphQL schema and services for exposing entities.
+  example:
+  - >-
+    <pre><code class="lang-csharp">services.AddDdap(options =&gt; {
+        options.ConnectionString = "...";
+    })
+
+    .AddGraphQL();</code></pre>
+  syntax:
+    content: public static IDdapBuilder AddGraphQL(this IDdapBuilder builder)
+    parameters:
+    - id: builder
+      type: Ddap.Core.IDdapBuilder
+      description: The DDAP builder.
+    return:
+      type: Ddap.Core.IDdapBuilder
+      description: The DDAP builder for chaining.
+    content.vb: Public Shared Function AddGraphQL(builder As IDdapBuilder) As IDdapBuilder
+  overload: Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL*
+references:
+- uid: Ddap.GraphQL
+  commentId: N:Ddap.GraphQL
+  href: Ddap.html
+  name: Ddap.GraphQL
+  nameWithType: Ddap.GraphQL
+  fullName: Ddap.GraphQL
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.GraphQL
+    name: GraphQL
+    href: Ddap.GraphQL.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.GraphQL
+    name: GraphQL
+    href: Ddap.GraphQL.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL*
+  commentId: Overload:Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL
+  href: Ddap.GraphQL.DdapGraphQLExtensions.html#Ddap_GraphQL_DdapGraphQLExtensions_AddGraphQL_Ddap_Core_IDdapBuilder_
+  name: AddGraphQL
+  nameWithType: DdapGraphQLExtensions.AddGraphQL
+  fullName: Ddap.GraphQL.DdapGraphQLExtensions.AddGraphQL
+- uid: Ddap.Core.IDdapBuilder
+  commentId: T:Ddap.Core.IDdapBuilder
+  parent: Ddap.Core
+  href: Ddap.Core.IDdapBuilder.html
+  name: IDdapBuilder
+  nameWithType: IDdapBuilder
+  fullName: Ddap.Core.IDdapBuilder
+- uid: Ddap.Core
+  commentId: N:Ddap.Core
+  href: Ddap.html
+  name: Ddap.Core
+  nameWithType: Ddap.Core
+  fullName: Ddap.Core
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html

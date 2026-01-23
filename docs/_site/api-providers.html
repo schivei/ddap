@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>API Providers | DDAP - Dynamic Data API Provider </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="API Providers | DDAP - Dynamic Data API Provider ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/schivei/ddap/blob/main/docs/api-providers.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="DDAP">
+            DDAP
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="api-providers">API Providers</h1>
+
+<p>DDAP supports multiple API protocols through separate provider packages. This guide covers REST, gRPC, and GraphQL providers in detail.</p>
+<h2 id="overview">Overview</h2>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Package</th>
+<th>Protocol</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REST</td>
+<td><code>Ddap.Rest</code></td>
+<td>HTTP/REST</td>
+<td>JSON, XML, YAML, Content Negotiation</td>
+</tr>
+<tr>
+<td>gRPC</td>
+<td><code>Ddap.Grpc</code></td>
+<td>gRPC/HTTP2</td>
+<td>Binary protocol, streaming</td>
+</tr>
+<tr>
+<td>GraphQL</td>
+<td><code>Ddap.GraphQL</code></td>
+<td>GraphQL</td>
+<td>Queries, mutations, schema introspection</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rest-provider">REST Provider</h2>
+<h3 id="installation">Installation</h3>
+<pre><code class="lang-bash">dotnet add package Ddap.Rest
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<pre><code class="lang-csharp">using Ddap.Rest;
+
+builder.Services
+    .AddDdap(options =&gt; { /* ... */ })
+    .AddSqlServerDapper()
+    .AddRest();
+
+var app = builder.Build();
+
+app.UseRouting();
+app.MapControllers();
+</code></pre>
+<h3 id="features">Features</h3>
+<h4 id="content-negotiation">Content Negotiation</h4>
+<p>DDAP REST APIs support multiple output formats via the <code>Accept</code> header:</p>
+<p><strong>JSON (Default - Newtonsoft.Json)</strong></p>
+<pre><code class="lang-bash">curl -H &quot;Accept: application/json&quot; http://localhost:5000/api/entity
+</code></pre>
+<p><strong>XML</strong></p>
+<pre><code class="lang-bash">curl -H &quot;Accept: application/xml&quot; http://localhost:5000/api/entity
+</code></pre>
+<p><strong>YAML</strong></p>
+<pre><code class="lang-bash">curl -H &quot;Accept: application/yaml&quot; http://localhost:5000/api/entity
+</code></pre>
+<h4 id="generated-endpoints">Generated Endpoints</h4>
+<p>The REST provider automatically generates the following endpoints:</p>
+<p><strong>Entity Listing</strong></p>
+<pre><code class="lang-http">GET /api/entity
+</code></pre>
+<p>Returns metadata about all entities in the database.</p>
+<p><strong>Entity Metadata</strong></p>
+<pre><code class="lang-http">GET /api/entity/{entityName}/metadata
+</code></pre>
+<p>Returns detailed metadata for a specific entity including properties, indexes, and relationships.</p>
+<p><strong>CRUD Operations</strong></p>
+<pre><code class="lang-http"># Create
+POST /api/entity/{entityName}
+Content-Type: application/json
+
+{
+  &quot;property1&quot;: &quot;value1&quot;,
+  &quot;property2&quot;: &quot;value2&quot;
+}
+
+# Read (single)
+GET /api/entity/{entityName}/{id}
+
+# Read (all)
+GET /api/entity/{entityName}/data
+
+# Update
+PUT /api/entity/{entityName}/{id}
+Content-Type: application/json
+
+{
+  &quot;property1&quot;: &quot;newValue&quot;
+}
+
+# Delete
+DELETE /api/entity/{entityName}/{id}
+</code></pre>
+<h3 id="customization">Customization</h3>
+<h4 id="custom-controllers">Custom Controllers</h4>
+<p>Extend the generated controller:</p>
+<pre><code class="lang-csharp">using Microsoft.AspNetCore.Mvc;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [HttpGet(&quot;search&quot;)]
+    public IActionResult Search([FromQuery] string query)
+    {
+        // Custom search logic
+        return Ok(results);
+    }
+
+    [HttpGet(&quot;{entityName}/stats&quot;)]
+    public IActionResult GetStatistics(string entityName)
+    {
+        var entity = _repository.GetEntity(entityName);
+        return Ok(new {
+            Name = entity.Name,
+            PropertyCount = entity.Properties.Count,
+            IndexCount = entity.Indexes.Count
+        });
+    }
+}
+</code></pre>
+<h4 id="json-serialization-settings">JSON Serialization Settings</h4>
+<p>Configure Newtonsoft.Json:</p>
+<pre><code class="lang-csharp">builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =&gt;
+    {
+        options.SerializerSettings.ContractResolver = 
+            new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.DateFormatString = &quot;yyyy-MM-ddTHH:mm:ssZ&quot;;
+    });
+</code></pre>
+<h3 id="best-practices">Best Practices</h3>
+<ol>
+<li><p><strong>Use versioning</strong> for API stability:</p>
+<pre><code class="lang-csharp">[ApiVersion(&quot;1.0&quot;)]
+[Route(&quot;api/v{version:apiVersion}/entity&quot;)]
+public partial class EntityController
+</code></pre>
+</li>
+<li><p><strong>Add authentication</strong>:</p>
+<pre><code class="lang-csharp">[Authorize]
+[HttpPost(&quot;{entityName}&quot;)]
+public IActionResult Create(string entityName, [FromBody] object data)
+</code></pre>
+</li>
+<li><p><strong>Implement pagination</strong>:</p>
+<pre><code class="lang-csharp">[HttpGet(&quot;{entityName}/data&quot;)]
+public IActionResult GetAll(
+    string entityName,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20)
+</code></pre>
+</li>
+<li><p><strong>Add caching</strong>:</p>
+<pre><code class="lang-csharp">[ResponseCache(Duration = 60)]
+[HttpGet(&quot;{entityName}/metadata&quot;)]
+public IActionResult GetMetadata(string entityName)
+</code></pre>
+</li>
+</ol>
+<h2 id="graphql-provider">GraphQL Provider</h2>
+<h3 id="installation-1">Installation</h3>
+<pre><code class="lang-bash">dotnet add package Ddap.GraphQL
+</code></pre>
+<h3 id="configuration-1">Configuration</h3>
+<pre><code class="lang-csharp">using Ddap.GraphQL;
+
+builder.Services
+    .AddDdap(options =&gt; { /* ... */ })
+    .AddSqlServerDapper()
+    .AddGraphQL();
+
+var app = builder.Build();
+
+app.MapGraphQL(&quot;/graphql&quot;);
+</code></pre>
+<h3 id="features-1">Features</h3>
+<h4 id="generated-schema">Generated Schema</h4>
+<p>DDAP automatically generates a GraphQL schema based on your database entities:</p>
+<pre><code class="lang-graphql">type Query {
+  entities: [EntityMetadata!]!
+  entity(entityName: String!): EntityMetadata
+}
+
+type EntityMetadata {
+  name: String!
+  schema: String!
+  propertyCount: Int!
+  properties: [PropertyMetadata!]!
+  indexes: [IndexMetadata!]!
+  relationships: [RelationshipMetadata!]!
+}
+
+type PropertyMetadata {
+  name: String!
+  dataType: String!
+  isRequired: Boolean!
+  isPrimaryKey: Boolean!
+  isAutoIncrement: Boolean!
+}
+</code></pre>
+<h4 id="query-examples">Query Examples</h4>
+<p><strong>List all entities:</strong></p>
+<pre><code class="lang-graphql">query {
+  entities {
+    name
+    schema
+    propertyCount
+  }
+}
+</code></pre>
+<p><strong>Get specific entity:</strong></p>
+<pre><code class="lang-graphql">query {
+  entity(entityName: &quot;Users&quot;) {
+    name
+    properties {
+      name
+      dataType
+      isRequired
+      isPrimaryKey
+    }
+    relationships {
+      name
+      targetEntityName
+      relationshipType
+    }
+  }
+}
+</code></pre>
+<h3 id="customization-1">Customization</h3>
+<h4 id="custom-queries">Custom Queries</h4>
+<p>Add custom queries to the generated Query type:</p>
+<pre><code class="lang-csharp">using HotChocolate;
+
+namespace Ddap.GraphQL;
+
+public partial class Query
+{
+    public string Version() =&gt; &quot;1.0.0&quot;;
+
+    public async Task&lt;EntityStatistics&gt; GetStatistics(
+        [Service] IEntityRepository repository)
+    {
+        return new EntityStatistics
+        {
+            TotalEntities = repository.Entities.Count,
+            TotalProperties = repository.Entities.Sum(e =&gt; e.Properties.Count),
+            TotalIndexes = repository.Entities.Sum(e =&gt; e.Indexes.Count)
+        };
+    }
+
+    public IEnumerable&lt;IEntityConfiguration&gt; SearchEntities(
+        string searchTerm,
+        [Service] IEntityRepository repository)
+    {
+        return repository.Entities
+            .Where(e =&gt; e.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+    }
+}
+</code></pre>
+<h4 id="custom-mutations">Custom Mutations</h4>
+<p>Add custom mutations:</p>
+<pre><code class="lang-csharp">namespace Ddap.GraphQL;
+
+public partial class Mutation
+{
+    public async Task&lt;bool&gt; RefreshMetadata(
+        [Service] IDataProvider provider,
+        [Service] IEntityRepository repository)
+    {
+        await provider.LoadEntitiesAsync(repository);
+        return true;
+    }
+
+    public string TestMutation(string input)
+    {
+        return $&quot;Received: {input}&quot;;
+    }
+}
+</code></pre>
+<h4 id="custom-types">Custom Types</h4>
+<p>Define custom GraphQL types:</p>
+<pre><code class="lang-csharp">public class EntityStatistics
+{
+    public int TotalEntities { get; set; }
+    public int TotalProperties { get; set; }
+    public int TotalIndexes { get; set; }
+}
+</code></pre>
+<h3 id="best-practices-1">Best Practices</h3>
+<ol>
+<li><p><strong>Use DataLoader</strong> for efficient data loading:</p>
+<pre><code class="lang-csharp">public async Task&lt;IEntityConfiguration&gt; GetEntity(
+    string entityName,
+    [Service] IEntityRepository repository,
+    EntityByNameDataLoader dataLoader)
+{
+    return await dataLoader.LoadAsync(entityName);
+}
+</code></pre>
+</li>
+<li><p><strong>Add authorization</strong>:</p>
+<pre><code class="lang-csharp">[Authorize(Roles = &quot;Admin&quot;)]
+public async Task&lt;bool&gt; DeleteEntity(string entityName)
+</code></pre>
+</li>
+<li><p><strong>Implement field-level authorization</strong>:</p>
+<pre><code class="lang-csharp">[Authorize(Policy = &quot;ReadMetadata&quot;)]
+public IEntityConfiguration GetEntity(string entityName)
+</code></pre>
+</li>
+<li><p><strong>Add validation</strong>:</p>
+<pre><code class="lang-csharp">public async Task&lt;bool&gt; CreateEntity(
+    [Required] string entityName,
+    [Service] IEntityRepository repository)
+</code></pre>
+</li>
+</ol>
+<h3 id="graphql-playground">GraphQL Playground</h3>
+<p>Access the GraphQL Playground at <code>http://localhost:5000/graphql</code> to:</p>
+<ul>
+<li>Explore the schema</li>
+<li>Run queries interactively</li>
+<li>View documentation</li>
+<li>Test mutations</li>
+</ul>
+<h2 id="grpc-provider">gRPC Provider</h2>
+<h3 id="installation-2">Installation</h3>
+<pre><code class="lang-bash">dotnet add package Ddap.Grpc
+</code></pre>
+<h3 id="configuration-2">Configuration</h3>
+<pre><code class="lang-csharp">using Ddap.Grpc;
+
+builder.Services
+    .AddDdap(options =&gt; { /* ... */ })
+    .AddSqlServerDapper()
+    .AddGrpc();
+
+var app = builder.Build();
+
+app.MapGrpcService&lt;EntityService&gt;();
+</code></pre>
+<h3 id="features-2">Features</h3>
+<h4 id="generated-services">Generated Services</h4>
+<p>DDAP generates gRPC services based on your entities:</p>
+<pre><code class="lang-protobuf">service EntityService {
+  rpc GetEntities(Empty) returns (EntityListResponse);
+  rpc GetEntity(GetEntityRequest) returns (EntityResponse);
+  rpc GetEntityMetadata(GetEntityRequest) returns (EntityMetadataResponse);
+}
+
+message EntityResponse {
+  string name = 1;
+  string schema = 2;
+  int32 property_count = 3;
+}
+</code></pre>
+<h4 id="client-example">Client Example</h4>
+<pre><code class="lang-csharp">using Grpc.Net.Client;
+
+// Create channel
+var channel = GrpcChannel.ForAddress(&quot;https://localhost:5001&quot;);
+var client = new EntityService.EntityServiceClient(channel);
+
+// Call service
+var response = await client.GetEntitiesAsync(new Empty());
+foreach (var entity in response.Entities)
+{
+    Console.WriteLine($&quot;Entity: {entity.Name}&quot;);
+}
+</code></pre>
+<h3 id="customization-2">Customization</h3>
+<h4 id="custom-grpc-services">Custom gRPC Services</h4>
+<pre><code class="lang-csharp">using Grpc.Core;
+
+namespace Ddap.Grpc;
+
+public partial class EntityService
+{
+    public override async Task&lt;CustomResponse&gt; CustomMethod(
+        CustomRequest request,
+        ServerCallContext context)
+    {
+        // Custom logic
+        return new CustomResponse
+        {
+            Message = &quot;Custom response&quot;
+        };
+    }
+}
+</code></pre>
+<h4 id="server-streaming">Server Streaming</h4>
+<pre><code class="lang-csharp">public override async Task StreamEntities(
+    Empty request,
+    IServerStreamWriter&lt;EntityResponse&gt; responseStream,
+    ServerCallContext context)
+{
+    foreach (var entity in _repository.Entities)
+    {
+        await responseStream.WriteAsync(new EntityResponse
+        {
+            Name = entity.Name,
+            Schema = entity.Schema
+        });
+    }
+}
+</code></pre>
+<h3 id="best-practices-2">Best Practices</h3>
+<ol>
+<li><p><strong>Use deadlines</strong>:</p>
+<pre><code class="lang-csharp">var response = await client.GetEntitiesAsync(
+    new Empty(),
+    deadline: DateTime.UtcNow.AddSeconds(5));
+</code></pre>
+</li>
+<li><p><strong>Implement health checks</strong>:</p>
+<pre><code class="lang-csharp">builder.Services.AddGrpcHealthChecks()
+    .AddCheck(&quot;entity_service&quot;, () =&gt; HealthCheckResult.Healthy());
+</code></pre>
+</li>
+<li><p><strong>Add interceptors</strong>:</p>
+<pre><code class="lang-csharp">builder.Services.AddGrpc(options =&gt;
+{
+    options.Interceptors.Add&lt;LoggingInterceptor&gt;();
+});
+</code></pre>
+</li>
+<li><p><strong>Enable compression</strong>:</p>
+<pre><code class="lang-csharp">builder.Services.AddGrpc(options =&gt;
+{
+    options.ResponseCompressionLevel = CompressionLevel.Optimal;
+});
+</code></pre>
+</li>
+</ol>
+<h2 id="provider-comparison">Provider Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>REST</th>
+<th>GraphQL</th>
+<th>gRPC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol</td>
+<td>HTTP/1.1</td>
+<td>HTTP/1.1</td>
+<td>HTTP/2</td>
+</tr>
+<tr>
+<td>Format</td>
+<td>JSON/XML/YAML</td>
+<td>JSON</td>
+<td>Binary (Protocol Buffers)</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td>OpenAPI/Swagger</td>
+<td>GraphQL Schema</td>
+<td>.proto files</td>
+</tr>
+<tr>
+<td>Query Flexibility</td>
+<td>Limited</td>
+<td>High</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Browser Support</td>
+<td>Excellent</td>
+<td>Excellent</td>
+<td>Limited</td>
+</tr>
+<tr>
+<td>Streaming</td>
+<td>Limited</td>
+<td>Subscriptions</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>Caching</td>
+<td>Easy</td>
+<td>Complex</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Learning Curve</td>
+<td>Easy</td>
+<td>Medium</td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<h2 id="multiple-providers">Multiple Providers</h2>
+<p>You can enable multiple providers simultaneously:</p>
+<pre><code class="lang-csharp">builder.Services
+    .AddDdap(options =&gt; { /* ... */ })
+    .AddSqlServerDapper()
+    .AddRest()      // REST at /api/*
+    .AddGraphQL()   // GraphQL at /graphql
+    .AddGrpc();     // gRPC on configured port
+
+var app = builder.Build();
+
+app.UseRouting();
+app.MapControllers();           // REST
+app.MapGraphQL(&quot;/graphql&quot;);     // GraphQL
+app.MapGrpcService&lt;EntityService&gt;();  // gRPC
+</code></pre>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li><a href="advanced.html">Advanced Usage</a> - Extensibility and patterns</li>
+<li><a href="troubleshooting.html">Troubleshooting</a> - Common issues</li>
+<li><a href="database-providers.html">Database Providers</a> - Database-specific features</li>
+</ul>
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://restfulapi.net/">REST API Best Practices</a></li>
+<li><a href="https://graphql.org/learn/">GraphQL Documentation</a></li>
+<li><a href="https://grpc.io/docs/">gRPC Documentation</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/schivei/ddap/blob/main/docs/api-providers.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          DDAP - Dynamic Data API Provider | MIT License
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

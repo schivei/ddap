@@ -1,0 +1,147 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Core.DatabaseProvider
+  commentId: T:Ddap.Core.DatabaseProvider
+  id: DatabaseProvider
+  parent: Ddap.Core
+  children:
+  - Ddap.Core.DatabaseProvider.MySQL
+  - Ddap.Core.DatabaseProvider.PostgreSQL
+  - Ddap.Core.DatabaseProvider.SQLServer
+  langs:
+  - csharp
+  - vb
+  name: DatabaseProvider
+  nameWithType: DatabaseProvider
+  fullName: Ddap.Core.DatabaseProvider
+  type: Enum
+  source:
+    remote:
+      path: src/Ddap.Core/DdapOptions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: DatabaseProvider
+    path: ../src/Ddap.Core/DdapOptions.cs
+    startLine: 42
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Defines supported database providers.
+  example: []
+  syntax:
+    content: public enum DatabaseProvider
+    content.vb: Public Enum DatabaseProvider
+- uid: Ddap.Core.DatabaseProvider.SQLServer
+  commentId: F:Ddap.Core.DatabaseProvider.SQLServer
+  id: SQLServer
+  parent: Ddap.Core.DatabaseProvider
+  langs:
+  - csharp
+  - vb
+  name: SQLServer
+  nameWithType: DatabaseProvider.SQLServer
+  fullName: Ddap.Core.DatabaseProvider.SQLServer
+  type: Field
+  source:
+    remote:
+      path: src/Ddap.Core/DdapOptions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: SQLServer
+    path: ../src/Ddap.Core/DdapOptions.cs
+    startLine: 47
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Microsoft SQL Server.
+  example: []
+  syntax:
+    content: SQLServer = 0
+    return:
+      type: Ddap.Core.DatabaseProvider
+- uid: Ddap.Core.DatabaseProvider.MySQL
+  commentId: F:Ddap.Core.DatabaseProvider.MySQL
+  id: MySQL
+  parent: Ddap.Core.DatabaseProvider
+  langs:
+  - csharp
+  - vb
+  name: MySQL
+  nameWithType: DatabaseProvider.MySQL
+  fullName: Ddap.Core.DatabaseProvider.MySQL
+  type: Field
+  source:
+    remote:
+      path: src/Ddap.Core/DdapOptions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: MySQL
+    path: ../src/Ddap.Core/DdapOptions.cs
+    startLine: 52
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: MySQL database.
+  example: []
+  syntax:
+    content: MySQL = 1
+    return:
+      type: Ddap.Core.DatabaseProvider
+- uid: Ddap.Core.DatabaseProvider.PostgreSQL
+  commentId: F:Ddap.Core.DatabaseProvider.PostgreSQL
+  id: PostgreSQL
+  parent: Ddap.Core.DatabaseProvider
+  langs:
+  - csharp
+  - vb
+  name: PostgreSQL
+  nameWithType: DatabaseProvider.PostgreSQL
+  fullName: Ddap.Core.DatabaseProvider.PostgreSQL
+  type: Field
+  source:
+    remote:
+      path: src/Ddap.Core/DdapOptions.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: PostgreSQL
+    path: ../src/Ddap.Core/DdapOptions.cs
+    startLine: 57
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: PostgreSQL database.
+  example: []
+  syntax:
+    content: PostgreSQL = 2
+    return:
+      type: Ddap.Core.DatabaseProvider
+references:
+- uid: Ddap.Core
+  commentId: N:Ddap.Core
+  href: Ddap.html
+  name: Ddap.Core
+  nameWithType: Ddap.Core
+  fullName: Ddap.Core
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+- uid: Ddap.Core.DatabaseProvider
+  commentId: T:Ddap.Core.DatabaseProvider
+  parent: Ddap.Core
+  href: Ddap.Core.DatabaseProvider.html
+  name: DatabaseProvider
+  nameWithType: DatabaseProvider
+  fullName: Ddap.Core.DatabaseProvider

@@ -1,0 +1,37 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Rest
+  commentId: N:Ddap.Rest
+  id: Ddap.Rest
+  children:
+  - Ddap.Rest.DdapRestExtensions
+  - Ddap.Rest.EntityController
+  - Ddap.Rest.IRestApiProvider
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Rest
+  nameWithType: Ddap.Rest
+  fullName: Ddap.Rest
+  type: Namespace
+  assemblies:
+  - Ddap.Rest
+references:
+- uid: Ddap.Rest.DdapRestExtensions
+  commentId: T:Ddap.Rest.DdapRestExtensions
+  href: Ddap.Rest.DdapRestExtensions.html
+  name: DdapRestExtensions
+  nameWithType: DdapRestExtensions
+  fullName: Ddap.Rest.DdapRestExtensions
+- uid: Ddap.Rest.EntityController
+  commentId: T:Ddap.Rest.EntityController
+  href: Ddap.Rest.EntityController.html
+  name: EntityController
+  nameWithType: EntityController
+  fullName: Ddap.Rest.EntityController
+- uid: Ddap.Rest.IRestApiProvider
+  commentId: T:Ddap.Rest.IRestApiProvider
+  href: Ddap.Rest.IRestApiProvider.html
+  name: IRestApiProvider
+  nameWithType: IRestApiProvider
+  fullName: Ddap.Rest.IRestApiProvider

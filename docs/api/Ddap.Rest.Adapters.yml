@@ -1,0 +1,23 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Rest.Adapters
+  commentId: N:Ddap.Rest.Adapters
+  id: Ddap.Rest.Adapters
+  children:
+  - Ddap.Rest.Adapters.GrpcToRestAdapter
+  langs:
+  - csharp
+  - vb
+  name: Ddap.Rest.Adapters
+  nameWithType: Ddap.Rest.Adapters
+  fullName: Ddap.Rest.Adapters
+  type: Namespace
+  assemblies:
+  - Ddap.Rest
+references:
+- uid: Ddap.Rest.Adapters.GrpcToRestAdapter
+  commentId: T:Ddap.Rest.Adapters.GrpcToRestAdapter
+  href: Ddap.Rest.Adapters.GrpcToRestAdapter.html
+  name: GrpcToRestAdapter
+  nameWithType: GrpcToRestAdapter
+  fullName: Ddap.Rest.Adapters.GrpcToRestAdapter

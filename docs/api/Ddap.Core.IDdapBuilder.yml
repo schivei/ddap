@@ -1,0 +1,374 @@
+### YamlMime:ManagedReference
+items:
+- uid: Ddap.Core.IDdapBuilder
+  commentId: T:Ddap.Core.IDdapBuilder
+  id: IDdapBuilder
+  parent: Ddap.Core
+  children:
+  - Ddap.Core.IDdapBuilder.Options
+  - Ddap.Core.IDdapBuilder.Services
+  langs:
+  - csharp
+  - vb
+  name: IDdapBuilder
+  nameWithType: IDdapBuilder
+  fullName: Ddap.Core.IDdapBuilder
+  type: Interface
+  source:
+    remote:
+      path: src/Ddap.Core/IDdapBuilder.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: IDdapBuilder
+    path: ../src/Ddap.Core/IDdapBuilder.cs
+    startLine: 7
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Provides a builder for configuring DDAP services and providers.
+  example: []
+  syntax:
+    content: public interface IDdapBuilder
+    content.vb: Public Interface IDdapBuilder
+  extensionMethods:
+  - Ddap.Core.IDdapBuilder.Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper
+  - Ddap.Core.IDdapBuilder.Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper
+- uid: Ddap.Core.IDdapBuilder.Services
+  commentId: P:Ddap.Core.IDdapBuilder.Services
+  id: Services
+  parent: Ddap.Core.IDdapBuilder
+  langs:
+  - csharp
+  - vb
+  name: Services
+  nameWithType: IDdapBuilder.Services
+  fullName: Ddap.Core.IDdapBuilder.Services
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IDdapBuilder.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: Services
+    path: ../src/Ddap.Core/IDdapBuilder.cs
+    startLine: 12
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the service collection being configured.
+  example: []
+  syntax:
+    content: IServiceCollection Services { get; }
+    parameters: []
+    return:
+      type: Microsoft.Extensions.DependencyInjection.IServiceCollection
+    content.vb: ReadOnly Property Services As IServiceCollection
+  overload: Ddap.Core.IDdapBuilder.Services*
+- uid: Ddap.Core.IDdapBuilder.Options
+  commentId: P:Ddap.Core.IDdapBuilder.Options
+  id: Options
+  parent: Ddap.Core.IDdapBuilder
+  langs:
+  - csharp
+  - vb
+  name: Options
+  nameWithType: IDdapBuilder.Options
+  fullName: Ddap.Core.IDdapBuilder.Options
+  type: Property
+  source:
+    remote:
+      path: src/Ddap.Core/IDdapBuilder.cs
+      branch: copilot/fix-documentation-build-errors
+      repo: https://github.com/schivei/ddap
+    id: Options
+    path: ../src/Ddap.Core/IDdapBuilder.cs
+    startLine: 17
+  assemblies:
+  - Ddap.Core
+  namespace: Ddap.Core
+  summary: Gets the DDAP configuration options.
+  example: []
+  syntax:
+    content: DdapOptions Options { get; }
+    parameters: []
+    return:
+      type: Ddap.Core.DdapOptions
+    content.vb: ReadOnly Property Options As DdapOptions
+  overload: Ddap.Core.IDdapBuilder.Options*
+references:
+- uid: Ddap.Core
+  commentId: N:Ddap.Core
+  href: Ddap.html
+  name: Ddap.Core
+  nameWithType: Ddap.Core
+  fullName: Ddap.Core
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Core
+    name: Core
+    href: Ddap.Core.html
+- uid: Ddap.Core.IDdapBuilder.Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper
+  commentId: M:Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+  parent: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+  definition: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+  href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html#Ddap_Data_Dapper_MySQL_DdapMySqlExtensions_AddMySqlDapper_Ddap_Core_IDdapBuilder_
+  name: AddMySqlDapper(IDdapBuilder)
+  nameWithType: DdapMySqlExtensions.AddMySqlDapper(IDdapBuilder)
+  fullName: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+  spec.csharp:
+  - uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddMySqlDapper
+    href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html#Ddap_Data_Dapper_MySQL_DdapMySqlExtensions_AddMySqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+  spec.vb:
+  - uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddMySqlDapper
+    href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html#Ddap_Data_Dapper_MySQL_DdapMySqlExtensions_AddMySqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+- uid: Ddap.Core.IDdapBuilder.Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper
+  commentId: M:Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+  parent: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions
+  definition: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+  href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html#Ddap_Data_Dapper_PostgreSQL_DdapPostgreSqlExtensions_AddPostgreSqlDapper_Ddap_Core_IDdapBuilder_
+  name: AddPostgreSqlDapper(IDdapBuilder)
+  nameWithType: DdapPostgreSqlExtensions.AddPostgreSqlDapper(IDdapBuilder)
+  fullName: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+  spec.csharp:
+  - uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddPostgreSqlDapper
+    href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html#Ddap_Data_Dapper_PostgreSQL_DdapPostgreSqlExtensions_AddPostgreSqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+  spec.vb:
+  - uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddPostgreSqlDapper
+    href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html#Ddap_Data_Dapper_PostgreSQL_DdapPostgreSqlExtensions_AddPostgreSqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+- uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+  commentId: M:Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+  href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html#Ddap_Data_Dapper_MySQL_DdapMySqlExtensions_AddMySqlDapper_Ddap_Core_IDdapBuilder_
+  name: AddMySqlDapper(IDdapBuilder)
+  nameWithType: DdapMySqlExtensions.AddMySqlDapper(IDdapBuilder)
+  fullName: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+  spec.csharp:
+  - uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddMySqlDapper
+    href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html#Ddap_Data_Dapper_MySQL_DdapMySqlExtensions_AddMySqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+  spec.vb:
+  - uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.AddMySqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddMySqlDapper
+    href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html#Ddap_Data_Dapper_MySQL_DdapMySqlExtensions_AddMySqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+- uid: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+  commentId: T:Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+  parent: Ddap.Data.Dapper.MySQL
+  href: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions.html
+  name: DdapMySqlExtensions
+  nameWithType: DdapMySqlExtensions
+  fullName: Ddap.Data.Dapper.MySQL.DdapMySqlExtensions
+- uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+  commentId: M:Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+  href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html#Ddap_Data_Dapper_PostgreSQL_DdapPostgreSqlExtensions_AddPostgreSqlDapper_Ddap_Core_IDdapBuilder_
+  name: AddPostgreSqlDapper(IDdapBuilder)
+  nameWithType: DdapPostgreSqlExtensions.AddPostgreSqlDapper(IDdapBuilder)
+  fullName: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+  spec.csharp:
+  - uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddPostgreSqlDapper
+    href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html#Ddap_Data_Dapper_PostgreSQL_DdapPostgreSqlExtensions_AddPostgreSqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+  spec.vb:
+  - uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.AddPostgreSqlDapper(Ddap.Core.IDdapBuilder)
+    name: AddPostgreSqlDapper
+    href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html#Ddap_Data_Dapper_PostgreSQL_DdapPostgreSqlExtensions_AddPostgreSqlDapper_Ddap_Core_IDdapBuilder_
+  - name: (
+  - uid: Ddap.Core.IDdapBuilder
+    name: IDdapBuilder
+    href: Ddap.Core.IDdapBuilder.html
+  - name: )
+- uid: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions
+  commentId: T:Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions
+  parent: Ddap.Data.Dapper.PostgreSQL
+  href: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions.html
+  name: DdapPostgreSqlExtensions
+  nameWithType: DdapPostgreSqlExtensions
+  fullName: Ddap.Data.Dapper.PostgreSQL.DdapPostgreSqlExtensions
+- uid: Ddap.Data.Dapper.MySQL
+  commentId: N:Ddap.Data.Dapper.MySQL
+  href: Ddap.html
+  name: Ddap.Data.Dapper.MySQL
+  nameWithType: Ddap.Data.Dapper.MySQL
+  fullName: Ddap.Data.Dapper.MySQL
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  - name: .
+  - uid: Ddap.Data.Dapper
+    name: Dapper
+    href: Ddap.Data.Dapper.html
+  - name: .
+  - uid: Ddap.Data.Dapper.MySQL
+    name: MySQL
+    href: Ddap.Data.Dapper.MySQL.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  - name: .
+  - uid: Ddap.Data.Dapper
+    name: Dapper
+    href: Ddap.Data.Dapper.html
+  - name: .
+  - uid: Ddap.Data.Dapper.MySQL
+    name: MySQL
+    href: Ddap.Data.Dapper.MySQL.html
+- uid: Ddap.Data.Dapper.PostgreSQL
+  commentId: N:Ddap.Data.Dapper.PostgreSQL
+  href: Ddap.html
+  name: Ddap.Data.Dapper.PostgreSQL
+  nameWithType: Ddap.Data.Dapper.PostgreSQL
+  fullName: Ddap.Data.Dapper.PostgreSQL
+  spec.csharp:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  - name: .
+  - uid: Ddap.Data.Dapper
+    name: Dapper
+    href: Ddap.Data.Dapper.html
+  - name: .
+  - uid: Ddap.Data.Dapper.PostgreSQL
+    name: PostgreSQL
+    href: Ddap.Data.Dapper.PostgreSQL.html
+  spec.vb:
+  - uid: Ddap
+    name: Ddap
+    href: Ddap.html
+  - name: .
+  - uid: Ddap.Data
+    name: Data
+    href: Ddap.Data.html
+  - name: .
+  - uid: Ddap.Data.Dapper
+    name: Dapper
+    href: Ddap.Data.Dapper.html
+  - name: .
+  - uid: Ddap.Data.Dapper.PostgreSQL
+    name: PostgreSQL
+    href: Ddap.Data.Dapper.PostgreSQL.html
+- uid: Ddap.Core.IDdapBuilder.Services*
+  commentId: Overload:Ddap.Core.IDdapBuilder.Services
+  href: Ddap.Core.IDdapBuilder.html#Ddap_Core_IDdapBuilder_Services
+  name: Services
+  nameWithType: IDdapBuilder.Services
+  fullName: Ddap.Core.IDdapBuilder.Services
+- uid: Microsoft.Extensions.DependencyInjection.IServiceCollection
+  commentId: T:Microsoft.Extensions.DependencyInjection.IServiceCollection
+  parent: Microsoft.Extensions.DependencyInjection
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection
+  name: IServiceCollection
+  nameWithType: IServiceCollection
+  fullName: Microsoft.Extensions.DependencyInjection.IServiceCollection
+- uid: Microsoft.Extensions.DependencyInjection
+  commentId: N:Microsoft.Extensions.DependencyInjection
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/microsoft
+  name: Microsoft.Extensions.DependencyInjection
+  nameWithType: Microsoft.Extensions.DependencyInjection
+  fullName: Microsoft.Extensions.DependencyInjection
+  spec.csharp:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Extensions
+    name: Extensions
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.extensions
+  - name: .
+  - uid: Microsoft.Extensions.DependencyInjection
+    name: DependencyInjection
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection
+  spec.vb:
+  - uid: Microsoft
+    name: Microsoft
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft
+  - name: .
+  - uid: Microsoft.Extensions
+    name: Extensions
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.extensions
+  - name: .
+  - uid: Microsoft.Extensions.DependencyInjection
+    name: DependencyInjection
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection
+- uid: Ddap.Core.IDdapBuilder.Options*
+  commentId: Overload:Ddap.Core.IDdapBuilder.Options
+  href: Ddap.Core.IDdapBuilder.html#Ddap_Core_IDdapBuilder_Options
+  name: Options
+  nameWithType: IDdapBuilder.Options
+  fullName: Ddap.Core.IDdapBuilder.Options
+- uid: Ddap.Core.DdapOptions
+  commentId: T:Ddap.Core.DdapOptions
+  parent: Ddap.Core
+  href: Ddap.Core.DdapOptions.html
+  name: DdapOptions
+  nameWithType: DdapOptions
+  fullName: Ddap.Core.DdapOptions
