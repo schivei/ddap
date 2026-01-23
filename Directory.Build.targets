@@ -20,7 +20,7 @@
   <Target
     Name="RestoreTools"
     BeforeTargets="FormatCode"
-    Condition="'$(Configuration)' == 'Debug' AND '$(MSBuildProjectName)' == 'Ddap.Core'"
+    Condition="'$(Configuration)' == 'Debug'"
   >
     <Exec
       Command="dotnet tool restore"
@@ -33,7 +33,7 @@
   <Target
     Name="FormatCode"
     BeforeTargets="Build"
-    Condition="'$(Configuration)' == 'Debug' AND '$(MSBuildProjectName)' == 'Ddap.Core'"
+    Condition="'$(Configuration)' == 'Debug'"
   >
     <Exec
       Command="dotnet csharpier format ."
