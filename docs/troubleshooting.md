@@ -193,11 +193,20 @@ Unable to connect to any of the specified MySQL hosts
 
 3. **Check bind-address in my.cnf:**
    ```ini
-   bind-address = 0.0.0.0  # Allow remote connections
+   bind-address = 127.0.0.1  # Restrict to local connections (recommended)
+   # For remote access, bind to a specific internal IP or CIDR (not 0.0.0.0) and secure the network.
    ```
 
-4. **Grant remote access:**
+4. **Create a dedicated application user (recommended):**
    ```sql
+   CREATE USER 'ddap_app'@'localhost' IDENTIFIED BY 'your-strong-password';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON your_database.* TO 'ddap_app'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
+
+   **⚠️ Development-only (DO NOT USE IN PRODUCTION):**
+   ```sql
+   -- Only for local development with proper firewall protection
    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password';
    FLUSH PRIVILEGES;
    ```
@@ -224,12 +233,24 @@ Connection refused
 
 3. **Edit postgresql.conf:**
    ```ini
-   listen_addresses = '*'
+   # In production, restrict PostgreSQL to localhost or a specific trusted interface.
+   # Example (local-only):
+   listen_addresses = 'localhost'
+   # Example (single interface or subnet, adjust as needed):
+   # listen_addresses = '192.0.2.10'
    ```
 
 4. **Edit pg_hba.conf:**
    ```
-   host    all             all             0.0.0.0/0            md5
+   # Allow local connections only (recommended default)
+   host    all             all             127.0.0.1/32         scram-sha-256
+   host    all             all             ::1/128              scram-sha-256
+
+   # For remote access, restrict to the minimal required subnet or IP and a least-privilege role:
+   # host   mydb           app_user        203.0.113.0/24       scram-sha-256
+
+   # Development-only: allow all IPv4 addresses (DO NOT USE IN PRODUCTION)
+   # host   all            all             0.0.0.0/0            md5
    ```
 
 5. **Restart PostgreSQL:**
