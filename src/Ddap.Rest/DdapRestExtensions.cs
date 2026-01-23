@@ -62,4 +62,26 @@ public static class DdapRestExtensions
 
         return builder;
     }
+
+    /// <summary>
+    /// Enables gRPC-to-REST integration for the DDAP builder.
+    /// This allows REST endpoints to automatically use gRPC service implementations.
+    /// </summary>
+    /// <param name="builder">The DDAP builder.</param>
+    /// <returns>The DDAP builder for chaining.</returns>
+    /// <example>
+    /// <code>
+    /// services.AddDdap(options => { })
+    ///     .AddGrpc()
+    ///     .AddRest()
+    ///     .WithGrpcIntegration();
+    /// 
+    /// // REST endpoints will now derive from gRPC services
+    /// </code>
+    /// </example>
+    public static IDdapBuilder WithGrpcIntegration(this IDdapBuilder builder)
+    {
+        builder.Services.AddSingleton<Adapters.GrpcToRestAdapter>();
+        return builder;
+    }
 }

@@ -1,4 +1,5 @@
 using Ddap.Core;
+using Ddap.Rest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,23 +52,37 @@ public partial class EntityController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all available entities.
+    /// Gets all available entities with optional filtering, sorting, and pagination.
     /// </summary>
-    /// <returns>A list of entity names.</returns>
-    /// <response code="200">Returns the list of available entities</response>
+    /// <param name="parameters">Query parameters for filtering, sorting, and pagination.</param>
+    /// <returns>A paginated list of entity names.</returns>
+    /// <response code="200">Returns the paginated list of available entities</response>
+    /// <example>
+    /// <code>
+    /// // GET /api/entity?pageNumber=1&amp;pageSize=10&amp;orderBy=entityName asc
+    /// </code>
+    /// </example>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetAllEntities()
+    public IActionResult GetAllEntities([FromQuery] QueryParameters parameters)
     {
         var entities = _entityRepository.GetAllEntities();
-        var entityNames = entities.Select(e => new
+        var entityData = entities.Select(e => new
         {
             e.EntityName,
             e.SchemaName,
             PropertyCount = e.Properties.Count
-        });
+        }).ToList();
 
-        return Ok(entityNames);
+        var totalCount = entityData.Count;
+        
+        // Apply pagination
+        var pagedItems = entityData
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize);
+
+        var result = new PagedResult<object>(pagedItems, totalCount, parameters.PageNumber, parameters.PageSize);
+        return Ok(result);
     }
 
     /// <summary>

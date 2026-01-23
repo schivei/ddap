@@ -116,7 +116,7 @@ public class EntityControllerTests
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
-        var result = _controller.GetAllEntities();
+        var result = _controller.GetAllEntities(new Ddap.Rest.Models.QueryParameters());
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -131,7 +131,7 @@ public class EntityControllerTests
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(new List<IEntityConfiguration>());
 
         // Act
-        var result = _controller.GetAllEntities();
+        var result = _controller.GetAllEntities(new Ddap.Rest.Models.QueryParameters());
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();

@@ -10,7 +10,7 @@ public static class DdapGrpcExtensions
 {
     /// <summary>
     /// Adds gRPC support to the DDAP builder.
-    /// This method configures gRPC services for exposing entities.
+    /// This method configures gRPC services for exposing entities and enables .proto file download.
     /// </summary>
     /// <param name="builder">The DDAP builder.</param>
     /// <returns>The DDAP builder for chaining.</returns>
@@ -20,6 +20,10 @@ public static class DdapGrpcExtensions
     ///     options.ConnectionString = "...";
     /// })
     /// .AddGrpc();
+    /// 
+    /// // Download .proto files:
+    /// // GET /proto - all entities
+    /// // GET /proto/User - specific entity
     /// </code>
     /// </example>
     public static IDdapBuilder AddGrpc(this IDdapBuilder builder)
@@ -27,6 +31,9 @@ public static class DdapGrpcExtensions
         // Register gRPC services
         builder.Services.AddGrpc();
         builder.Services.AddSingleton<IGrpcServiceProvider, GrpcServiceProvider>();
+
+        // Register controllers for proto file download
+        builder.Services.AddControllers();
 
         return builder;
     }
