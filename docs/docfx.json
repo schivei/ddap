@@ -10,7 +10,8 @@
           "exclude": [
             "**/bin/**",
             "**/obj/**",
-            "**/Internals/**"
+            "**/Internals/**",
+            "**/Ddap.CodeGen/**"
           ]
         }
       ],
