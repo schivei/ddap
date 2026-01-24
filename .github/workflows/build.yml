@@ -77,9 +77,7 @@ jobs:
 
     - name: Update version in Directory.Build.props
       run: |
-        CURRENT_VERSION=$(grep -oP '<VersionPrefix>\K[^<]+' Directory.Build.props)
-        sed -i "s/<VersionPrefix>.*<\/VersionPrefix>/<VersionPrefix>${CURRENT_VERSION}.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
-        sed -i "s/<VersionSuffix.*/<VersionSuffix><\/VersionSuffix>/" Directory.Build.props
+        sed -i "s/<\/VersionPrefix>/.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
     
     - name: Check code formatting
       run: dotnet csharpier check .
