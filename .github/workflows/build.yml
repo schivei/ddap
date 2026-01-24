@@ -75,6 +75,12 @@ jobs:
     - name: Restore .NET tools
       run: dotnet tool restore
 
+    - name: Update version in Directory.Build.props
+      run: |
+        CURRENT_VERSION=$(grep -oP '<VersionPrefix>\K[^<]+' Directory.Build.props)
+        sed -i "s/<VersionPrefix>.*<\/VersionPrefix>/<VersionPrefix>${CURRENT_VERSION}.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
+        sed -i "s/<VersionSuffix.*/<VersionSuffix><\/VersionSuffix>/" Directory.Build.props
+    
     - name: Check code formatting
       run: dotnet csharpier check .
       continue-on-error: false
@@ -101,7 +107,7 @@ jobs:
           -targetdir:"coverage/report" \
           -reporttypes:"Html;MarkdownSummaryGithub;Cobertura" \
           -verbosity:Info
-        
+    
     - name: Check Coverage Threshold
       run: |
         # Check if Summary.md exists
