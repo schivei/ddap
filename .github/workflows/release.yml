@@ -30,7 +30,7 @@ jobs:
 
     - name: Update version in Directory.Build.props
       run: |
-        sed -i "s/<VersionPrefix>.*<\/VersionPrefix>/<VersionPrefix>${{ github.event.inputs.version }}<\/VersionPrefix>/" Directory.Build.props
+        sed -i "s/<VersionPrefix>.*<\/VersionPrefix>/<VersionPrefix>${{ github.event.inputs.version }}.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
         sed -i "s/<VersionSuffix.*/<VersionSuffix><\/VersionSuffix>/" Directory.Build.props
 
     - name: Restore dependencies
