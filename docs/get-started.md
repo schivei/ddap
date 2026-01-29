@@ -20,7 +20,29 @@ Before you begin, make sure you have:
 - Basic knowledge of ASP.NET Core
 - Your database connection string
 
-## Installation
+## Quick Start with Templates
+
+The fastest way to get started with DDAP is using the project template:
+
+```bash
+# Install the template
+dotnet new install Ddap.Templates
+
+# Create a new DDAP API (interactive mode will prompt you)
+dotnet new ddap-api --name MyDdapApi
+cd MyDdapApi
+
+# Run your API
+dotnet run
+```
+
+That's it! Your API is now running with auto-generated endpoints for your database.
+
+> **Learn more:** See [Templates Guide](./templates.md) for detailed template options and customization.
+
+## Manual Installation
+
+If you prefer manual setup or want to add DDAP to an existing project:
 
 ### Step 1: Create a New ASP.NET Core Project
 
@@ -112,13 +134,13 @@ Replace `Users` with the name of any table in your database.
 
 ### Content Negotiation (REST)
 
-DDAP supports multiple output formats:
+DDAP supports multiple output formats. You control the serialization:
 
 ```bash
-# JSON (default - using Newtonsoft.Json)
+# JSON (default - you choose System.Text.Json or Newtonsoft.Json)
 curl -H "Accept: application/json" http://localhost:5000/api/entity
 
-# XML
+# XML (if you configure XML formatters)
 curl -H "Accept: application/xml" http://localhost:5000/api/entity
 ```
 
@@ -241,10 +263,36 @@ builder.Services
     .AddRest();
 ```
 
+## Auto-Reload Configuration
+
+Enable automatic schema reloading when your database changes:
+
+```csharp
+builder.Services
+    .AddDdap(options =>
+    {
+        options.ConnectionString = connectionString;
+        options.AutoReload = new AutoReloadOptions
+        {
+            Enabled = true,
+            IdleTimeout = TimeSpan.FromMinutes(5)
+        };
+    })
+    .AddDapper(() => new SqlConnection(connectionString))
+    .AddRest();
+```
+
+When enabled, DDAP automatically detects database schema changes and reloads without restarting your application—perfect for rapid development and zero-downtime deployments.
+
+> **Learn more:** See [Auto-Reload Guide](./auto-reload.md) for configuration options, strategies, and lifecycle hooks.
+
 ## Next Steps
 
 Now that you have DDAP running, explore these topics:
 
+- **[Philosophy](./philosophy.md)** - Understand the "Developer in Control" philosophy
+- **[Templates](./templates.md)** - Use project templates for faster setup
+- **[Auto-Reload](./auto-reload.md)** - Configure automatic schema reloading
 - **[Architecture](./architecture.md)** - Learn about DDAP's architecture and design
 - **[Advanced Usage](./advanced.md)** - Extensibility, custom endpoints, and advanced patterns
 - **[Database Providers](./database-providers.md)** - Deep dive into database provider options

@@ -8,6 +8,9 @@ This guide covers advanced patterns, extensibility, and best practices for using
 - [Custom Endpoints](#custom-endpoints)
 - [Custom Queries and Mutations](#custom-queries-and-mutations)
 - [Advanced Configuration](#advanced-configuration)
+- [Auto-Reload Patterns](#auto-reload-patterns)
+- [Template Customization](#template-customization)
+- [Lifecycle Hooks](#lifecycle-hooks)
 - [Performance Optimization](#performance-optimization)
 - [Production Best Practices](#production-best-practices)
 - [Integration Patterns](#integration-patterns)
@@ -387,6 +390,12 @@ if (builder.Environment.IsDevelopment())
         {
             options.ConnectionString = devConnectionString;
             options.EnableDetailedErrors = true;
+            options.AutoReload = new AutoReloadOptions
+            {
+                Enabled = true,
+                IdleTimeout = TimeSpan.FromSeconds(30),
+                Strategy = ReloadStrategy.HotReload  // Fast for dev
+            };
         })
         .AddDapper(() => new SqlConnection(devConnectionString))
         .AddRest()
@@ -401,11 +410,414 @@ else if (builder.Environment.IsProduction())
         {
             options.ConnectionString = prodConnectionString;
             options.EnableDetailedErrors = false;
+            options.AutoReload = new AutoReloadOptions
+            {
+                Enabled = true,
+                IdleTimeout = TimeSpan.FromMinutes(10),
+                Strategy = ReloadStrategy.InvalidateAndRebuild,  // Thorough for prod
+                Behavior = ReloadBehavior.ServeOldSchema  // Zero downtime
+            };
         })
         .AddDapper(() => new SqlConnection(prodConnectionString))
         .AddRest()
         .AddGraphQL();
 }
+```
+
+## Auto-Reload Patterns
+
+The Auto-Reload System enables zero-downtime schema updates. Here are advanced patterns for production use.
+
+### Pattern 1: Conditional Reload
+
+Control when reloads happen based on business logic:
+
+```csharp
+builder.Services.AddDdap(options =>
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        Enabled = true,
+        IdleTimeout = TimeSpan.FromMinutes(5),
+        
+        OnBeforeReloadAsync = async (sp) =>
+        {
+            var logger = sp.GetRequiredService<ILogger<Program>>();
+            var config = sp.GetRequiredService<IConfiguration>();
+            
+            // Check maintenance window
+            var now = DateTime.UtcNow;
+            if (now.Hour >= 2 && now.Hour <= 4)
+            {
+                logger.LogInformation("Allowing reload during maintenance window");
+                return true;
+            }
+            
+            // Check if manually blocked
+            if (config.GetValue<bool>("BlockAutoReload"))
+            {
+                logger.LogWarning("Auto-reload blocked by configuration");
+                return false;
+            }
+            
+            return true;
+        }
+    };
+});
+```
+
+### Pattern 2: Coordinated Multi-Instance Reload
+
+In a load-balanced environment, stagger reloads across instances:
+
+```csharp
+OnBeforeReloadAsync = async (sp) =>
+{
+    var cache = sp.GetRequiredService<IDistributedCache>();
+    var instanceId = Environment.GetEnvironmentVariable("INSTANCE_ID") ?? "default";
+    
+    // Check if another instance is reloading
+    var lockKey = "ddap:reload:lock";
+    var existingLock = await cache.GetStringAsync(lockKey);
+    
+    if (existingLock != null && existingLock != instanceId)
+    {
+        // Another instance is reloading, wait
+        return false;
+    }
+    
+    // Acquire lock for this instance
+    await cache.SetStringAsync(lockKey, instanceId, new DistributedCacheEntryOptions
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+    });
+    
+    return true;
+}
+```
+
+### Pattern 3: Health Check Integration
+
+Integrate reload status with health checks:
+
+```csharp
+public class SchemaReloadHealthCheck : IHealthCheck
+{
+    private readonly IEntityRepository _repository;
+    private static DateTime? _lastReload;
+    private static bool _isReloading;
+    
+    public async Task<HealthCheckResult> CheckHealthAsync(
+        HealthCheckContext context,
+        CancellationToken cancellationToken = default)
+    {
+        if (_isReloading)
+        {
+            return HealthCheckResult.Degraded("Schema reload in progress");
+        }
+        
+        var data = new Dictionary<string, object>
+        {
+            { "entityCount", _repository.Entities.Count },
+            { "lastReload", _lastReload ?? DateTime.UtcNow }
+        };
+        
+        return HealthCheckResult.Healthy("Schema is current", data);
+    }
+    
+    public static void MarkReloadStart() => _isReloading = true;
+    public static void MarkReloadComplete()
+    {
+        _isReloading = false;
+        _lastReload = DateTime.UtcNow;
+    }
+}
+
+// Configure in Program.cs
+builder.Services.AddDdap(options =>
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        OnBeforeReloadAsync = async (sp) =>
+        {
+            SchemaReloadHealthCheck.MarkReloadStart();
+            return true;
+        },
+        OnAfterReloadAsync = async (sp) =>
+        {
+            SchemaReloadHealthCheck.MarkReloadComplete();
+        }
+    };
+});
+```
+
+### Pattern 4: Monitoring and Alerting
+
+Track reload metrics and send alerts:
+
+```csharp
+public class ReloadMetrics
+{
+    public int TotalReloads { get; set; }
+    public int FailedReloads { get; set; }
+    public List<TimeSpan> ReloadDurations { get; set; } = new();
+}
+
+builder.Services.AddSingleton<ReloadMetrics>();
+builder.Services.AddDdap(options =>
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        OnBeforeReloadAsync = async (sp) =>
+        {
+            var metrics = sp.GetRequiredService<ReloadMetrics>();
+            var startTime = DateTime.UtcNow;
+            
+            // Store start time for duration calculation
+            sp.GetRequiredService<IMemoryCache>()
+                .Set("reload:start", startTime);
+            
+            return true;
+        },
+        
+        OnAfterReloadAsync = async (sp) =>
+        {
+            var metrics = sp.GetRequiredService<ReloadMetrics>();
+            var cache = sp.GetRequiredService<IMemoryCache>();
+            
+            if (cache.TryGetValue("reload:start", out DateTime startTime))
+            {
+                var duration = DateTime.UtcNow - startTime;
+                metrics.ReloadDurations.Add(duration);
+                metrics.TotalReloads++;
+                
+                // Alert if reload took too long
+                if (duration > TimeSpan.FromSeconds(10))
+                {
+                    var logger = sp.GetRequiredService<ILogger<Program>>();
+                    logger.LogWarning("Slow schema reload: {Duration}ms", duration.TotalMilliseconds);
+                }
+            }
+        },
+        
+        OnReloadErrorAsync = async (sp, exception) =>
+        {
+            var metrics = sp.GetRequiredService<ReloadMetrics>();
+            metrics.FailedReloads++;
+            
+            var logger = sp.GetRequiredService<ILogger<Program>>();
+            logger.LogError(exception, "Schema reload failed");
+            
+            // Send alert for production failures
+            if (builder.Environment.IsProduction())
+            {
+                var alerting = sp.GetService<IAlertingService>();
+                await alerting?.SendAlertAsync(
+                    "DDAP Schema Reload Failure",
+                    $"Reload failed: {exception.Message}\nTotal failures: {metrics.FailedReloads}"
+                );
+            }
+        }
+    };
+});
+```
+
+## Template Customization
+
+DDAP templates generate starting projects that you can fully customize. Here are common customization patterns.
+
+### Custom Template Options
+
+Create your own template variants by modifying generated projects:
+
+```bash
+# Generate a base project
+dotnet new ddap-api --name MyTemplate
+
+# Customize it:
+# - Add your authentication strategy
+# - Configure logging providers
+# - Set up middleware pipeline
+# - Add domain services
+
+# Package as a template
+dotnet pack -c Release
+dotnet new install ./bin/Release/MyTemplate.Templates.1.0.0.nupkg
+```
+
+### Post-Generation Scripts
+
+Add scripts to `scripts/` folder in generated projects:
+
+```bash
+# scripts/setup.sh
+#!/bin/bash
+echo "Setting up development environment..."
+
+# Initialize user secrets
+dotnet user-secrets init
+
+# Set default connection string
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=Dev;Integrated Security=true;"
+
+# Restore packages
+dotnet restore
+
+# Run migrations (if using EF)
+dotnet ef database update
+
+echo "Setup complete!"
+```
+
+### Extending Generated Code
+
+All generated code uses partial classes for extension:
+
+```csharp
+// Generated/EntityController.g.cs (generated - don't modify)
+public abstract partial class EntityController : ControllerBase
+{
+    // Generated methods...
+}
+
+// Controllers/EntityController.cs (your customizations)
+public partial class EntityController
+{
+    private readonly ILogger<EntityController> _logger;
+    private readonly IMemoryCache _cache;
+    
+    public EntityController(
+        IEntityRepository repository,
+        ILogger<EntityController> logger,
+        IMemoryCache cache)
+    {
+        _repository = repository;
+        _logger = logger;
+        _cache = cache;
+    }
+    
+    [HttpGet("custom/health")]
+    public IActionResult Health()
+    {
+        return Ok(new { Status = "Healthy", Entities = _repository.Entities.Count });
+    }
+}
+```
+
+## Lifecycle Hooks
+
+DDAP provides lifecycle hooks at various points for custom logic.
+
+### Application Lifecycle
+
+```csharp
+public class DdapApplicationLifecycle : IHostedService
+{
+    private readonly IEntityRepository _repository;
+    private readonly ILogger<DdapApplicationLifecycle> _logger;
+    
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("DDAP starting - {EntityCount} entities loaded", 
+            _repository.Entities.Count);
+        
+        // Pre-warm caches
+        foreach (var entity in _repository.Entities)
+        {
+            // Load metadata into cache
+            await PreloadEntityMetadata(entity);
+        }
+    }
+    
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("DDAP shutting down gracefully");
+        
+        // Flush any pending operations
+        await FlushPendingOperations();
+    }
+}
+
+// Register in Program.cs
+builder.Services.AddHostedService<DdapApplicationLifecycle>();
+```
+
+### Request Lifecycle
+
+Hook into request processing:
+
+```csharp
+public class RequestLoggingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<RequestLoggingMiddleware> _logger;
+    
+    public RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var startTime = DateTime.UtcNow;
+        
+        try
+        {
+            await _next(context);
+        }
+        finally
+        {
+            var duration = DateTime.UtcNow - startTime;
+            _logger.LogInformation(
+                "Request: {Method} {Path} - {StatusCode} - {Duration}ms",
+                context.Request.Method,
+                context.Request.Path,
+                context.Response.StatusCode,
+                duration.TotalMilliseconds);
+        }
+    }
+}
+
+// Register in Program.cs
+app.UseMiddleware<RequestLoggingMiddleware>();
+```
+
+### Entity Repository Events
+
+Subscribe to repository events:
+
+```csharp
+public interface IEntityRepositoryEventHandler
+{
+    Task OnEntityAddedAsync(IEntityConfiguration entity);
+    Task OnEntityRemovedAsync(string entityName);
+    Task OnRepositoryReloadedAsync();
+}
+
+public class EntityChangeLogger : IEntityRepositoryEventHandler
+{
+    private readonly ILogger<EntityChangeLogger> _logger;
+    
+    public async Task OnEntityAddedAsync(IEntityConfiguration entity)
+    {
+        _logger.LogInformation("Entity added: {EntityName} with {PropertyCount} properties",
+            entity.Name, entity.Properties.Count);
+    }
+    
+    public async Task OnEntityRemovedAsync(string entityName)
+    {
+        _logger.LogWarning("Entity removed: {EntityName}", entityName);
+    }
+    
+    public async Task OnRepositoryReloadedAsync()
+    {
+        _logger.LogInformation("Entity repository reloaded");
+    }
+}
+
+// Register in Program.cs
+builder.Services.AddSingleton<IEntityRepositoryEventHandler, EntityChangeLogger>();
 ```
 
 ## Performance Optimization
@@ -764,6 +1176,9 @@ public class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 
 ## Next Steps
 
+- [Philosophy](./philosophy.md) - Developer in Control philosophy
+- [Templates](./templates.md) - Project templates and quick start
+- [Auto-Reload](./auto-reload.md) - Auto-reload configuration and patterns
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 - [Database Providers](./database-providers.md) - Database-specific features
 - [API Providers](./api-providers.md) - API-specific features
