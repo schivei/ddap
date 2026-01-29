@@ -1,5 +1,7 @@
 - name: Home
   href: index.md
+- name: Philosophy
+  href: philosophy.md
 - name: Getting Started
   href: get-started.md
 - name: Architecture
@@ -10,6 +12,8 @@
   href: database-providers.md
 - name: API Providers
   href: api-providers.md
+- name: Auto-Reload
+  href: auto-reload.md
 - name: Templates
   href: templates.md
 - name: Troubleshooting
