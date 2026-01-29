@@ -396,6 +396,177 @@ public class ProtoGeneratorTests
         result.Should().Contain("package ddap;");
     }
 
+    [Fact]
+    public void GenerateProtoFile_Should_Map_Nullable_Int32_To_Proto_int32()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration>
+        {
+            CreateProperty("NullableId", typeof(int?)),
+        };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("int32 nullableId");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Map_Nullable_Boolean_To_Proto_bool()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration>
+        {
+            CreateProperty("IsActive", typeof(bool?)),
+        };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("bool isActive");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Map_Nullable_DateTime_To_Proto_string()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration>
+        {
+            CreateProperty("CreatedDate", typeof(DateTime?)),
+        };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("string createdDate");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Handle_Empty_Property_Name()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration> { CreateProperty("", typeof(string)) };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain(" = 1;"); // Should handle empty name
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Handle_Single_Character_Property_Name()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration> { CreateProperty("X", typeof(string)) };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("string x = 1;");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Map_Byte_To_Proto_int32()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration> { CreateProperty("Age", typeof(byte)) };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("int32 age");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Map_Int16_To_Proto_int32()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration>
+        {
+            CreateProperty("SmallNumber", typeof(short)),
+        };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("int32 smallNumber");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Map_Unknown_Type_To_Proto_string()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration>
+        {
+            CreateProperty("CustomType", typeof(object)),
+        };
+        var entity = CreateTestEntityWithProperties("User", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("string customType");
+    }
+
+    [Fact]
+    public void GenerateProtoFile_Should_Handle_Entity_With_No_Properties()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var properties = new List<IPropertyConfiguration>();
+        var entity = CreateTestEntityWithProperties("EmptyEntity", "dbo", properties);
+
+        // Act
+        var result = generator.GenerateProtoFile(entity);
+
+        // Assert
+        result.Should().Contain("message EmptyEntity {");
+        result.Should().Contain("}");
+        result.Should().Contain("service EmptyEntityService");
+    }
+
+    [Fact]
+    public void GenerateAllProtoFiles_Should_Handle_Entities_With_No_Properties()
+    {
+        // Arrange
+        var generator = new ProtoGenerator();
+        var entities = new List<IEntityConfiguration>
+        {
+            CreateTestEntityWithProperties("Entity1", "dbo", new List<IPropertyConfiguration>()),
+            CreateTestEntityWithProperties("Entity2", "dbo", new List<IPropertyConfiguration>()),
+        };
+
+        // Act
+        var result = generator.GenerateAllProtoFiles(entities);
+
+        // Assert
+        result.Should().Contain("message Entity1 {");
+        result.Should().Contain("message Entity2 {");
+    }
+
     private static IPropertyConfiguration CreateProperty(string name, Type type)
     {
         var mock = new Mock<IPropertyConfiguration>();
