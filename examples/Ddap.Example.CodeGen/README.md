@@ -20,7 +20,8 @@ This example demonstrates how to use DDAP's source generator (`Ddap.CodeGen`) to
 ```bash
 dotnet add package Ddap.Core
 dotnet add package Ddap.CodeGen
-dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Data.Dapper
+dotnet add package Microsoft.Data.SqlClient
 dotnet add package Ddap.Rest
 ```
 
@@ -40,7 +41,8 @@ Add to your `.csproj` file:
   <ItemGroup>
     <PackageReference Include="Ddap.Core" Version="*" />
     <PackageReference Include="Ddap.CodeGen" Version="*" />
-    <PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="*" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="*" />
     <PackageReference Include="Ddap.Rest" Version="*" />
   </ItemGroup>
 </Project>

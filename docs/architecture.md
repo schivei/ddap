@@ -401,7 +401,7 @@ public partial class MyEntity
 
 - Format selection happens early in pipeline
 - Newtonsoft.Json for JSON (configurable)
-- XML and YAML formatters cached
+- XML formatters cached
 
 ## Security
 

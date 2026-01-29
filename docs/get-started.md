@@ -8,7 +8,7 @@ DDAP is a .NET 10 library that automatically generates APIs from your database s
 
 - Load your database metadata (tables, columns, relationships, indexes)
 - Generate REST, gRPC, and/or GraphQL endpoints
-- Support JSON, XML, and YAML content negotiation
+- Support JSON and XML content negotiation
 - Provide extensibility through partial classes
 
 ## Prerequisites
@@ -39,10 +39,12 @@ dotnet add package Ddap.Core
 
 # Choose your database provider
 dotnet add package Ddap.Data.Dapper      # Generic Dapper provider
+# Plus your database-specific driver:
+dotnet add package Microsoft.Data.SqlClient    # For SQL Server
 # OR
-dotnet add package Ddap.Data.Dapper.MySQL          # For MySQL
+dotnet add package MySqlConnector              # For MySQL
 # OR
-dotnet add package Ddap.Data.Dapper.PostgreSQL     # For PostgreSQL
+dotnet add package Npgsql                      # For PostgreSQL
 
 # Choose your API providers (one or more)
 dotnet add package Ddap.Rest                       # REST API
