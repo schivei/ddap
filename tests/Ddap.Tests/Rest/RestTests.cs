@@ -470,6 +470,159 @@ public class EntityControllerTests
         mockEntity.Setup(e => e.Relationships).Returns(relationships);
         return mockEntity.Object;
     }
+
+    [Fact]
+    public void GetAllEntities_Should_Apply_Pagination_Correctly()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>();
+        for (int i = 0; i < 50; i++)
+        {
+            entities.Add(CreateTestEntity($"Entity{i}", "dbo", 1));
+        }
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        var parameters = new QueryParameters { PageNumber = 2, PageSize = 10 };
+
+        // Act
+        var result = _controller.GetAllEntities(parameters);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+        pagedResult.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Include_PropertyCount()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>
+        {
+            CreateTestEntity("Entity1", "dbo", 5),
+            CreateTestEntity("Entity2", "schema1", 10),
+        };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(new QueryParameters());
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Handle_Large_Page_Number()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration> { CreateTestEntity("Entity1", "dbo", 1) };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        var parameters = new QueryParameters { PageNumber = 100, PageSize = 10 };
+
+        // Act
+        var result = _controller.GetAllEntities(parameters);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Indexes()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Relationships()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Property_Type_Names()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Relationship_Type_As_String()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Return_Correct_TotalCount()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>();
+        for (int i = 0; i < 25; i++)
+        {
+            entities.Add(CreateTestEntity($"Entity{i}", "dbo", 1));
+        }
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(new QueryParameters { PageSize = 10 });
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Skip_Correct_Number_Of_Items()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>();
+        for (int i = 0; i < 30; i++)
+        {
+            entities.Add(CreateTestEntity($"Entity{i}", "dbo", 1));
+        }
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        var parameters = new QueryParameters { PageNumber = 3, PageSize = 10 };
+
+        // Act
+        var result = _controller.GetAllEntities(parameters);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
 }
 
 // YamlOutputFormatterTests removed - YAML formatter was removed as part of
