@@ -575,9 +575,25 @@ public class QueryFilterBuilderTests
 
         // Assert
         var resultList = result.ToList();
+        resultList.Should().HaveCount(4);
+
+        // First item: status=active, age=30, name=Alice
         resultList[0].Status.Should().Be("active");
         resultList[0].Age.Should().Be(30);
-        // Among same status and age, should be sorted by name
+        resultList[0].Name.Should().Be("Alice");
+
+        // Second item: status=active, age=30, name=John
+        resultList[1].Status.Should().Be("active");
+        resultList[1].Age.Should().Be(30);
+        resultList[1].Name.Should().Be("John");
+
+        // Third item: status=active, age=25, name=Jane
+        resultList[2].Status.Should().Be("active");
+        resultList[2].Age.Should().Be(25);
+        resultList[2].Name.Should().Be("Jane");
+
+        // Fourth item: status=inactive, age=30, name=Bob
+        resultList[3].Status.Should().Be("inactive");
     }
 
     [Fact]

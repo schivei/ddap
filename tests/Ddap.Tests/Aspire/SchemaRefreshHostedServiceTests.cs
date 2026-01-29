@@ -23,7 +23,7 @@ public class SchemaRefreshHostedServiceTests
         var serviceProvider = services.BuildServiceProvider();
 
         var service = new TestSchemaRefreshHostedService(serviceProvider, 60);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         // Act
         var startTask = service.StartAsync(cts.Token);
@@ -58,7 +58,7 @@ public class SchemaRefreshHostedServiceTests
         var serviceProvider = services.BuildServiceProvider();
 
         var service = new TestSchemaRefreshHostedService(serviceProvider, 1); // 1 second interval
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         // Act
         var startTask = service.StartAsync(cts.Token);
@@ -93,7 +93,7 @@ public class SchemaRefreshHostedServiceTests
         var serviceProvider = services.BuildServiceProvider();
 
         var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         // Act
         var startTask = service.StartAsync(cts.Token);
@@ -130,7 +130,7 @@ public class SchemaRefreshHostedServiceTests
         var serviceProvider = services.BuildServiceProvider();
 
         var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         // Act
         var startTask = service.StartAsync(cts.Token);
@@ -174,7 +174,7 @@ public class SchemaRefreshHostedServiceTests
             serviceProvider.GetRequiredService<IEntityRepository>() as EntityRepository;
 
         var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         // Act
         var startTask = service.StartAsync(cts.Token);
@@ -196,29 +196,37 @@ public class SchemaRefreshHostedServiceTests
     }
 
     // Helper class to expose protected members for testing
-    private class TestSchemaRefreshHostedService : IHostedService
+    private class TestSchemaRefreshHostedService : IHostedService, IDisposable
     {
-        private readonly Task _executeTask;
+        private readonly object _innerService;
         private readonly CancellationTokenSource _stoppingCts = new();
 
         public TestSchemaRefreshHostedService(IServiceProvider serviceProvider, int intervalSeconds)
         {
             // Use reflection to create the actual service
             var type = Type.GetType("Ddap.Aspire.SchemaRefreshHostedService, Ddap.Aspire");
-            var instance = Activator.CreateInstance(type!, serviceProvider, intervalSeconds);
-            var method = type!.GetMethod("StartAsync");
-            _executeTask = (Task)method!.Invoke(instance, new object[] { _stoppingCts.Token })!;
+            _innerService =
+                Activator.CreateInstance(type!, serviceProvider, intervalSeconds)
+                ?? throw new InvalidOperationException(
+                    "Failed to create SchemaRefreshHostedService instance."
+                );
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            var method = _innerService.GetType().GetMethod("StartAsync");
+            return (Task)method!.Invoke(_innerService, new object[] { cancellationToken })!;
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
-            _stoppingCts.Cancel();
-            await _executeTask;
+            var method = _innerService.GetType().GetMethod("StopAsync");
+            return (Task)method!.Invoke(_innerService, new object[] { cancellationToken })!;
+        }
+
+        public void Dispose()
+        {
+            _stoppingCts?.Dispose();
         }
     }
 

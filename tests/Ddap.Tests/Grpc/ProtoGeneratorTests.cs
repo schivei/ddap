@@ -462,7 +462,9 @@ public class ProtoGeneratorTests
         var result = generator.GenerateProtoFile(entity);
 
         // Assert
-        result.Should().Contain(" = 1;"); // Should handle empty name
+        // Note: This test documents current behavior where empty property names
+        // result in invalid proto syntax. In production, property names should be validated.
+        result.Should().Contain("string  = 1;"); // Current behavior with empty name
     }
 
     [Fact]

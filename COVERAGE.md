@@ -72,7 +72,7 @@ reportgenerator \
   -filefilters:"-*.g.cs;-*Generated*"
 ```
 
-### Check per-file thresholds
+### Check per-class thresholds
 ```bash
 ./check-coverage.sh
 ```
@@ -85,7 +85,7 @@ Open `coverage/report/index.html` in your browser.
 The GitHub Actions workflow (`.github/workflows/build.yml`) automatically:
 1. Runs tests with coverage collection
 2. Generates coverage reports with filters
-3. Checks per-file coverage thresholds
+3. Checks per-class coverage thresholds
 4. Posts coverage summary to pull requests
 5. Uploads coverage data to Codecov
 

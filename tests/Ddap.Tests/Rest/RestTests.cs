@@ -491,7 +491,18 @@ public class EntityControllerTests
         result.Should().BeOfType<OkObjectResult>();
         var okResult = result as OkObjectResult;
         var pagedResult = okResult!.Value;
-        pagedResult.Should().NotBeNull();
+
+        var pagedResultType = pagedResult!.GetType();
+        var pageNumber = (int)pagedResultType.GetProperty("PageNumber")!.GetValue(pagedResult)!;
+        var pageSize = (int)pagedResultType.GetProperty("PageSize")!.GetValue(pagedResult)!;
+        var totalCount = (int)pagedResultType.GetProperty("TotalCount")!.GetValue(pagedResult)!;
+        var items =
+            pagedResultType.GetProperty("Items")!.GetValue(pagedResult) as IEnumerable<object>;
+
+        pageNumber.Should().Be(2);
+        pageSize.Should().Be(10);
+        totalCount.Should().Be(50);
+        items.Should().HaveCount(10);
     }
 
     [Fact]
@@ -602,6 +613,12 @@ public class EntityControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        var totalCount = (int)
+            pagedResult!.GetType().GetProperty("TotalCount")!.GetValue(pagedResult)!;
+        totalCount.Should().Be(25);
     }
 
     [Fact]

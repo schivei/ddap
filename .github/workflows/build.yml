@@ -108,7 +108,7 @@ jobs:
           -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Memory.*;-Ddap.Subscriptions.*" \
           -filefilters:"-*.g.cs;-*Generated*"
     
-    - name: Check Coverage Threshold Per File
+    - name: Check Coverage Threshold Per Class
       run: |
         # Install jq for JSON parsing
         sudo apt-get update && sudo apt-get install -y jq
