@@ -39,11 +39,11 @@ echo ""
 echo "Per-File Analysis:"
 echo "---"
 
-# Create temporary file for tracking results
-TEMP_RESULTS="/tmp/coverage_results_$$.txt"
-> "$TEMP_RESULTS"
+# Create temporary file for tracking results (securely)
+TEMP_RESULTS="$(mktemp -t coverage_results_XXXXXX)"
 
 # Iterate through each assembly and class
+while IFS= read -r assembly; do
 while IFS= read -r assembly; do
     ASSEMBLY_NAME=$(echo "$assembly" | jq -r '.name')
     
@@ -58,12 +58,12 @@ while IFS= read -r assembly; do
             BRANCH_COV="N/A"
             BRANCH_CHECK=1
         else
-            # Check if branch coverage meets threshold
-            BRANCH_CHECK=$(echo "$BRANCH_COV >= $MIN_BRANCH_COVERAGE" | bc -l)
+            # Check if branch coverage meets threshold using jq for numeric comparison
+            BRANCH_CHECK=$(jq -n --argjson cov "$BRANCH_COV" --argjson min "$MIN_BRANCH_COVERAGE" 'if ($cov >= $min) then 1 else 0 end')
         fi
         
-        # Check if line coverage meets threshold
-        LINE_CHECK=$(echo "$LINE_COV >= $MIN_LINE_COVERAGE" | bc -l)
+        # Check if line coverage meets threshold using jq for numeric comparison
+        LINE_CHECK=$(jq -n --argjson cov "$LINE_COV" --argjson min "$MIN_LINE_COVERAGE" 'if ($cov >= $min) then 1 else 0 end')
         
         if [ "$LINE_CHECK" = "1" ] && [ "$BRANCH_CHECK" = "1" ]; then
             echo "✅ $CLASS_NAME - Line: ${LINE_COV}%, Branch: ${BRANCH_COV}%"

@@ -3,7 +3,7 @@
   <!-- Configuration for code coverage -->
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="XPlat code coverage">
+      <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <!-- Coverage options -->
           <Format>cobertura</Format>

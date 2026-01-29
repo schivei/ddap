@@ -38,9 +38,7 @@
     "[Ddap.Grpc]*",
     "[Ddap.Aspire]*"
   ],
-  "thresholdType": "line,branch",
-  "thresholdStat": "minimum",
-  "threshold": 80,
+
   "skipAutoProps": true,
   "useSourceLink": true,
   "singleHit": false,
