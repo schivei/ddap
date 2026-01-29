@@ -2,6 +2,7 @@ using System.Text;
 using Ddap.Core;
 using Ddap.Core.Internals;
 using Ddap.Rest;
+using Ddap.Rest.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +64,196 @@ public class DdapRestExtensionsTests
     }
 }
 
+public class QueryParametersTests
+{
+    [Fact]
+    public void PageNumber_Should_Default_To_One()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.PageNumber.Should().Be(1);
+    }
+
+    [Fact]
+    public void PageSize_Should_Default_To_Ten()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.PageSize.Should().Be(10);
+    }
+
+    [Fact]
+    public void PageSize_Should_Accept_Valid_Values()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageSize = 50;
+
+        // Assert
+        queryParams.PageSize.Should().Be(50);
+    }
+
+    [Fact]
+    public void PageSize_Should_Cap_At_MaxPageSize_When_Exceeding()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageSize = 200; // Exceeds max of 100
+
+        // Assert
+        queryParams.PageSize.Should().Be(100);
+    }
+
+    [Fact]
+    public void PageSize_Should_Cap_At_MaxPageSize_Exactly()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageSize = 101; // Just over max
+
+        // Assert
+        queryParams.PageSize.Should().Be(100);
+    }
+
+    [Fact]
+    public void Filter_Should_Be_Null_By_Default()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.Filter.Should().BeNull();
+    }
+
+    [Fact]
+    public void Filter_Should_Accept_Value()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.Filter = "name eq 'John'";
+
+        // Assert
+        queryParams.Filter.Should().Be("name eq 'John'");
+    }
+
+    [Fact]
+    public void OrderBy_Should_Be_Null_By_Default()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.OrderBy.Should().BeNull();
+    }
+
+    [Fact]
+    public void OrderBy_Should_Accept_Value()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.OrderBy = "name desc";
+
+        // Assert
+        queryParams.OrderBy.Should().Be("name desc");
+    }
+
+    [Fact]
+    public void PageNumber_Should_Accept_Value()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageNumber = 5;
+
+        // Assert
+        queryParams.PageNumber.Should().Be(5);
+    }
+}
+
+public class PagedResultTests
+{
+    [Fact]
+    public void PagedResult_Should_Initialize_Properties()
+    {
+        // Arrange
+        var items = new List<string> { "item1", "item2" };
+
+        // Act
+        var result = new PagedResult<string>(items, 100, 2, 10);
+
+        // Assert
+        result.Items.Should().BeEquivalentTo(items);
+        result.TotalCount.Should().Be(100);
+        result.PageNumber.Should().Be(2);
+        result.PageSize.Should().Be(10);
+    }
+
+    [Fact]
+    public void PagedResult_Should_Calculate_TotalPages()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 95, 1, 10);
+
+        // Assert
+        result.TotalPages.Should().Be(10); // 95 items / 10 per page = 10 pages
+    }
+
+    [Fact]
+    public void PagedResult_HasPrevious_Should_Be_False_For_First_Page()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 1, 10);
+
+        // Assert
+        result.HasPrevious.Should().BeFalse();
+    }
+
+    [Fact]
+    public void PagedResult_HasPrevious_Should_Be_True_For_Second_Page()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 2, 10);
+
+        // Assert
+        result.HasPrevious.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PagedResult_HasNext_Should_Be_True_When_More_Pages_Exist()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 1, 10);
+
+        // Assert
+        result.HasNext.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PagedResult_HasNext_Should_Be_False_On_Last_Page()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 10, 10);
+
+        // Assert
+        result.HasNext.Should().BeFalse();
+    }
+}
+
 public class EntityControllerTests
 {
     private readonly Mock<IEntityRepository> _mockRepository;
@@ -96,7 +287,7 @@ public class EntityControllerTests
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
-        var result = _controller.GetAllEntities(new Ddap.Rest.Models.QueryParameters());
+        var result = _controller.GetAllEntities(new QueryParameters());
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -111,7 +302,7 @@ public class EntityControllerTests
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(new List<IEntityConfiguration>());
 
         // Act
-        var result = _controller.GetAllEntities(new Ddap.Rest.Models.QueryParameters());
+        var result = _controller.GetAllEntities(new QueryParameters());
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
