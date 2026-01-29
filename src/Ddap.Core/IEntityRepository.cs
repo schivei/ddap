@@ -25,4 +25,10 @@ public interface IEntityRepository
     /// <param name="entityName">The name of the entity to check.</param>
     /// <returns>True if the entity exists; otherwise, false.</returns>
     bool EntityExists(string entityName);
+
+    /// <summary>
+    /// Adds or updates an entity configuration in the repository.
+    /// </summary>
+    /// <param name="entity">The entity configuration to add or update.</param>
+    void AddOrUpdateEntity(IEntityConfiguration entity);
 }

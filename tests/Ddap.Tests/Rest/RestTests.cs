@@ -2,11 +2,9 @@ using System.Text;
 using Ddap.Core;
 using Ddap.Core.Internals;
 using Ddap.Rest;
-using Ddap.Rest.Formatters;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -47,24 +45,6 @@ public class DdapRestExtensionsTests
         // Assert
         result.Should().BeAssignableTo<IDdapBuilder>();
         result.Services.Should().BeSameAs(services);
-    }
-
-    [Fact]
-    public void AddRest_Should_Configure_Content_Negotiation()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var builder = services.AddDdap(options =>
-        {
-            options.ConnectionString = "test";
-        });
-
-        // Act
-        builder.AddRest();
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Assert
-        serviceProvider.Should().NotBeNull();
     }
 
     [Fact]
@@ -301,133 +281,5 @@ public class EntityControllerTests
     }
 }
 
-public class YamlOutputFormatterTests
-{
-    [Fact]
-    public void Constructor_Should_Set_Supported_Media_Types()
-    {
-        // Arrange & Act
-        var formatter = new YamlOutputFormatter();
-
-        // Assert
-        formatter.SupportedMediaTypes.Should().Contain(mt => mt.ToString() == "application/yaml");
-        formatter.SupportedMediaTypes.Should().Contain(mt => mt.ToString() == "application/x-yaml");
-        formatter.SupportedMediaTypes.Should().Contain(mt => mt.ToString() == "text/yaml");
-        formatter.SupportedMediaTypes.Should().Contain(mt => mt.ToString() == "text/x-yaml");
-    }
-
-    [Fact]
-    public void Constructor_Should_Set_Supported_Encodings()
-    {
-        // Arrange & Act
-        var formatter = new YamlOutputFormatter();
-
-        // Assert
-        formatter.SupportedEncodings.Should().Contain(Encoding.UTF8);
-        formatter.SupportedEncodings.Should().Contain(Encoding.Unicode);
-    }
-
-    // Note: CanWriteType is protected and cannot be tested directly from unit tests
-    // The functionality is indirectly tested through WriteResponseBodyAsync tests
-
-    [Fact]
-    public async Task WriteResponseBodyAsync_Should_Write_Yaml_Content()
-    {
-        // Arrange
-        var formatter = new YamlOutputFormatter();
-        var httpContext = new DefaultHttpContext();
-        var memoryStream = new MemoryStream();
-        httpContext.Response.Body = memoryStream;
-
-        var testObject = new { Name = "Test", Value = 123 };
-        var context = new OutputFormatterWriteContext(
-            httpContext,
-            (stream, encoding) => new StreamWriter(stream, encoding),
-            typeof(object),
-            testObject
-        );
-
-        // Act
-        await formatter.WriteResponseBodyAsync(context, Encoding.UTF8);
-
-        // Assert
-        memoryStream.Position = 0;
-        using var reader = new StreamReader(memoryStream);
-        var content = await reader.ReadToEndAsync();
-        content.Should().NotBeEmpty();
-        content.Should().Contain("Name:");
-        content.Should().Contain("Test");
-    }
-
-    [Fact]
-    public async Task WriteResponseBodyAsync_Should_Throw_When_Context_Is_Null()
-    {
-        // Arrange
-        var formatter = new YamlOutputFormatter();
-
-        // Act & Assert
-        var act = async () => await formatter.WriteResponseBodyAsync(null!, Encoding.UTF8);
-        await act.Should().ThrowAsync<ArgumentNullException>();
-    }
-
-    [Fact]
-    public async Task WriteResponseBodyAsync_Should_Handle_Empty_Object()
-    {
-        // Arrange
-        var formatter = new YamlOutputFormatter();
-        var httpContext = new DefaultHttpContext();
-        var memoryStream = new MemoryStream();
-        httpContext.Response.Body = memoryStream;
-
-        var testObject = new { };
-        var context = new OutputFormatterWriteContext(
-            httpContext,
-            (stream, encoding) => new StreamWriter(stream, encoding),
-            typeof(object),
-            testObject
-        );
-
-        // Act
-        await formatter.WriteResponseBodyAsync(context, Encoding.UTF8);
-
-        // Assert
-        memoryStream.Position = 0;
-        using var reader = new StreamReader(memoryStream);
-        var content = await reader.ReadToEndAsync();
-        content.Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task WriteResponseBodyAsync_Should_Handle_Complex_Objects()
-    {
-        // Arrange
-        var formatter = new YamlOutputFormatter();
-        var httpContext = new DefaultHttpContext();
-        var memoryStream = new MemoryStream();
-        httpContext.Response.Body = memoryStream;
-
-        var testObject = new
-        {
-            Name = "Test",
-            Items = new[] { "Item1", "Item2" },
-            Nested = new { Value = 42 },
-        };
-        var context = new OutputFormatterWriteContext(
-            httpContext,
-            (stream, encoding) => new StreamWriter(stream, encoding),
-            typeof(object),
-            testObject
-        );
-
-        // Act
-        await formatter.WriteResponseBodyAsync(context, Encoding.UTF8);
-
-        // Assert
-        memoryStream.Position = 0;
-        using var reader = new StreamReader(memoryStream);
-        var content = await reader.ReadToEndAsync();
-        content.Should().Contain("Name:");
-        content.Should().Contain("Items:");
-        content.Should().Contain("Nested:");
-    }
-}
+// YamlOutputFormatterTests removed - YAML formatter was removed as part of
+// removing opinionated dependencies. Developers configure their own formatters.
