@@ -521,6 +521,24 @@ public class EntityControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+        var itemsProperty = pagedResult!.GetType().GetProperty("Items");
+        var items = itemsProperty!.GetValue(pagedResult) as IEnumerable<object>;
+
+        var itemsList = items!.ToList();
+        itemsList.Should().HaveCount(2);
+
+        // Verify PropertyCount is included in each item
+        var firstItem = itemsList[0];
+        var propertyCountProp = firstItem.GetType().GetProperty("PropertyCount");
+        propertyCountProp.Should().NotBeNull();
+        var propertyCount = (int)propertyCountProp!.GetValue(firstItem)!;
+        propertyCount.Should().Be(5);
+
+        var secondItem = itemsList[1];
+        var propertyCount2 = (int)propertyCountProp.GetValue(secondItem)!;
+        propertyCount2.Should().Be(10);
     }
 
     [Fact]
@@ -567,6 +585,15 @@ public class EntityControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        // Verify Relationships property exists and contains the expected relationship
+        var relationshipsProp = metadata!.GetType().GetProperty("Relationships");
+        relationshipsProp.Should().NotBeNull();
+        var relationships = relationshipsProp!.GetValue(metadata) as IEnumerable<object>;
+        relationships.Should().NotBeNull();
+        relationships.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -639,6 +666,25 @@ public class EntityControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        // Verify pagination metadata
+        var pageNumberProp = pagedResult!.GetType().GetProperty("PageNumber");
+        var pageSizeProp = pagedResult.GetType().GetProperty("PageSize");
+        var itemsProp = pagedResult.GetType().GetProperty("Items");
+
+        pageNumberProp!.GetValue(pagedResult).Should().Be(3);
+        pageSizeProp!.GetValue(pagedResult).Should().Be(10);
+
+        var items = itemsProp!.GetValue(pagedResult) as IEnumerable<object>;
+        var itemsList = items!.ToList();
+        itemsList.Should().HaveCount(10);
+
+        // Verify we got items 20-29 (page 3 with page size 10 skips first 20)
+        var firstItemNameProp = itemsList[0].GetType().GetProperty("EntityName");
+        var firstName = firstItemNameProp!.GetValue(itemsList[0]) as string;
+        firstName.Should().Be("Entity20");
     }
 
     [Fact]

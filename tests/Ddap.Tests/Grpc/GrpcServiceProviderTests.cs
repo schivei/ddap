@@ -16,7 +16,7 @@ public class GrpcServiceProviderTests
         services.AddDdap(options => { }).AddGrpc();
 
         // Act
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetService<IGrpcServiceProvider>();
 
         // Assert
@@ -30,7 +30,7 @@ public class GrpcServiceProviderTests
         // Arrange
         var services = new ServiceCollection();
         services.AddDdap(options => { }).AddGrpc();
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetService<IGrpcServiceProvider>();
 
         // Act
@@ -46,7 +46,7 @@ public class GrpcServiceProviderTests
         // Arrange
         var services = new ServiceCollection();
         services.AddDdap(options => { }).AddGrpc();
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetService<IGrpcServiceProvider>();
 
         // Act

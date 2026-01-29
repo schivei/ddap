@@ -16,7 +16,7 @@ public class RestApiProviderTests
         services.AddDdap(options => { }).AddRest();
 
         // Act
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetService<IRestApiProvider>();
 
         // Assert
@@ -30,7 +30,7 @@ public class RestApiProviderTests
         // Arrange
         var services = new ServiceCollection();
         services.AddDdap(options => { }).AddRest();
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetService<IRestApiProvider>();
 
         // Act
@@ -46,7 +46,7 @@ public class RestApiProviderTests
         // Arrange
         var services = new ServiceCollection();
         services.AddDdap(options => { }).AddRest();
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetService<IRestApiProvider>();
 
         // Act

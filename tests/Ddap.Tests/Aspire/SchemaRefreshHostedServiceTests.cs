@@ -20,7 +20,7 @@ public class SchemaRefreshHostedServiceTests
         services.AddLogging();
         services.AddSingleton<IEntityRepository, EntityRepository>();
 
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
 
         using var service = new TestSchemaRefreshHostedService(serviceProvider, 60);
         using var cts = new CancellationTokenSource();
@@ -199,7 +199,6 @@ public class SchemaRefreshHostedServiceTests
     private class TestSchemaRefreshHostedService : IHostedService, IDisposable
     {
         private readonly object _innerService;
-        private readonly CancellationTokenSource _stoppingCts = new();
 
         public TestSchemaRefreshHostedService(IServiceProvider serviceProvider, int intervalSeconds)
         {
@@ -226,7 +225,6 @@ public class SchemaRefreshHostedServiceTests
 
         public void Dispose()
         {
-            _stoppingCts?.Dispose();
             if (_innerService is IDisposable disposable)
             {
                 disposable.Dispose();
