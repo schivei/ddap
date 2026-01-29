@@ -260,13 +260,29 @@ public class DapperDataProvider : IDataProvider
 
     private static Type MapSqlTypeToClrType(string sqlType, bool isNullable)
     {
-        var baseType = sqlType.ToLower() switch
+        var sqlTypeLower = sqlType.ToLower();
+
+        // Check for unsigned types (MySQL specific)
+        bool isUnsigned = sqlTypeLower.Contains("unsigned");
+
+        var baseType = sqlTypeLower switch
         {
-            // Integer types
+            // Unsigned integer types (MySQL)
+            var t
+                when t.Contains("int")
+                    && t.Contains("unsigned")
+                    && !t.Contains("big")
+                    && !t.Contains("small")
+                    && !t.Contains("tiny") => typeof(uint),
+            var t when t.Contains("bigint") && t.Contains("unsigned") => typeof(ulong),
+            var t when t.Contains("smallint") && t.Contains("unsigned") => typeof(ushort),
+            var t when t.Contains("tinyint") && t.Contains("unsigned") => typeof(byte),
+
+            // Signed integer types
             "int" or "integer" or "int4" => typeof(int),
             "bigint" or "int8" or "long" => typeof(long),
             "smallint" or "int2" => typeof(short),
-            "tinyint" => typeof(byte),
+            "tinyint" => typeof(sbyte), // SQL Server tinyint is unsigned (byte), MySQL tinyint signed is sbyte
 
             // Boolean
             "bit" or "bool" or "boolean" => typeof(bool),
@@ -279,13 +295,11 @@ public class DapperDataProvider : IDataProvider
             "real" or "float4" => typeof(float),
 
             // Date/Time types
-            "datetime"
-            or "datetime2"
-            or "smalldatetime"
-            or "date"
-            or "timestamp"
-            or "timestamptz" => typeof(DateTime),
-            "time" => typeof(TimeSpan),
+            "datetime" or "datetime2" or "smalldatetime" or "timestamp" or "timestamptz" =>
+                typeof(DateTime),
+            "date" => typeof(DateOnly), // Map date to DateOnly
+            "time" => typeof(TimeOnly), // Map time to TimeOnly (breaking change: was TimeSpan)
+            "interval" => typeof(TimeSpan), // PostgreSQL interval type
             "datetimeoffset" => typeof(DateTimeOffset),
 
             // GUID

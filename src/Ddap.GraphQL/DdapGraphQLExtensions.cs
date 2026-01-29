@@ -1,5 +1,7 @@
 using Ddap.Core;
+using Ddap.GraphQL.Scalars;
 using HotChocolate.Execution.Configuration;
+using HotChocolate.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ddap.GraphQL;
@@ -33,6 +35,7 @@ public static class DdapGraphQLExtensions
     ///         .AddFiltering()
     ///         .AddSorting()
     ///         .AddProjections()
+    ///         .AddExtendedTypes() // Add support for uint, ulong, DateOnly, TimeOnly, etc.
     ///         .ModifyRequestOptions(opt =>
     ///         {
     ///             opt.IncludeExceptionDetails = isDevelopment;
@@ -55,6 +58,51 @@ public static class DdapGraphQLExtensions
 
         // Allow developer to configure GraphQL as needed
         configure?.Invoke(graphqlBuilder);
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds support for extended types including unsigned integers (uint, ulong, ushort, sbyte)
+    /// and modern .NET date/time types (DateOnly, TimeOnly, TimeSpan, DateTimeOffset).
+    /// </summary>
+    /// <param name="builder">The GraphQL request executor builder.</param>
+    /// <returns>The GraphQL request executor builder for chaining.</returns>
+    /// <example>
+    /// <code>
+    /// services.AddGraphQL(graphql =>
+    /// {
+    ///     graphql.AddExtendedTypes();
+    /// });
+    /// </code>
+    /// </example>
+    public static IRequestExecutorBuilder AddExtendedTypes(this IRequestExecutorBuilder builder)
+    {
+        // Add type converters for unsigned integer types
+        // These map to their signed equivalents in GraphQL
+        builder.AddTypeConverter<uint, int>(value => unchecked((int)value));
+        builder.AddTypeConverter<int, uint>(value => unchecked((uint)value));
+
+        builder.AddTypeConverter<ulong, long>(value => unchecked((long)value));
+        builder.AddTypeConverter<long, ulong>(value => unchecked((ulong)value));
+
+        builder.AddTypeConverter<ushort, short>(value => unchecked((short)value));
+        builder.AddTypeConverter<short, ushort>(value => unchecked((ushort)value));
+
+        // sbyte maps to short (Int16) for better GraphQL compatibility
+        builder.AddTypeConverter<sbyte, short>(value => value);
+        builder.AddTypeConverter<short, sbyte>(value => (sbyte)value);
+
+        // Add custom scalar types for DateOnly and TimeOnly
+        builder.AddType(new DateOnlyType());
+        builder.AddType(new TimeOnlyType());
+
+        // Bind runtime types to their GraphQL scalar types
+        builder.BindRuntimeType<DateOnly, DateOnlyType>();
+        builder.BindRuntimeType<TimeOnly, TimeOnlyType>();
+
+        // TimeSpan and DateTimeOffset have built-in support in HotChocolate
+        // They will be automatically handled by the framework
 
         return builder;
     }
