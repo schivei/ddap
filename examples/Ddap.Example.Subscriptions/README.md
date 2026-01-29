@@ -20,7 +20,8 @@ This example demonstrates how to use DDAP with real-time subscriptions using the
 ```bash
 dotnet add package Ddap.Core
 dotnet add package Ddap.Subscriptions
-dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Data.Dapper
+dotnet add package Microsoft.Data.SqlClient
 dotnet add package Ddap.Rest
 dotnet add package Ddap.GraphQL
 ```
@@ -32,19 +33,21 @@ dotnet add package Ddap.GraphQL
 ```csharp
 using Ddap.Core;
 using Ddap.Subscriptions;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
 using Ddap.GraphQL;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure DDAP with subscriptions
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL()
     .AddSubscriptions(subscriptionOptions =>

@@ -6,7 +6,7 @@ DDAP supports multiple API protocols through separate provider packages. This gu
 
 | Provider | Package | Protocol | Features |
 |----------|---------|----------|----------|
-| REST | `Ddap.Rest` | HTTP/REST | JSON, XML, YAML, Content Negotiation |
+| REST | `Ddap.Rest` | HTTP/REST | JSON, XML, Content Negotiation |
 | gRPC | `Ddap.Grpc` | gRPC/HTTP2 | Binary protocol, streaming |
 | GraphQL | `Ddap.GraphQL` | GraphQL | Queries, mutations, schema introspection |
 
@@ -25,7 +25,7 @@ using Ddap.Rest;
 
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest();
 
 var app = builder.Build();
@@ -38,22 +38,19 @@ app.MapControllers();
 
 #### Content Negotiation
 
-DDAP REST APIs support multiple output formats via the `Accept` header:
+DDAP REST APIs support multiple output formats via the `Accept` header. **You control which serializer to use**—DDAP doesn't force any particular choice:
 
-**JSON (Default - Newtonsoft.Json)**
+**JSON (Your Choice: System.Text.Json or Newtonsoft.Json)**
 ```bash
 curl -H "Accept: application/json" http://localhost:5000/api/entity
 ```
 
-**XML**
+**XML (If you configure XML formatters)**
 ```bash
 curl -H "Accept: application/xml" http://localhost:5000/api/entity
 ```
 
-**YAML**
-```bash
-curl -H "Accept: application/yaml" http://localhost:5000/api/entity
-```
+> **Developer in Control:** DDAP doesn't force Newtonsoft.Json or any other serializer. Configure ASP.NET Core's JSON settings as you prefer. See [Philosophy](./philosophy.md) for more on developer control.
 
 #### Generated Endpoints
 
@@ -136,8 +133,19 @@ public partial class EntityController
 
 #### JSON Serialization Settings
 
-Configure Newtonsoft.Json:
+**You choose your serializer—DDAP doesn't impose one:**
 
+**Option 1: System.Text.Json (Default in ASP.NET Core)**
+```csharp
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+```
+
+**Option 2: Newtonsoft.Json (If you prefer)**
 ```csharp
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -148,6 +156,8 @@ builder.Services.AddControllers()
         options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ssZ";
     });
 ```
+
+**Developer in Control:** The choice is yours. DDAP works with whatever serializer you configure in ASP.NET Core.
 
 ### Best Practices
 
@@ -196,13 +206,26 @@ using Ddap.GraphQL;
 
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
-    .AddGraphQL();
+    .AddDapper(() => new SqlConnection(connectionString))
+    .AddGraphQL(graphql =>
+    {
+        // YOU configure HotChocolate - DDAP doesn't force settings
+        graphql
+            .AddFiltering()
+            .AddSorting()
+            .ModifyRequestOptions(opt =>
+            {
+                opt.IncludeExceptionDetails = builder.Environment.IsDevelopment();
+                opt.ExecutionTimeout = TimeSpan.FromSeconds(30);
+            });
+    });
 
 var app = builder.Build();
 
 app.MapGraphQL("/graphql");
 ```
+
+> **Developer in Control:** The callback lets you configure HotChocolate exactly as you want—filtering, sorting, error handling, and more. DDAP provides the infrastructure; you make the decisions.
 
 ### Features
 
@@ -395,7 +418,7 @@ using Ddap.Grpc;
 
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddGrpc();
 
 var app = builder.Build();
@@ -519,7 +542,7 @@ public override async Task StreamEntities(
 | Feature | REST | GraphQL | gRPC |
 |---------|------|---------|------|
 | Protocol | HTTP/1.1 | HTTP/1.1 | HTTP/2 |
-| Format | JSON/XML/YAML | JSON | Binary (Protocol Buffers) |
+| Format | JSON/XML | JSON | Binary (Protocol Buffers) |
 | Schema | OpenAPI/Swagger | GraphQL Schema | .proto files |
 | Query Flexibility | Limited | High | Medium |
 | Performance | Medium | Medium | High |
@@ -535,7 +558,7 @@ You can enable multiple providers simultaneously:
 ```csharp
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()      // REST at /api/*
     .AddGraphQL()   // GraphQL at /graphql
     .AddGrpc();     // gRPC on configured port
@@ -550,6 +573,7 @@ app.MapGrpcService<EntityService>();  // gRPC
 
 ## Next Steps
 
+- [Philosophy](./philosophy.md) - The "Developer in Control" philosophy
 - [Advanced Usage](./advanced.md) - Extensibility and patterns
 - [Troubleshooting](./troubleshooting.md) - Common issues
 - [Database Providers](./database-providers.md) - Database-specific features

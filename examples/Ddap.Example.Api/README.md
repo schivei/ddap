@@ -6,7 +6,7 @@ This example demonstrates how to use DDAP (Dynamic Data API Provider) to automat
 
 - **Automatic Entity Loading**: Loads database schema on startup
 - **Multiple API Providers**: REST, gRPC, and GraphQL
-- **Content Negotiation**: Supports JSON (Newtonsoft.Json), XML, and YAML output formats
+- **Content Negotiation**: Supports JSON (Newtonsoft.Json) and XML output formats
 - **Extensible**: Partial classes allow custom extensions
 - **Modular Database Providers**: Choose your database provider (SQL Server, MySQL, PostgreSQL)
 
@@ -25,32 +25,38 @@ DDAP now supports modular database providers. Choose the one that fits your need
 
 ### SQL Server with Dapper
 ```csharp
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;
 
+var connectionString = "Server=localhost;Database=MyDb;...";
 services.AddDdap(options => {
-    options.ConnectionString = "Server=localhost;Database=MyDb;...";
+    options.ConnectionString = connectionString;
 })
-.AddSqlServerDapper();
+.AddDapper(() => new SqlConnection(connectionString));
 ```
 
 ### MySQL with Dapper
 ```csharp
-using Ddap.Data.Dapper.MySQL;
+using Ddap.Data.Dapper;
+using MySqlConnector;
 
+var connectionString = "Server=localhost;Database=MyDb;User=root;Password=...";
 services.AddDdap(options => {
-    options.ConnectionString = "Server=localhost;Database=MyDb;User=root;Password=...";
+    options.ConnectionString = connectionString;
 })
-.AddMySqlDapper();
+.AddDapper(() => new MySqlConnection(connectionString));
 ```
 
 ### PostgreSQL with Dapper
 ```csharp
-using Ddap.Data.Dapper.PostgreSQL;
+using Ddap.Data.Dapper;
+using Npgsql;
 
+var connectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=...";
 services.AddDdap(options => {
-    options.ConnectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=...";
+    options.ConnectionString = connectionString;
 })
-.AddPostgreSqlDapper();
+.AddDapper(() => new NpgsqlConnection(connectionString));
 ```
 
 ### Entity Framework Core (Database Agnostic)
@@ -60,7 +66,7 @@ using Ddap.Data.EntityFramework;
 services.AddDdap(options => {
     options.ConnectionString = "...";
 })
-.AddEntityFramework();
+.AddEntityFramework<MyDbContext>();
 ```
 
 ## REST API Examples
@@ -73,11 +79,6 @@ curl -H "Accept: application/json" http://localhost:5000/api/entity
 ### Get all entities (XML)
 ```bash
 curl -H "Accept: application/xml" http://localhost:5000/api/entity
-```
-
-### Get all entities (YAML)
-```bash
-curl -H "Accept: application/yaml" http://localhost:5000/api/entity
 ```
 
 ### Get entity metadata
@@ -125,13 +126,11 @@ Install the packages you need:
 dotnet add package Ddap.Core
 
 # Choose your database provider:
-dotnet add package Ddap.Data.Dapper.SqlServer     # For SQL Server
-dotnet add package Ddap.Data.Dapper.MySQL         # For MySQL
-dotnet add package Ddap.Data.Dapper.PostgreSQL    # For PostgreSQL
+dotnet add package Ddap.Data.Dapper                # Generic Dapper provider
 dotnet add package Ddap.Data.EntityFramework      # For EF Core
 
 # Choose your API providers:
-dotnet add package Ddap.Rest                       # REST with JSON/XML/YAML
+dotnet add package Ddap.Rest                       # REST with JSON/XML
 dotnet add package Ddap.Grpc                       # gRPC
 dotnet add package Ddap.GraphQL                    # GraphQL
 ```

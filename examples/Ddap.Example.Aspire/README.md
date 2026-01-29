@@ -79,9 +79,10 @@ builder.Build().Run();
 
 ```csharp
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
 using Ddap.GraphQL;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,12 +90,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // Configure DDAP
+var connectionString = builder.Configuration.GetConnectionString("catalogdb");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("catalogdb");
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL();
 
@@ -113,14 +115,15 @@ app.Run();
 For development, you can enable auto-refresh to automatically detect schema changes:
 
 ```csharp
+var connectionString = builder.Configuration.GetConnectionString("catalogdb");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("catalogdb");
+        options.ConnectionString = connectionString;
         options.EnableAutoRefresh = true;
         options.RefreshIntervalSeconds = 30;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL();
 ```

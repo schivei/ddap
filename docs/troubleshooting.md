@@ -88,12 +88,18 @@ No data provider registered
 ```
 
 **Solution:**
-Register a database provider after AddDdap:
+Register a database provider after AddDdap. Use the generic `Ddap.Data.Dapper` package:
 ```csharp
+using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;  // Or your chosen database driver
+
+var connectionString = "...";
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper();  // Don't forget this!
+    .AddDapper(() => new SqlConnection(connectionString));  // Don't forget this!
 ```
+
+> **Note:** Previous versions had database-specific packages like `Ddap.Data.Dapper.SqlServer`. The new architecture uses a single `Ddap.Data.Dapper` package that works with any `IDbConnection`.
 
 ### Issue: Connection String Not Found
 
@@ -412,13 +418,7 @@ HTTP 404 - /graphql
        .AddXmlSerializerFormatters();
    ```
 
-2. **Add YAML formatter:**
-   ```csharp
-   builder.Services.AddControllers()
-       .AddYamlFormatters();
-   ```
-
-3. **Check Accept header:**
+2. **Check Accept header:**
    ```bash
    curl -v -H "Accept: application/xml" http://localhost:5000/api/entity
    ```
@@ -520,6 +520,228 @@ app.UseCors();
    ```sql
    CREATE INDEX IX_Entity_Name ON Entities(Name);
    ```
+
+## Auto-Reload Issues
+
+### Issue: Schema Not Reloading
+
+**Problem:** Database changes not reflected in API.
+
+**Solutions:**
+
+1. **Verify Auto-Reload is enabled:**
+   ```csharp
+   builder.Services.AddDdap(options =>
+   {
+       options.AutoReload = new AutoReloadOptions
+       {
+           Enabled = true,  // Must be true
+           IdleTimeout = TimeSpan.FromMinutes(5)
+       };
+   });
+   ```
+
+2. **Check idle timeout has passed:**
+   - The system only checks for changes after the idle timeout
+   - Make a request, wait for the timeout, then make another request
+
+3. **Test with AlwaysReload:**
+   ```csharp
+   options.AutoReload.Detection = ChangeDetection.AlwaysReload;
+   ```
+
+4. **Check logs for reload errors:**
+   ```csharp
+   builder.Logging.SetMinimumLevel(LogLevel.Debug);
+   ```
+
+5. **Verify database permissions:**
+   - Ensure the connection has SELECT permissions on metadata tables
+   - SQL Server: `INFORMATION_SCHEMA` views
+   - MySQL: `information_schema` database
+   - PostgreSQL: `information_schema` and `pg_catalog` schemas
+
+### Issue: Frequent Unnecessary Reloads
+
+**Problem:** Schema reloads even when nothing changed.
+
+**Solutions:**
+
+1. **Use CheckHash detection:**
+   ```csharp
+   options.AutoReload.Detection = ChangeDetection.CheckHash;
+   ```
+
+2. **Increase idle timeout:**
+   ```csharp
+   options.AutoReload.IdleTimeout = TimeSpan.FromMinutes(10);
+   ```
+
+3. **Check what's triggering changes:**
+   - Enable debug logging to see what's being detected
+   - Some operations (like rebuilding indexes) may change metadata timestamps
+
+### Issue: High Memory During Reload
+
+**Problem:** Memory usage spikes during schema reload.
+
+**Solutions:**
+
+1. **Use BlockRequests instead of ServeOldSchema:**
+   ```csharp
+   options.AutoReload.Behavior = ReloadBehavior.BlockRequests;
+   ```
+   Note: This will return HTTP 503 during reload.
+
+2. **Switch to HotReload strategy:**
+   ```csharp
+   options.AutoReload.Strategy = ReloadStrategy.HotReload;
+   ```
+
+3. **Increase idle timeout to reduce frequency:**
+   ```csharp
+   options.AutoReload.IdleTimeout = TimeSpan.FromMinutes(15);
+   ```
+
+### Issue: Requests Failing During Reload
+
+**Problem:** Getting HTTP 503 errors during reload.
+
+**Solutions:**
+
+1. **Switch to ServeOldSchema for zero downtime:**
+   ```csharp
+   options.AutoReload.Behavior = ReloadBehavior.ServeOldSchema;
+   ```
+
+2. **Use QueueRequests to buffer:**
+   ```csharp
+   options.AutoReload.Behavior = ReloadBehavior.QueueRequests;
+   ```
+
+3. **Implement client retry logic:**
+   ```javascript
+   async function fetchWithRetry(url, retries = 3) {
+       for (let i = 0; i < retries; i++) {
+           const response = await fetch(url);
+           if (response.status !== 503) return response;
+           await new Promise(resolve => setTimeout(resolve, 1000));
+       }
+       throw new Error('Service unavailable');
+   }
+   ```
+
+### Issue: Reload Takes Too Long
+
+**Problem:** Schema reload duration is unacceptable.
+
+**Solutions:**
+
+1. **Use faster reload strategy:**
+   ```csharp
+   // HotReload is fastest (100-500ms)
+   options.AutoReload.Strategy = ReloadStrategy.HotReload;
+   
+   // Or RestartExecutor for balance (500ms-2s)
+   options.AutoReload.Strategy = ReloadStrategy.RestartExecutor;
+   ```
+
+2. **Use timestamp-based detection:**
+   ```csharp
+   options.AutoReload.Detection = ChangeDetection.CheckTimestamps;
+   ```
+
+3. **Filter tables to reduce schema size:**
+   ```csharp
+   builder.Services.AddDdap(options =>
+   {
+       options.IncludeSchemas = new[] { "dbo" };
+       options.ExcludeTables = new[] { "sys%", "__EFMigrations%" };
+   });
+   ```
+
+## Migration from Old API
+
+### Issue: Package Names Changed
+
+**Problem:** Build fails with old package references.
+
+**Solution:**
+
+**Old packages (pre-1.0):**
+```xml
+<PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="0.x.x" />
+<PackageReference Include="Ddap.Data.Dapper.MySQL" Version="0.x.x" />
+<PackageReference Include="Ddap.Data.Dapper.PostgreSQL" Version="0.x.x" />
+```
+
+**New packages (1.0+):**
+```xml
+<!-- Single generic Dapper package -->
+<PackageReference Include="Ddap.Data.Dapper" Version="1.0.0" />
+
+<!-- Plus your chosen database driver -->
+<PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" />
+<!-- OR -->
+<PackageReference Include="MySqlConnector" Version="2.0.0" />
+<!-- OR -->
+<PackageReference Include="Npgsql" Version="8.0.0" />
+```
+
+**Update your code:**
+```csharp
+// Old way
+using Ddap.Data.Dapper.SqlServer;
+builder.Services.AddDdap(...).AddSqlServerDapper(connectionString);
+
+// New way
+using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;
+builder.Services.AddDdap(...).AddDapper(() => new SqlConnection(connectionString));
+```
+
+### Issue: WithGrpcIntegration() Not Found
+
+**Problem:** Old code references removed methods.
+
+**Solution:**
+
+**Old way:**
+```csharp
+builder.Services.AddDdap(...).WithGrpcIntegration();
+```
+
+**New way:** gRPC is configured separately via `AddGrpc()`:
+```csharp
+builder.Services
+    .AddDdap(...)
+    .AddRest()
+    .AddGraphQL()
+    .AddGrpc();
+```
+
+### Issue: Forced Newtonsoft.Json Configuration
+
+**Problem:** Old code assumed Newtonsoft.Json was required.
+
+**Solution:**
+
+DDAP no longer forces any JSON serializer. You choose:
+
+**System.Text.Json (recommended for performance):**
+```csharp
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
+```
+
+**Newtonsoft.Json (if you prefer):**
+```csharp
+builder.Services.AddControllers().AddNewtonsoftJson();
+```
+
+**No changes needed in DDAP configuration—it respects your choice.**
 
 ## Deployment Issues
 
@@ -625,7 +847,7 @@ If you're still experiencing issues:
 
 | Error | Likely Cause | Quick Fix |
 |-------|--------------|-----------|
-| `NullReferenceException` in EntityRepository | Provider not registered | Add `.AddSqlServerDapper()` etc. |
+| `NullReferenceException` in EntityRepository | Provider not registered | Add `.AddDapper()` etc. |
 | `InvalidOperationException: No service for type IDataProvider` | Missing provider | Register data provider |
 | `SqlException: Login failed` | Wrong credentials | Check connection string |
 | `TimeoutException` | Slow query or network | Increase timeout |
@@ -651,7 +873,10 @@ if (app.Environment.IsDevelopment())
 
 ## Next Steps
 
+- [Philosophy](./philosophy.md) - Developer in Control philosophy
 - [Get Started](./get-started.md) - Basic setup and configuration
+- [Templates](./templates.md) - Quick start with templates
+- [Auto-Reload](./auto-reload.md) - Auto-reload configuration
 - [Advanced Usage](./advanced.md) - Extensibility patterns
 - [Database Providers](./database-providers.md) - Database-specific documentation
 - [API Providers](./api-providers.md) - API protocol details

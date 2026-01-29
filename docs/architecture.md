@@ -18,12 +18,11 @@ graph TB
         Repository[Entity Repository & Configuration]
         EntityConfig[Entity Configuration]
         PropertyConfig[Property Configuration]
+        AutoReload[Auto-Reload System]
     end
     
     subgraph DataProvider["Data Provider Layer"]
-        SqlServerDapper[SQL Server<br/>Dapper]
-        MySQLDapper[MySQL<br/>Dapper]
-        PostgreSQLDapper[PostgreSQL<br/>Dapper]
+        Dapper[Dapper<br/>Generic]
         EF[Entity<br/>Framework]
     end
     
@@ -31,6 +30,7 @@ graph TB
         MSSQL[(SQL Server)]
         MySQL[(MySQL)]
         PostgreSQL[(PostgreSQL)]
+        SQLite[(SQLite)]
     end
     
     REST --> Repository
@@ -39,15 +39,15 @@ graph TB
     
     Repository --> EntityConfig
     Repository --> PropertyConfig
+    AutoReload --> Repository
     
-    Repository --> SqlServerDapper
-    Repository --> MySQLDapper
-    Repository --> PostgreSQLDapper
+    Repository --> Dapper
     Repository --> EF
     
-    SqlServerDapper --> MSSQL
-    MySQLDapper --> MySQL
-    PostgreSQLDapper --> PostgreSQL
+    Dapper --> MSSQL
+    Dapper --> MySQL
+    Dapper --> PostgreSQL
+    Dapper --> SQLite
     EF --> MSSQL
     EF --> MySQL
     EF --> PostgreSQL
@@ -116,6 +116,30 @@ public interface IDataProvider
 - Pluggable database support
 - Consistent API across providers
 
+### 4. Auto-Reload System
+
+The Auto-Reload System automatically detects and applies database schema changes:
+
+```csharp
+public class AutoReloadOptions
+{
+    public bool Enabled { get; set; }
+    public TimeSpan IdleTimeout { get; set; }
+    public ReloadStrategy Strategy { get; set; }
+    public ReloadBehavior Behavior { get; set; }
+    public ChangeDetection Detection { get; set; }
+}
+```
+
+**Features:**
+- Zero-downtime schema updates
+- Multiple reload strategies (HotReload, RestartExecutor, InvalidateAndRebuild)
+- Change detection methods (AlwaysReload, CheckHash, CheckTimestamps)
+- Lifecycle hooks for custom logic
+- Configurable behaviors (ServeOldSchema, BlockRequests, QueueRequests)
+
+> **Learn more:** See [Auto-Reload Guide](./auto-reload.md) for detailed configuration and usage.
+
 ## Component Details
 
 ### Core Package (Ddap.Core)
@@ -141,20 +165,14 @@ public interface IDataProvider
 
 Each database provider implements `IDataProvider` and loads database metadata:
 
-#### Ddap.Data.Dapper.SqlServer
-- SQL Server metadata loading
-- Dapper-based queries
-- Supports indexes, relationships, composite keys
+#### Ddap.Data.Dapper
+- **Single generic package** for any database with `IDbConnection`
+- Supports SQL Server, MySQL, PostgreSQL, SQLite, Oracle, and more
+- Database-specific metadata queries for indexes and relationships
+- Full support for composite keys and complex relationships
+- **You bring your own database driver** (Microsoft.Data.SqlClient, Npgsql, MySqlConnector, etc.)
 
-#### Ddap.Data.Dapper.MySQL
-- MySQL metadata loading via INFORMATION_SCHEMA
-- Handles MySQL-specific data types
-- Full relationship and index support
-
-#### Ddap.Data.Dapper.PostgreSQL
-- PostgreSQL metadata loading via pg_catalog
-- Supports PostgreSQL-specific features
-- UUID and array type handling
+> **Architecture Note:** Previous architecture had separate packages (e.g., `Ddap.Data.Dapper.SqlServer`). The new architecture uses a single `Ddap.Data.Dapper` package that works with any database driver you choose.
 
 #### Ddap.Data.EntityFramework
 - Database-agnostic using EF Core
@@ -165,7 +183,7 @@ Each database provider implements `IDataProvider` and loads database metadata:
 
 #### Ddap.Rest
 - Generates REST controllers via partial classes
-- Content negotiation (JSON/XML/YAML)
+- Content negotiation (JSON/XML)
 - Uses Newtonsoft.Json for JSON serialization
 - Entity metadata endpoints
 
@@ -220,7 +238,7 @@ type EntityMetadata {
 - .NET Aspire integration
 - Automatic service discovery
 - Connection string management
-- Auto-refresh support for schema changes
+- Auto-reload support for schema changes
 
 #### Ddap.Auth
 - Authentication and authorization support
@@ -233,6 +251,11 @@ type EntityMetadata {
 - SignalR integration
 - GraphQL subscriptions
 
+#### Ddap.Templates
+- `dotnet new` templates for rapid project setup
+- Pre-configured projects with best practices
+- Support for multiple databases and API providers
+
 ## Design Patterns
 
 ### Builder Pattern
@@ -240,9 +263,10 @@ type EntityMetadata {
 DDAP uses the builder pattern for fluent configuration:
 
 ```csharp
+var connectionString = "...";
 builder.Services
     .AddDdap(options => { /* configure */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL();
 ```
@@ -296,20 +320,29 @@ public class EntityController
 1. **Configuration Phase**
    ```
    AddDdap() → Register core services
-   AddSqlServerDapper() → Register data provider
+   AddDapper() → Register data provider
    AddRest() → Register REST controllers
+   AddGraphQL() → Register GraphQL schema (optional)
    ```
 
 2. **Initialization Phase**
    ```
    Application starts → Data provider loads metadata
    → Populates EntityRepository → APIs ready
+   → Auto-Reload monitors for changes (if enabled)
    ```
 
 3. **Request Handling**
    ```
-   HTTP Request → Controller → EntityRepository
+   HTTP Request → Controller/GraphQL → EntityRepository
    → Returns metadata or data → Response
+   ```
+
+4. **Auto-Reload Flow** (if enabled)
+   ```
+   Idle timeout expires → Check for schema changes
+   → If changes detected → Reload entities
+   → Apply reload strategy → Resume serving requests
    ```
 
 ### Entity Loading Flow
@@ -409,7 +442,7 @@ public partial class MyEntity
 
 - Format selection happens early in pipeline
 - Newtonsoft.Json for JSON (configurable)
-- XML and YAML formatters cached
+- XML formatters cached
 
 ## Security
 
@@ -527,14 +560,19 @@ builder.AddDdapApi("api")
 
 DDAP's architecture prioritizes:
 
+- **Developer Control**: You make all technology choices
 - **Modularity**: Use only what you need
 - **Extensibility**: Easy to customize and extend
 - **Performance**: Efficient metadata loading and caching
+- **Zero Downtime**: Auto-reload keeps APIs running during schema changes
 - **Maintainability**: Clear separation of concerns
 - **Testability**: Interface-based design
 
 For more details, see:
-- [Get Started](./get-started.md)
-- [Advanced Usage](./advanced.md)
-- [API Providers](./api-providers.md)
-- [Database Providers](./database-providers.md)
+- [Philosophy](./philosophy.md) - Developer in Control approach
+- [Get Started](./get-started.md) - Quick start guide
+- [Templates](./templates.md) - Project templates
+- [Auto-Reload](./auto-reload.md) - Schema reloading system
+- [Advanced Usage](./advanced.md) - Extensibility patterns
+- [API Providers](./api-providers.md) - REST, GraphQL, gRPC
+- [Database Providers](./database-providers.md) - Dapper and EF

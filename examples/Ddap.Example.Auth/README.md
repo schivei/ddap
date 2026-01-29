@@ -20,7 +20,8 @@ This example demonstrates how to use DDAP with authentication and authorization 
 ```bash
 dotnet add package Ddap.Core
 dotnet add package Ddap.Auth
-dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Data.Dapper
+dotnet add package Microsoft.Data.SqlClient
 dotnet add package Ddap.Rest
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 ```
@@ -32,10 +33,11 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 ```csharp
 using Ddap.Core;
 using Ddap.Auth;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Data.SqlClient;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,12 +62,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Configure DDAP with authentication
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddAuth(authOptions =>
     {
         // Enable authentication for all entities by default
