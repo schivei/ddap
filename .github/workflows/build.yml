@@ -110,6 +110,8 @@ jobs:
     
     - name: Check Coverage Threshold Per File
       run: |
+        # Install jq for JSON parsing
+        sudo apt-get update && sudo apt-get install -y jq
         chmod +x check-coverage.sh
         ./check-coverage.sh
       continue-on-error: true

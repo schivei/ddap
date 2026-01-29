@@ -1,5 +1,4 @@
 {
-  "version": "1.0.0",
   "excludeByFile": [
     "**/*.g.cs",
     "**/Generated/**/*.cs",
@@ -40,7 +39,7 @@
     "[Ddap.Aspire]*"
   ],
   "thresholdType": "line,branch",
-  "thresholdStat": "total",
+  "thresholdStat": "minimum",
   "threshold": 80,
   "skipAutoProps": true,
   "useSourceLink": true,

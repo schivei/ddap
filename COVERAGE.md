@@ -6,7 +6,7 @@ This repository is configured with comprehensive code coverage requirements to e
 
 - **Per-File Threshold**: 80% line coverage and 80% branch coverage per file
 - **Measurement Level**: Coverage is measured per file, not just overall
-- **Enforcement**: Coverage checks run on every CI build
+- **Enforcement**: Coverage checks run on every CI build as warnings (non-blocking)
 
 ## Configuration Files
 
@@ -108,7 +108,9 @@ The pipeline generates multiple report formats:
 
 ## Notes
 
-- Coverage checks are set to `continue-on-error: true` to not block builds, but warnings are shown
-- The goal is to improve coverage over time, not to block all changes
+- Coverage checks run as warnings (`continue-on-error: true`) to not block builds
+- The goal is to track and improve coverage over time, while allowing incremental progress
 - Focus on meaningful coverage that tests actual behavior, not just line hits
 - Files with no branches (simple DTOs, options classes) only need line coverage
+- When a file fails coverage thresholds, a warning is shown with details
+- The CI will still pass even with low coverage, but teams can see what needs improvement
