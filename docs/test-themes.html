@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDAP Theme Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="nav-brand">
+                <span class="logo">🎛️</span>
+                <span class="brand-name">DDAP Theme Test</span>
+            </div>
+            <div class="nav-links">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <main id="main-content" style="padding: 2rem;">
+        <div class="container">
+            <h1>Theme System Test</h1>
+            <p>Click the theme toggle button to cycle through: Light → Dark → High Contrast → Light</p>
+            
+            <section style="margin-top: 2rem;">
+                <h2>Color Variables Test</h2>
+                <div style="display: grid; gap: 1rem; margin-top: 1rem;">
+                    <div style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 1rem;">
+                        Background Primary: <code>var(--bg-primary)</code>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 1rem;">
+                        Background Secondary: <code>var(--bg-secondary)</code>
+                    </div>
+                    <div style="background: var(--color-primary); color: var(--text-on-primary); padding: 1rem;">
+                        Primary Color: <code>var(--color-primary)</code>
+                    </div>
+                </div>
+            </section>
+
+            <section style="margin-top: 2rem;">
+                <h2>Button Test</h2>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <a href="#" class="btn btn-primary">Primary Button</a>
+                    <a href="#" class="btn btn-secondary">Secondary Button</a>
+                </div>
+            </section>
+
+            <section style="margin-top: 2rem;">
+                <h2>Code Block Test</h2>
+                <pre class="code-block"><code><span class="keyword">var</span> example = <span class="string">"Hello World"</span>; <span class="comment">// Comment</span></code></pre>
+            </section>
+        </div>
+    </main>
+    <script src="theme-toggle.js"></script>
+    <script>
+        // Log theme changes for testing
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'data-theme') {
+                    console.log('Theme changed to:', document.documentElement.getAttribute('data-theme'));
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
+    </script>
+</body>
+</html>

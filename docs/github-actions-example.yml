@@ -1,0 +1,33 @@
+# Example GitHub Actions workflow snippet for replacing build placeholders
+# Add this to your existing docs deployment workflow
+
+- name: Replace build placeholders
+  run: |
+    # Get version from project or tag
+    VERSION=$(grep -oP '<Version>\K[^<]+' Directory.Build.props || echo "dev")
+    
+    # Get commit info
+    COMMIT_SHA="${GITHUB_SHA}"
+    COMMIT_SHA_SHORT="${GITHUB_SHA:0:7}"
+    
+    # Get build date
+    BUILD_DATE=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
+    
+    # Replace placeholders in index.html
+    sed -i "s|{{RUN_ID}}|${GITHUB_RUN_ID}|g" docs/index.html
+    sed -i "s|{{RUN_NUMBER}}|${GITHUB_RUN_NUMBER}|g" docs/index.html
+    sed -i "s|{{VERSION}}|${VERSION}|g" docs/index.html
+    sed -i "s|{{BUILD_DATE}}|${BUILD_DATE}|g" docs/index.html
+    sed -i "s|{{COMMIT_SHA}}|${COMMIT_SHA}|g" docs/index.html
+    sed -i "s|{{COMMIT_SHA_SHORT}}|${COMMIT_SHA_SHORT}|g" docs/index.html
+    
+    # Verify replacements
+    echo "Build info updated:"
+    grep "build-info" docs/index.html
+
+- name: Deploy to GitHub Pages
+  uses: peaceiris/actions-gh-pages@v3
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    publish_dir: ./docs
+    publish_branch: gh-pages
