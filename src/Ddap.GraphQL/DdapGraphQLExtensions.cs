@@ -93,7 +93,7 @@ public static class DdapGraphQLExtensions
 
         // sbyte maps to short (Int16) for better GraphQL compatibility
         builder.AddTypeConverter<sbyte, short>(value => value);
-        builder.AddTypeConverter<short, sbyte>(value => (sbyte)value);
+        builder.AddTypeConverter<short, sbyte>(value => unchecked((sbyte)value));
 
         // Add custom scalar types for DateOnly and TimeOnly
         builder.AddType(new DateOnlyType());
