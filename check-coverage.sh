@@ -44,7 +44,6 @@ TEMP_RESULTS="$(mktemp -t coverage_results_XXXXXX)"
 
 # Iterate through each assembly and class
 while IFS= read -r assembly; do
-while IFS= read -r assembly; do
     ASSEMBLY_NAME=$(echo "$assembly" | jq -r '.name')
     
     # Get all classes in the assembly
