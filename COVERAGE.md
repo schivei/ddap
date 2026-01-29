@@ -4,8 +4,8 @@ This repository is configured with comprehensive code coverage requirements to e
 
 ## Coverage Requirements
 
-- **Per-File Threshold**: 80% line coverage and 80% branch coverage per file
-- **Measurement Level**: Coverage is measured per file, not just overall
+- **Per-Class Threshold**: 80% line coverage and 80% branch coverage per class
+- **Measurement Level**: Coverage is measured per class/type (standard for .NET projects), not just overall
 - **Enforcement**: Coverage checks run on every CI build as warnings (non-blocking)
 
 ## Configuration Files
@@ -17,13 +17,14 @@ The main coverage configuration file used by `dotnet test`. It configures:
 - Inclusion patterns for main application code
 
 ### `coverlet.json`
-Additional configuration for Coverlet coverage tool, specifying:
-- File patterns to exclude from coverage
-- Attributes to exclude (Obsolete, GeneratedCode, etc.)
-- Coverage thresholds
+**Note**: This file is currently not used in the CI pipeline. Coverage configuration is handled entirely through `.runsettings`. This file is provided as a reference for local development if you choose to use Coverlet directly. To use it, you would need to:
+- Add `<PackageReference Include="coverlet.msbuild" />` to test projects
+- Pass `/p:CollectCoverage=true /p:CoverletOutput=./coverage/` to `dotnet test`
+
+If not using Coverlet directly, the configuration in `.runsettings` is sufficient.
 
 ### `check-coverage.sh`
-Script that validates per-file coverage thresholds and provides detailed reporting.
+Script that validates per-class coverage thresholds and provides detailed reporting. Note: In .NET, coverage is measured at the class/type level, which typically corresponds to one class per file but may include nested classes.
 
 ## Excluded from Coverage
 
@@ -90,9 +91,9 @@ The GitHub Actions workflow (`.github/workflows/build.yml`) automatically:
 
 ## Improving Coverage
 
-If a file fails the coverage threshold:
+If a class fails the coverage threshold:
 
-1. **Identify the file** - Check the coverage report or CI output
+1. **Identify the class** - Check the coverage report or CI output
 2. **Review uncovered lines** - Open the HTML report to see which lines need coverage
 3. **Write tests** - Add unit tests that exercise the uncovered code paths
 4. **Verify** - Run coverage locally to confirm improvements
@@ -111,6 +112,6 @@ The pipeline generates multiple report formats:
 - Coverage checks run as warnings (`continue-on-error: true`) to not block builds
 - The goal is to track and improve coverage over time, while allowing incremental progress
 - Focus on meaningful coverage that tests actual behavior, not just line hits
-- Files with no branches (simple DTOs, options classes) only need line coverage
-- When a file fails coverage thresholds, a warning is shown with details
+- Classes with no branches (simple DTOs, options classes) only need line coverage
+- When a class fails coverage thresholds, a warning is shown with details
 - The CI will still pass even with low coverage, but teams can see what needs improvement

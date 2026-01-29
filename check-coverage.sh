@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Script to check per-file coverage thresholds
-# Requirements: 80% line coverage and 80% branch coverage per file
+# Script to check per-class coverage thresholds
+# Requirements: 80% line coverage and 80% branch coverage per class
+# Note: In .NET, coverage is typically measured at the class/type level, not individual source files
 # Prerequisite: jq must be installed (handled by CI workflow)
 
 set -e
@@ -23,8 +24,9 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-echo "📊 Checking Coverage Per File"
-echo "Requirements: ${MIN_LINE_COVERAGE}% line coverage, ${MIN_BRANCH_COVERAGE}% branch coverage per file"
+echo "📊 Checking Coverage Per Class"
+echo "Requirements: ${MIN_LINE_COVERAGE}% line coverage, ${MIN_BRANCH_COVERAGE}% branch coverage per class"
+echo "Note: Coverage is measured at class/type level (standard for .NET projects)"
 echo "=============================================================================="
 
 # Extract overall summary
@@ -36,7 +38,7 @@ echo "Overall Coverage (filtered modules):"
 echo "  Line Coverage: ${OVERALL_LINE}%"
 echo "  Branch Coverage: ${OVERALL_BRANCH}%"
 echo ""
-echo "Per-File Analysis:"
+echo "Per-Class Analysis:"
 echo "---"
 
 # Create temporary file for tracking results (securely)
@@ -91,13 +93,13 @@ echo "  Failed: $FAILED_COUNT"
 echo ""
 
 if [ "$FAILED_COUNT" -gt 0 ]; then
-    echo "❌ $FAILED_COUNT file(s) below coverage thresholds:"
+    echo "❌ $FAILED_COUNT class(es) below coverage thresholds:"
     echo ""
     grep "^FAIL|" "$TEMP_RESULTS" | while IFS='|' read -r status file line branch; do
         echo "  - $file (Line: ${line}%, Branch: ${branch}%)"
     done
     echo ""
-    echo "⚠️  These files need more test coverage to meet the requirements:"
+    echo "⚠️  These classes need more test coverage to meet the requirements:"
     echo "     - Minimum Line Coverage: ${MIN_LINE_COVERAGE}%"
     echo "     - Minimum Branch Coverage: ${MIN_BRANCH_COVERAGE}%"
     echo ""
