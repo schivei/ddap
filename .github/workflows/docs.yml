@@ -13,6 +13,7 @@ name: Documentation
 
 env:
   DOTNET_VERSION: '10.0.x'
+  NODE_VERSION: '20.x'
 
 jobs:
   build-docs:
@@ -42,6 +43,33 @@ jobs:
           dotnet build --configuration Release --no-restore
         continue-on-error: false
 
+      - name: Extract version from csproj
+        id: get_version
+        run: |
+          VERSION=$(grep -oP '<Version>\K[^<]+' src/Ddap.Core/Ddap.Core.csproj || echo "1.0.0")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Inject build info into HTML
+        run: |
+          BUILD_DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_SHA_SHORT="${COMMIT_SHA:0:7}"
+          RUN_ID="${{ github.run_id }}"
+          RUN_NUMBER="${{ github.run_number }}"
+          
+          # Replace placeholders in index.html
+          if [ -f "docs/index.html" ]; then
+            sed -i "s/{{VERSION}}/${{ env.VERSION }}/g" docs/index.html
+            sed -i "s/{{BUILD_DATE}}/$BUILD_DATE/g" docs/index.html
+            sed -i "s/{{COMMIT_SHA}}/$COMMIT_SHA/g" docs/index.html
+            sed -i "s/{{COMMIT_SHA_SHORT}}/$COMMIT_SHA_SHORT/g" docs/index.html
+            sed -i "s/{{RUN_ID}}/$RUN_ID/g" docs/index.html
+            sed -i "s/{{RUN_NUMBER}}/$RUN_NUMBER/g" docs/index.html
+            
+            echo "✅ Build info injected into index.html"
+          fi
+
       - name: Generate API documentation from XML comments
         run: |
           mkdir -p docs/api
@@ -53,11 +81,69 @@ jobs:
           docfx build docs/docfx.json
         continue-on-error: false
 
-      - name: Copy markdown files to _site
+      - name: Copy markdown files and HTML to _site
         run: |
           cp docs/*.md docs/_site/ 2>/dev/null || true
+          cp docs/*.html docs/_site/ 2>/dev/null || true
+          cp docs/*.css docs/_site/ 2>/dev/null || true
+          cp docs/*.js docs/_site/ 2>/dev/null || true
           cp README.md docs/_site/ 2>/dev/null || true
           cp CONTRIBUTING.md docs/_site/ 2>/dev/null || true
+          
+          echo "✅ Files copied to _site directory"
+
+      - name: Setup Node.js for Playwright
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Playwright browsers
+        run: |
+          cd tests/Ddap.Docs.Tests
+          dotnet build
+          pwsh -Command "npx playwright install chromium"
+
+      - name: Start local server for testing
+        run: |
+          cd docs/_site
+          python3 -m http.server 8000 &
+          echo $! > server.pid
+          sleep 3
+          echo "✅ Local server started on port 8000"
+
+      - name: Run Playwright accessibility tests
+        run: |
+          cd tests/Ddap.Docs.Tests
+          dotnet test --no-build --verbosity normal --logger "console;verbosity=detailed"
+        continue-on-error: true
+        id: accessibility_tests
+
+      - name: Stop local server
+        if: always()
+        run: |
+          if [ -f "docs/_site/server.pid" ]; then
+            kill $(cat docs/_site/server.pid) || true
+            rm docs/_site/server.pid
+          fi
+
+      - name: Accessibility Test Summary
+        if: always()
+        run: |
+          echo "## 🔍 Accessibility Tests" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.accessibility_tests.outcome }}" == "success" ]; then
+            echo "✅ **All accessibility tests passed!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- WCAG AA compliance verified" >> $GITHUB_STEP_SUMMARY
+            echo "- All 3 themes tested (Light, Dark, High Contrast)" >> $GITHUB_STEP_SUMMARY
+            echo "- Keyboard navigation working" >> $GITHUB_STEP_SUMMARY
+            echo "- Screen reader compatibility confirmed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Some accessibility tests failed**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the test results above for details." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
@@ -72,23 +158,34 @@ jobs:
         uses: actions/deploy-pages@v4
         continue-on-error: true
 
-      - name: Summary
+      - name: Build Summary
+        if: always()
         run: |
-          echo "## Documentation Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 📚 Documentation Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build Information:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: v${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: [${{ github.sha }}](https://github.com/schivei/ddap/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ Documentation files created" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Generated Files:" >> $GITHUB_STEP_SUMMARY
-          echo "- 📄 index.html (main page)" >> $GITHUB_STEP_SUMMARY
+          echo "### 📄 Generated Files:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏠 index.html (modern home page with 3 themes)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎯 philosophy.md (Developer in Control)" >> $GITHUB_STEP_SUMMARY
           echo "- 📚 get-started.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🏗️ architecture.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🔧 advanced.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🗄️ database-providers.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🌐 api-providers.md" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔄 auto-reload.md" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 templates.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🐛 troubleshooting.md" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.deployment.outcome }}" == "success" ]; then
             echo "🚀 **Deployed successfully!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "View at: https://schivei.github.io/ddap" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Deployment skipped or failed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
