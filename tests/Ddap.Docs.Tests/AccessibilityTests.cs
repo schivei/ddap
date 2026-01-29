@@ -26,10 +26,12 @@ public class AccessibilityTests : PageTest
     public async Task LightMode_MeetsWCAG_AA_ContrastRequirements()
     {
         // Arrange: Set light theme
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('ddap-theme', 'light');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(500);
 
         // Act: Check contrast ratios for key elements
@@ -38,22 +40,33 @@ public class AccessibilityTests : PageTest
         var linkContrast = await GetContrastRatio(await Page.QuerySelectorAsync("a"));
 
         // Assert: WCAG AA requires 4.5:1 for normal text, 3:1 for large text
-        Assert.That(bodyContrast, Is.GreaterThanOrEqualTo(4.5), 
-            "Body text contrast does not meet WCAG AA (4.5:1)");
-        Assert.That(h1Contrast, Is.GreaterThanOrEqualTo(3.0), 
-            "Heading contrast does not meet WCAG AA for large text (3:1)");
-        Assert.That(linkContrast, Is.GreaterThanOrEqualTo(4.5), 
-            "Link contrast does not meet WCAG AA (4.5:1)");
+        Assert.That(
+            bodyContrast,
+            Is.GreaterThanOrEqualTo(4.5),
+            "Body text contrast does not meet WCAG AA (4.5:1)"
+        );
+        Assert.That(
+            h1Contrast,
+            Is.GreaterThanOrEqualTo(3.0),
+            "Heading contrast does not meet WCAG AA for large text (3:1)"
+        );
+        Assert.That(
+            linkContrast,
+            Is.GreaterThanOrEqualTo(4.5),
+            "Link contrast does not meet WCAG AA (4.5:1)"
+        );
     }
 
     [Test]
     public async Task DarkMode_MeetsWCAG_AA_ContrastRequirements()
     {
         // Arrange: Set dark theme
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('ddap-theme', 'dark');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(500);
 
         // Act: Check contrast ratios for key elements
@@ -62,22 +75,33 @@ public class AccessibilityTests : PageTest
         var linkContrast = await GetContrastRatio(await Page.QuerySelectorAsync("a"));
 
         // Assert: WCAG AA requires 4.5:1 for normal text, 3:1 for large text
-        Assert.That(bodyContrast, Is.GreaterThanOrEqualTo(4.5), 
-            "Body text contrast does not meet WCAG AA (4.5:1)");
-        Assert.That(h1Contrast, Is.GreaterThanOrEqualTo(3.0), 
-            "Heading contrast does not meet WCAG AA for large text (3:1)");
-        Assert.That(linkContrast, Is.GreaterThanOrEqualTo(4.5), 
-            "Link contrast does not meet WCAG AA (4.5:1)");
+        Assert.That(
+            bodyContrast,
+            Is.GreaterThanOrEqualTo(4.5),
+            "Body text contrast does not meet WCAG AA (4.5:1)"
+        );
+        Assert.That(
+            h1Contrast,
+            Is.GreaterThanOrEqualTo(3.0),
+            "Heading contrast does not meet WCAG AA for large text (3:1)"
+        );
+        Assert.That(
+            linkContrast,
+            Is.GreaterThanOrEqualTo(4.5),
+            "Link contrast does not meet WCAG AA (4.5:1)"
+        );
     }
 
     [Test]
     public async Task HighContrastMode_MeetsWCAG_AAA_ContrastRequirements()
     {
         // Arrange: Set high contrast theme
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             document.documentElement.setAttribute('data-theme', 'high-contrast');
             localStorage.setItem('ddap-theme', 'high-contrast');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(500);
 
         // Act: Check contrast ratios for key elements
@@ -86,12 +110,21 @@ public class AccessibilityTests : PageTest
         var linkContrast = await GetContrastRatio(await Page.QuerySelectorAsync("a"));
 
         // Assert: WCAG AAA requires 7:1 for normal text, 4.5:1 for large text
-        Assert.That(bodyContrast, Is.GreaterThanOrEqualTo(7.0), 
-            "Body text contrast does not meet WCAG AAA (7:1)");
-        Assert.That(h1Contrast, Is.GreaterThanOrEqualTo(4.5), 
-            "Heading contrast does not meet WCAG AAA for large text (4.5:1)");
-        Assert.That(linkContrast, Is.GreaterThanOrEqualTo(7.0), 
-            "Link contrast does not meet WCAG AAA (7:1)");
+        Assert.That(
+            bodyContrast,
+            Is.GreaterThanOrEqualTo(7.0),
+            "Body text contrast does not meet WCAG AAA (7:1)"
+        );
+        Assert.That(
+            h1Contrast,
+            Is.GreaterThanOrEqualTo(4.5),
+            "Heading contrast does not meet WCAG AAA for large text (4.5:1)"
+        );
+        Assert.That(
+            linkContrast,
+            Is.GreaterThanOrEqualTo(7.0),
+            "Link contrast does not meet WCAG AAA (7:1)"
+        );
     }
 
     [Test]
@@ -103,8 +136,7 @@ public class AccessibilityTests : PageTest
         );
 
         // Assert: All focusable elements should be reachable via Tab
-        Assert.That(focusableElements.Count, Is.GreaterThan(0), 
-            "No focusable elements found");
+        Assert.That(focusableElements.Count, Is.GreaterThan(0), "No focusable elements found");
 
         // Test tabbing through first 5 elements
         for (int i = 0; i < Math.Min(5, focusableElements.Count); i++)
@@ -114,11 +146,12 @@ public class AccessibilityTests : PageTest
         }
 
         // Verify focus is on an element
-        var focusedElement = await Page.EvaluateAsync<string>(
-            "document.activeElement.tagName"
+        var focusedElement = await Page.EvaluateAsync<string>("document.activeElement.tagName");
+        Assert.That(
+            focusedElement,
+            Is.Not.EqualTo("BODY"),
+            "Focus should be on an interactive element, not body"
         );
-        Assert.That(focusedElement, Is.Not.EqualTo("BODY"), 
-            "Focus should be on an interactive element, not body");
     }
 
     [Test]
@@ -137,11 +170,12 @@ public class AccessibilityTests : PageTest
         await Page.WaitForTimeoutAsync(500);
 
         // Assert: Focus should be on main content
-        var focusedElementId = await Page.EvaluateAsync<string>(
-            "document.activeElement.id"
+        var focusedElementId = await Page.EvaluateAsync<string>("document.activeElement.id");
+        Assert.That(
+            focusedElementId,
+            Is.EqualTo("main-content"),
+            "Skip link did not focus main content"
         );
-        Assert.That(focusedElementId, Is.EqualTo("main-content"), 
-            "Skip link did not focus main content");
     }
 
     [Test]
@@ -169,8 +203,7 @@ public class AccessibilityTests : PageTest
 
         // Assert: Theme toggle should have ARIA label
         Assert.That(themeToggle, Is.Not.Null, "Theme toggle button not found");
-        Assert.That(ariaLabel, Is.Not.Null.And.Not.Empty, 
-            "Theme toggle missing aria-label");
+        Assert.That(ariaLabel, Is.Not.Null.And.Not.Empty, "Theme toggle missing aria-label");
     }
 
     [Test]
@@ -185,18 +218,23 @@ public class AccessibilityTests : PageTest
         var viewportWidth = await Page.EvaluateAsync<int>("window.innerWidth");
 
         // Assert: No horizontal scrollbar
-        Assert.That(pageWidth, Is.LessThanOrEqualTo(viewportWidth), 
-            "Page has horizontal scroll on mobile");
+        Assert.That(
+            pageWidth,
+            Is.LessThanOrEqualTo(viewportWidth),
+            "Page has horizontal scroll on mobile"
+        );
     }
 
     [Test]
     public async Task ThemeToggle_Cycles_ThroughAllThemes()
     {
         // Arrange: Start with light theme
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('ddap-theme', 'light');
-        ");
+        "
+        );
 
         var themeToggle = await Page.QuerySelectorAsync("button#theme-toggle");
         Assert.That(themeToggle, Is.Not.Null, "Theme toggle button not found");
@@ -212,8 +250,7 @@ public class AccessibilityTests : PageTest
         await themeToggle.ClickAsync();
         await Page.WaitForTimeoutAsync(300);
         var theme2 = await Page.GetAttributeAsync("html", "data-theme");
-        Assert.That(theme2, Is.EqualTo("high-contrast"), 
-            "Theme did not switch to high-contrast");
+        Assert.That(theme2, Is.EqualTo("high-contrast"), "Theme did not switch to high-contrast");
 
         // High Contrast -> Light
         await themeToggle.ClickAsync();
@@ -227,9 +264,8 @@ public class AccessibilityTests : PageTest
     {
         // Arrange: Get all navigation links
         var navLinks = await Page.QuerySelectorAllAsync("nav a");
-        
-        Assert.That(navLinks.Count, Is.GreaterThan(0), 
-            "No navigation links found");
+
+        Assert.That(navLinks.Count, Is.GreaterThan(0), "No navigation links found");
 
         // Act: Check first 3 links (to avoid too many page loads)
         for (int i = 0; i < Math.Min(3, navLinks.Count); i++)
@@ -243,8 +279,7 @@ public class AccessibilityTests : PageTest
 
                 // Assert: Page loaded successfully
                 var title = await Page.TitleAsync();
-                Assert.That(title, Is.Not.Null.And.Not.Empty, 
-                    $"Page {href} did not load properly");
+                Assert.That(title, Is.Not.Null.And.Not.Empty, $"Page {href} did not load properly");
 
                 // Go back to home
                 await Page.GotoAsync($"{DocsBaseUrl}/index.html");
@@ -259,9 +294,11 @@ public class AccessibilityTests : PageTest
     /// </summary>
     private async Task<double> GetContrastRatio(IElementHandle? element)
     {
-        if (element == null) return 0;
+        if (element == null)
+            return 0;
 
-        var result = await element.EvaluateAsync<ContrastResult>(@"(el) => {
+        var result = await element.EvaluateAsync<ContrastResult>(
+            @"(el) => {
             const style = window.getComputedStyle(el);
             const color = style.color;
             const bgColor = style.backgroundColor;
@@ -293,7 +330,8 @@ public class AccessibilityTests : PageTest
             const ratio = (lighter + 0.05) / (darker + 0.05);
             
             return { ratio, color, bgColor };
-        }");
+        }"
+        );
 
         return result.Ratio;
     }
