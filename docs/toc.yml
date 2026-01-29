@@ -10,6 +10,8 @@
   href: database-providers.md
 - name: API Providers
   href: api-providers.md
+- name: Templates
+  href: templates.md
 - name: Troubleshooting
   href: troubleshooting.md
 - name: API Reference
