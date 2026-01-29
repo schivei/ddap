@@ -421,3 +421,8 @@ FodyWeavers.xsd
 docs/_site/
 docs/api/
 docs/obj/
+
+# Agent workspace and temporary files
+.agent-workspace/
+.validation-results/
+.playwright-cache/
