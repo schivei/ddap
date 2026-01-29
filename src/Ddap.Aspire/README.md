@@ -15,7 +15,7 @@ This library provides seamless integration between DDAP (Dynamic Data API Provid
 ```bash
 dotnet add package Ddap.Aspire
 dotnet add package Ddap.Core
-dotnet add package Ddap.Data.Dapper.SqlServer  # or MySQL/PostgreSQL
+dotnet add package Ddap.Data.Dapper  # Generic Dapper provider
 dotnet add package Ddap.Rest
 dotnet add package Ddap.GraphQL
 ```
@@ -38,7 +38,7 @@ var db = builder.AddSqlServer("sql")
 // Add DDAP API service with automatic database discovery
 builder.AddDdapApi("api")
        .WithReference(db)
-       .WithRestApi()           // Enable REST (JSON/XML/YAML)
+       .WithRestApi()           // Enable REST (JSON/XML)
        .WithGraphQL()           // Enable GraphQL
        .WithGrpc()              // Enable gRPC
        .WithAutoRefresh(30);    // Auto-reload schema every 30 seconds
@@ -52,9 +52,10 @@ Configure DDAP in your service:
 
 ```csharp
 using Ddap.Aspire;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
 using Ddap.GraphQL;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,8 +63,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // Add DDAP with Aspire integration
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDdapForAspire(builder.Configuration)
-       .AddSqlServerDapper()
+       .AddDapper(() => new SqlConnection(connectionString))
        .AddRest()
        .AddGraphQL();
 
@@ -82,11 +84,12 @@ app.Run();
 For development environments where the schema changes frequently:
 
 ```csharp
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDdapForAspireWithAutoRefresh(
     builder.Configuration,
     refreshIntervalSeconds: 30  // Check for schema changes every 30 seconds
 )
-.AddSqlServerDapper()
+.AddDapper(() => new SqlConnection(connectionString))
 .AddRest()
 .AddGraphQL();
 ```
@@ -132,9 +135,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+var connectionString = builder.Configuration.GetConnectionString("catalogdb");
 builder.Services
     .AddDdapForAspireWithAutoRefresh(builder.Configuration, 30)
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL()
     .AddGrpc();
@@ -225,16 +229,16 @@ Choose based on your database:
 
 ```csharp
 // SQL Server
-.AddSqlServerDapper()
+.AddDapper(() => new SqlConnection(connectionString))
 
 // MySQL
-.AddMySqlDapper()
+.AddDapper(() => new MySqlConnection(connectionString))
 
 // PostgreSQL
-.AddPostgreSqlDapper()
+.AddDapper(() => new NpgsqlConnection(connectionString))
 
 // Entity Framework (any provider)
-.AddEntityFramework()
+.AddEntityFramework<TContext>()
 ```
 
 ## Troubleshooting
@@ -248,7 +252,7 @@ builder.AddDdapApi("api").WithReference(database);
 ### Auto-Refresh Not Working
 Check logs for errors. Ensure data provider is registered:
 ```csharp
-.AddSqlServerDapper()  // Don't forget the data provider!
+.AddDapper(() => new SqlConnection(connectionString))  // Don't forget the data provider!
 ```
 
 ### Port Conflicts

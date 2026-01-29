@@ -7,9 +7,7 @@ Welcome to the DDAP API Reference documentation. This section provides detailed 
 Browse the API documentation by namespace:
 
 - **Ddap.Core** - Core abstractions and interfaces
-- **Ddap.Data.Dapper.SqlServer** - SQL Server provider with Dapper
-- **Ddap.Data.Dapper.MySQL** - MySQL provider with Dapper
-- **Ddap.Data.Dapper.PostgreSQL** - PostgreSQL provider with Dapper
+- **Ddap.Data.Dapper** - Generic Dapper provider for any database
 - **Ddap.Data.EntityFramework** - Entity Framework Core provider
 - **Ddap.Rest** - REST API provider
 - **Ddap.GraphQL** - GraphQL provider

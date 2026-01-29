@@ -6,7 +6,7 @@ DDAP supports multiple API protocols through separate provider packages. This gu
 
 | Provider | Package | Protocol | Features |
 |----------|---------|----------|----------|
-| REST | `Ddap.Rest` | HTTP/REST | JSON, XML, YAML, Content Negotiation |
+| REST | `Ddap.Rest` | HTTP/REST | JSON, XML, Content Negotiation |
 | gRPC | `Ddap.Grpc` | gRPC/HTTP2 | Binary protocol, streaming |
 | GraphQL | `Ddap.GraphQL` | GraphQL | Queries, mutations, schema introspection |
 
@@ -25,7 +25,7 @@ using Ddap.Rest;
 
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest();
 
 var app = builder.Build();
@@ -48,11 +48,6 @@ curl -H "Accept: application/json" http://localhost:5000/api/entity
 **XML**
 ```bash
 curl -H "Accept: application/xml" http://localhost:5000/api/entity
-```
-
-**YAML**
-```bash
-curl -H "Accept: application/yaml" http://localhost:5000/api/entity
 ```
 
 #### Generated Endpoints
@@ -196,7 +191,7 @@ using Ddap.GraphQL;
 
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddGraphQL();
 
 var app = builder.Build();
@@ -395,7 +390,7 @@ using Ddap.Grpc;
 
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddGrpc();
 
 var app = builder.Build();
@@ -519,7 +514,7 @@ public override async Task StreamEntities(
 | Feature | REST | GraphQL | gRPC |
 |---------|------|---------|------|
 | Protocol | HTTP/1.1 | HTTP/1.1 | HTTP/2 |
-| Format | JSON/XML/YAML | JSON | Binary (Protocol Buffers) |
+| Format | JSON/XML | JSON | Binary (Protocol Buffers) |
 | Schema | OpenAPI/Swagger | GraphQL Schema | .proto files |
 | Query Flexibility | Limited | High | Medium |
 | Performance | Medium | Medium | High |
@@ -535,7 +530,7 @@ You can enable multiple providers simultaneously:
 ```csharp
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()      // REST at /api/*
     .AddGraphQL()   // GraphQL at /graphql
     .AddGrpc();     // gRPC on configured port

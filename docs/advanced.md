@@ -357,17 +357,18 @@ builder.Services
     {
         options.ConnectionString = builder.Configuration.GetConnectionString("PrimaryDb");
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL();
 
 // Second database
+var secondaryConnectionString = builder.Configuration.GetConnectionString("SecondaryDb");
 builder.Services
     .AddDdap("SecondaryDb", options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("SecondaryDb");
+        options.ConnectionString = secondaryConnectionString;
     })
-    .AddMySqlDapper()
+    .AddDapper(() => new MySqlConnection(secondaryConnectionString))
     .AddRest();
 ```
 
@@ -380,26 +381,28 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment())
 {
+    var devConnectionString = builder.Configuration.GetConnectionString("Development");
     builder.Services
         .AddDdap(options =>
         {
-            options.ConnectionString = builder.Configuration.GetConnectionString("Development");
+            options.ConnectionString = devConnectionString;
             options.EnableDetailedErrors = true;
         })
-        .AddSqlServerDapper()
+        .AddDapper(() => new SqlConnection(devConnectionString))
         .AddRest()
         .AddGraphQL()
         .AddGrpc();
 }
 else if (builder.Environment.IsProduction())
 {
+    var prodConnectionString = builder.Configuration.GetConnectionString("Production");
     builder.Services
         .AddDdap(options =>
         {
-            options.ConnectionString = builder.Configuration.GetConnectionString("Production");
+            options.ConnectionString = prodConnectionString;
             options.EnableDetailedErrors = false;
         })
-        .AddSqlServerDapper()
+        .AddDapper(() => new SqlConnection(prodConnectionString))
         .AddRest()
         .AddGraphQL();
 }
@@ -451,15 +454,16 @@ public partial class EntityController
 Optimize database connections:
 
 ```csharp
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.ConnectionString = connectionString;
         options.MaxPoolSize = 100;
         options.MinPoolSize = 10;
         options.ConnectionTimeout = 30;
     })
-    .AddSqlServerDapper();
+    .AddDapper(() => new SqlConnection(connectionString));
 ```
 
 ### Lazy Loading

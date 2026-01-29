@@ -6,9 +6,9 @@ DDAP supports multiple database providers, each implemented as a separate NuGet 
 
 | Provider | Package | Database | ORM | Status |
 |----------|---------|----------|-----|--------|
-| SQL Server | `Ddap.Data.Dapper.SqlServer` | SQL Server | Dapper | ✅ Stable |
-| MySQL | `Ddap.Data.Dapper.MySQL` | MySQL | Dapper | ✅ Stable |
-| PostgreSQL | `Ddap.Data.Dapper.PostgreSQL` | PostgreSQL | Dapper | ✅ Stable |
+| SQL Server | `Ddap.Data.Dapper` | SQL Server | Dapper | ✅ Stable |
+| MySQL | `Ddap.Data.Dapper` | MySQL | Dapper | ✅ Stable |
+| PostgreSQL | `Ddap.Data.Dapper` | PostgreSQL | Dapper | ✅ Stable |
 | Entity Framework | `Ddap.Data.EntityFramework` | Any EF-supported | EF Core | ✅ Stable |
 
 ## SQL Server Provider
@@ -16,20 +16,22 @@ DDAP supports multiple database providers, each implemented as a separate NuGet 
 ### Installation
 
 ```bash
-dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Data.Dapper
+dotnet add package Microsoft.Data.SqlClient
 ```
 
 ### Configuration
 
 ```csharp
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;
 
 builder.Services
     .AddDdap(options =>
     {
         options.ConnectionString = "Server=localhost;Database=MyDb;Integrated Security=true;";
     })
-    .AddSqlServerDapper();
+    .AddDapper(() => new SqlConnection(connectionString));
 ```
 
 ### Features
@@ -96,20 +98,22 @@ builder.Services
 ### Installation
 
 ```bash
-dotnet add package Ddap.Data.Dapper.MySQL
+dotnet add package Ddap.Data.Dapper
+dotnet add package MySqlConnector
 ```
 
 ### Configuration
 
 ```csharp
-using Ddap.Data.Dapper.MySQL;
+using Ddap.Data.Dapper;
+using MySqlConnector;
 
 builder.Services
     .AddDdap(options =>
     {
         options.ConnectionString = "Server=localhost;Database=MyDb;User=root;Password=secret;";
     })
-    .AddMySqlDapper();
+    .AddDapper(() => new MySqlConnection(connectionString));
 ```
 
 ### Features
@@ -179,20 +183,22 @@ builder.Services
 ### Installation
 
 ```bash
-dotnet add package Ddap.Data.Dapper.PostgreSQL
+dotnet add package Ddap.Data.Dapper
+dotnet add package Npgsql
 ```
 
 ### Configuration
 
 ```csharp
-using Ddap.Data.Dapper.PostgreSQL;
+using Ddap.Data.Dapper;
+using Npgsql;
 
 builder.Services
     .AddDdap(options =>
     {
         options.ConnectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=secret;";
     })
-    .AddPostgreSqlDapper();
+    .AddDapper(() => new NpgsqlConnection(connectionString));
 ```
 
 ### Features
@@ -312,7 +318,7 @@ builder.Services
     {
         options.ConnectionString = "Server=localhost;Database=MyDb;...";
     })
-    .AddEntityFramework();
+    .AddEntityFramework<TContext>();
 ```
 
 ### Features
@@ -403,21 +409,23 @@ You can use multiple database providers in the same application:
 
 ```csharp
 // Primary database (SQL Server)
+var sqlConnectionString = builder.Configuration.GetConnectionString("SqlServer");
 builder.Services
     .AddDdap("Primary", options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("SqlServer");
+        options.ConnectionString = sqlConnectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(sqlConnectionString))
     .AddRest();
 
 // Secondary database (PostgreSQL)
+var pgConnectionString = builder.Configuration.GetConnectionString("PostgreSQL");
 builder.Services
     .AddDdap("Secondary", options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("PostgreSQL");
+        options.ConnectionString = pgConnectionString;
     })
-    .AddPostgreSqlDapper()
+    .AddDapper(() => new NpgsqlConnection(pgConnectionString))
     .AddRest();
 ```
 

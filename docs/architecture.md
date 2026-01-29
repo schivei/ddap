@@ -141,20 +141,11 @@ public interface IDataProvider
 
 Each database provider implements `IDataProvider` and loads database metadata:
 
-#### Ddap.Data.Dapper.SqlServer
-- SQL Server metadata loading
-- Dapper-based queries
-- Supports indexes, relationships, composite keys
-
-#### Ddap.Data.Dapper.MySQL
-- MySQL metadata loading via INFORMATION_SCHEMA
-- Handles MySQL-specific data types
-- Full relationship and index support
-
-#### Ddap.Data.Dapper.PostgreSQL
-- PostgreSQL metadata loading via pg_catalog
-- Supports PostgreSQL-specific features
-- UUID and array type handling
+#### Ddap.Data.Dapper
+- Generic Dapper provider for any database with IDbConnection
+- Supports SQL Server, MySQL, PostgreSQL, SQLite, and more
+- Database-specific metadata queries for indexes and relationships
+- Full support for composite keys and complex relationships
 
 #### Ddap.Data.EntityFramework
 - Database-agnostic using EF Core
@@ -165,7 +156,7 @@ Each database provider implements `IDataProvider` and loads database metadata:
 
 #### Ddap.Rest
 - Generates REST controllers via partial classes
-- Content negotiation (JSON/XML/YAML)
+- Content negotiation (JSON/XML)
 - Uses Newtonsoft.Json for JSON serialization
 - Entity metadata endpoints
 
@@ -240,9 +231,10 @@ type EntityMetadata {
 DDAP uses the builder pattern for fluent configuration:
 
 ```csharp
+var connectionString = "...";
 builder.Services
     .AddDdap(options => { /* configure */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL();
 ```
@@ -296,7 +288,7 @@ public class EntityController
 1. **Configuration Phase**
    ```
    AddDdap() → Register core services
-   AddSqlServerDapper() → Register data provider
+   AddDapper() → Register data provider
    AddRest() → Register REST controllers
    ```
 

@@ -132,18 +132,20 @@ namespace MyApp.Entities
 
 ```csharp
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
+using Microsoft.Data.SqlClient;
 using MyApp.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest();
 
 var app = builder.Build();

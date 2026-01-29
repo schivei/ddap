@@ -90,9 +90,10 @@ No data provider registered
 **Solution:**
 Register a database provider after AddDdap:
 ```csharp
+var connectionString = "...";
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper();  // Don't forget this!
+    .AddDapper(() => new SqlConnection(connectionString));  // Don't forget this!
 ```
 
 ### Issue: Connection String Not Found
@@ -412,13 +413,7 @@ HTTP 404 - /graphql
        .AddXmlSerializerFormatters();
    ```
 
-2. **Add YAML formatter:**
-   ```csharp
-   builder.Services.AddControllers()
-       .AddYamlFormatters();
-   ```
-
-3. **Check Accept header:**
+2. **Check Accept header:**
    ```bash
    curl -v -H "Accept: application/xml" http://localhost:5000/api/entity
    ```
@@ -625,7 +620,7 @@ If you're still experiencing issues:
 
 | Error | Likely Cause | Quick Fix |
 |-------|--------------|-----------|
-| `NullReferenceException` in EntityRepository | Provider not registered | Add `.AddSqlServerDapper()` etc. |
+| `NullReferenceException` in EntityRepository | Provider not registered | Add `.AddDapper()` etc. |
 | `InvalidOperationException: No service for type IDataProvider` | Missing provider | Register data provider |
 | `SqlException: Login failed` | Wrong credentials | Check connection string |
 | `TimeoutException` | Slow query or network | Increase timeout |

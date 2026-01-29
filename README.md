@@ -11,7 +11,7 @@
 - 🚀 **Automatic API Generation**: Load database schema and automatically create API endpoints
 - 🗄️ **Multiple Database Options**: Supports SQL Server, MySQL, and PostgreSQL (one at a time)
 - 🌐 **Multiple API Protocols**: REST, gRPC, GraphQL simultaneously
-- 📋 **Content Negotiation**: REST APIs support JSON (Newtonsoft.Json), XML, and YAML
+- 📋 **Content Negotiation**: REST APIs support JSON (Newtonsoft.Json) and XML
 - 🔧 **Extensible**: Partial classes for custom controllers, services, queries, and mutations
 - 📦 **Modular**: Separate libraries for each provider
 - 🎯 **Builder Pattern**: Fluent API for easy configuration
@@ -32,13 +32,11 @@ Choose the packages you need based on your database and API requirements:
 dotnet add package Ddap.Core
 
 # Database Providers (choose one):
-dotnet add package Ddap.Data.Dapper.SqlServer      # SQL Server with Dapper
-dotnet add package Ddap.Data.Dapper.MySQL          # MySQL with Dapper
-dotnet add package Ddap.Data.Dapper.PostgreSQL     # PostgreSQL with Dapper
+dotnet add package Ddap.Data.Dapper                # Generic Dapper provider
 dotnet add package Ddap.Data.EntityFramework       # Entity Framework Core (database-agnostic)
 
 # API Providers (choose one or more):
-dotnet add package Ddap.Rest                       # REST API (JSON/XML/YAML)
+dotnet add package Ddap.Rest                       # REST API (JSON/XML)
 dotnet add package Ddap.Grpc                       # gRPC
 dotnet add package Ddap.GraphQL                    # GraphQL
 ```
@@ -50,20 +48,22 @@ Choose your database provider and configure DDAP:
 #### SQL Server with Dapper
 ```csharp
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
 using Ddap.Grpc;
 using Ddap.GraphQL;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = "Server=localhost;Database=MyDb;...";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Server=localhost;Database=MyDb;...";
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()  // SQL Server with Dapper
-    .AddRest()             // Enable REST API (JSON/XML/YAML)
+    .AddDapper(() => new SqlConnection(connectionString))  // SQL Server with Dapper
+    .AddRest()             // Enable REST API (JSON/XML)
     .AddGrpc()             // Enable gRPC
     .AddGraphQL();         // Enable GraphQL
 
@@ -78,28 +78,32 @@ app.Run();
 
 #### MySQL with Dapper
 ```csharp
-using Ddap.Data.Dapper.MySQL;
+using Ddap.Data.Dapper;
+using MySqlConnector;
 
+var connectionString = "Server=localhost;Database=MyDb;User=root;Password=...";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Server=localhost;Database=MyDb;User=root;Password=...";
+        options.ConnectionString = connectionString;
     })
-    .AddMySqlDapper()      // MySQL with Dapper
+    .AddDapper(() => new MySqlConnection(connectionString))      // MySQL with Dapper
     .AddRest()
     .AddGraphQL();
 ```
 
 #### PostgreSQL with Dapper
 ```csharp
-using Ddap.Data.Dapper.PostgreSQL;
+using Ddap.Data.Dapper;
+using Npgsql;
 
+var connectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=...";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=...";
+        options.ConnectionString = connectionString;
     })
-    .AddPostgreSqlDapper()  // PostgreSQL with Dapper
+    .AddDapper(() => new NpgsqlConnection(connectionString))  // PostgreSQL with Dapper
     .AddRest()
     .AddGrpc();
 ```
@@ -116,11 +120,6 @@ curl -H "Accept: application/json" http://localhost:5000/api/entity
 ### XML
 ```bash
 curl -H "Accept: application/xml" http://localhost:5000/api/entity
-```
-
-### YAML
-```bash
-curl -H "Accept: application/yaml" http://localhost:5000/api/entity
 ```
 
 ## API Examples
@@ -182,12 +181,10 @@ ddap/
 │   │   └── Internals/                  # Internal implementation classes
 │   ├── Ddap.Data/                      # Legacy data provider (deprecated)
 │   ├── Ddap.Data.EntityFramework/      # EF Core provider (database-agnostic)
-│   ├── Ddap.Data.Dapper.SqlServer/     # SQL Server with Dapper
-│   ├── Ddap.Data.Dapper.MySQL/         # MySQL with Dapper
-│   ├── Ddap.Data.Dapper.PostgreSQL/    # PostgreSQL with Dapper
+│   ├── Ddap.Data.Dapper/               # Generic Dapper provider for any database
 │   ├── Ddap.Memory/                    # In-memory entity management
 │   ├── Ddap.CodeGen/                   # Source generators
-│   ├── Ddap.Rest/                      # REST API provider (JSON/XML/YAML)
+│   ├── Ddap.Rest/                      # REST API provider (JSON/XML)
 │   ├── Ddap.Grpc/                      # gRPC provider
 │   └── Ddap.GraphQL/                   # GraphQL provider
 ├── tests/
@@ -219,7 +216,7 @@ Secure your APIs with JWT authentication and role-based authorization:
 ```csharp
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddAuth(authOptions =>
     {
         authOptions.RequireAuthenticationByDefault = true;
@@ -245,7 +242,7 @@ Get real-time notifications when data changes:
 ```csharp
 builder.Services
     .AddDdap(options => { /* ... */ })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()
     .AddGraphQL()
     .AddSubscriptions(subscriptionOptions =>

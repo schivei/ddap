@@ -38,7 +38,7 @@ Install the core package and your choice of providers:
 dotnet add package Ddap.Core
 
 # Choose your database provider
-dotnet add package Ddap.Data.Dapper.SqlServer      # For SQL Server
+dotnet add package Ddap.Data.Dapper      # Generic Dapper provider
 # OR
 dotnet add package Ddap.Data.Dapper.MySQL          # For MySQL
 # OR
@@ -56,18 +56,20 @@ Here's a minimal example using SQL Server:
 
 ```csharp
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure DDAP
+var connectionString = "Server=localhost;Database=MyDb;Integrated Security=true;";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Server=localhost;Database=MyDb;Integrated Security=true;";
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()  // Use SQL Server with Dapper
+    .AddDapper(() => new SqlConnection(connectionString))  // Use SQL Server with Dapper
     .AddRest();            // Enable REST API
 
 var app = builder.Build();
@@ -116,9 +118,6 @@ curl -H "Accept: application/json" http://localhost:5000/api/entity
 
 # XML
 curl -H "Accept: application/xml" http://localhost:5000/api/entity
-
-# YAML
-curl -H "Accept: application/yaml" http://localhost:5000/api/entity
 ```
 
 ## Adding More API Providers
@@ -127,19 +126,21 @@ DDAP supports multiple API protocols. You can add GraphQL and gRPC:
 
 ```csharp
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.Rest;
 using Ddap.GraphQL;
 using Ddap.Grpc;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = "Server=localhost;Database=MyDb;...";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Server=localhost;Database=MyDb;...";
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest()      // REST API
     .AddGraphQL()   // GraphQL
     .AddGrpc();     // gRPC
@@ -168,28 +169,32 @@ curl -X POST http://localhost:5000/graphql \
 ### MySQL
 
 ```csharp
-using Ddap.Data.Dapper.MySQL;
+using Ddap.Data.Dapper;
+using MySqlConnector;
 
+var connectionString = "Server=localhost;Database=MyDb;User=root;Password=secret;";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Server=localhost;Database=MyDb;User=root;Password=secret;";
+        options.ConnectionString = connectionString;
     })
-    .AddMySqlDapper()
+    .AddDapper(() => new MySqlConnection(connectionString))
     .AddRest();
 ```
 
 ### PostgreSQL
 
 ```csharp
-using Ddap.Data.Dapper.PostgreSQL;
+using Ddap.Data.Dapper;
+using Npgsql;
 
+var connectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=secret;";
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=secret;";
+        options.ConnectionString = connectionString;
     })
-    .AddPostgreSqlDapper()
+    .AddDapper(() => new NpgsqlConnection(connectionString))
     .AddRest();
 ```
 
@@ -205,7 +210,7 @@ builder.Services
     {
         options.ConnectionString = "...";
     })
-    .AddEntityFramework()
+    .AddEntityFramework<MyDbContext>()
     .AddRest();
 ```
 
@@ -224,12 +229,13 @@ It's recommended to store your connection string in `appsettings.json`:
 Then reference it in your code:
 
 ```csharp
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services
     .AddDdap(options =>
     {
-        options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper()
+    .AddDapper(() => new SqlConnection(connectionString))
     .AddRest();
 ```
 
