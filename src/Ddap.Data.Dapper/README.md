@@ -340,12 +340,19 @@ The provider automatically maps common SQL types to CLR types:
 | bigint, int8, long | long |
 | smallint, int2 | short |
 | tinyint | byte |
+| int unsigned | uint |
+| bigint unsigned | ulong |
+| smallint unsigned | ushort |
+| tinyint unsigned | byte |
 | bit, bool, boolean | bool |
 | decimal, numeric, money | decimal |
 | float, double | double |
 | real, float4 | float |
 | datetime, timestamp | DateTime |
-| time | TimeSpan |
+| datetimeoffset, timestamptz | DateTimeOffset |
+| date | DateOnly |
+| time | TimeOnly |
+| interval | TimeSpan |
 | uniqueidentifier, uuid | Guid |
 | binary, varbinary, bytea | byte[] |
 | char, varchar, text, nvarchar | string |

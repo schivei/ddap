@@ -23,13 +23,19 @@ public class TimeOnlyType : ScalarType<TimeOnly, StringValueNode>
     /// </summary>
     protected override TimeOnly ParseLiteral(StringValueNode valueSyntax)
     {
+        // Validate input is not null or whitespace
+        if (string.IsNullOrWhiteSpace(valueSyntax.Value))
+        {
+            throw new SerializationException("TimeOnly value cannot be null or whitespace.", this);
+        }
+
         if (TimeOnly.TryParse(valueSyntax.Value, out var timeOnly))
         {
             return timeOnly;
         }
 
         throw new SerializationException(
-            $"Unable to deserialize string to TimeOnly: {valueSyntax.Value}",
+            $"Unable to deserialize string to TimeOnly: '{valueSyntax.Value}'. Expected format: HH:mm:ss (e.g., 14:30:00).",
             this
         );
     }

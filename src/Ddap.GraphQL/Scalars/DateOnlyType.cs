@@ -23,13 +23,19 @@ public class DateOnlyType : ScalarType<DateOnly, StringValueNode>
     /// </summary>
     protected override DateOnly ParseLiteral(StringValueNode valueSyntax)
     {
+        // Validate input is not null or whitespace
+        if (string.IsNullOrWhiteSpace(valueSyntax.Value))
+        {
+            throw new SerializationException("DateOnly value cannot be null or whitespace.", this);
+        }
+
         if (DateOnly.TryParse(valueSyntax.Value, out var dateOnly))
         {
             return dateOnly;
         }
 
         throw new SerializationException(
-            $"Unable to deserialize string to DateOnly: {valueSyntax.Value}",
+            $"Unable to deserialize string to DateOnly: '{valueSyntax.Value}'. Expected format: yyyy-MM-dd (e.g., 2024-01-29).",
             this
         );
     }

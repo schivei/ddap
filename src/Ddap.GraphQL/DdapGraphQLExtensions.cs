@@ -79,7 +79,9 @@ public static class DdapGraphQLExtensions
     public static IRequestExecutorBuilder AddExtendedTypes(this IRequestExecutorBuilder builder)
     {
         // Add type converters for unsigned integer types
-        // These map to their signed equivalents in GraphQL
+        // These map to their signed equivalents in GraphQL using unchecked conversions.
+        // WARNING: Values exceeding signed type ranges will wrap around (e.g., uint.MaxValue becomes -1).
+        // Consider validating value ranges in your application logic if overflow is a concern.
         builder.AddTypeConverter<uint, int>(value => unchecked((int)value));
         builder.AddTypeConverter<int, uint>(value => unchecked((uint)value));
 

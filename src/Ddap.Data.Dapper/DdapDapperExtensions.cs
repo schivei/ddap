@@ -129,8 +129,8 @@ public static class DdapDapperExtensions
                     @"
                     SELECT 
                         INDEX_NAME as IndexName,
-                        NON_UNIQUE = 0 as IsUnique,
-                        INDEX_TYPE = 'BTREE' as IsClustered,
+                        (NON_UNIQUE = 0) as IsUnique,
+                        (INDEX_TYPE = 'BTREE') as IsClustered,
                         GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) as Columns
                     FROM INFORMATION_SCHEMA.STATISTICS
                     WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @TableName

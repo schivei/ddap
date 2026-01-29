@@ -262,9 +262,6 @@ public class DapperDataProvider : IDataProvider
     {
         var sqlTypeLower = sqlType.ToLower();
 
-        // Check for unsigned types (MySQL specific)
-        bool isUnsigned = sqlTypeLower.Contains("unsigned");
-
         var baseType = sqlTypeLower switch
         {
             // Unsigned integer types (MySQL)
@@ -282,7 +279,9 @@ public class DapperDataProvider : IDataProvider
             "int" or "integer" or "int4" => typeof(int),
             "bigint" or "int8" or "long" => typeof(long),
             "smallint" or "int2" => typeof(short),
-            "tinyint" => typeof(sbyte), // SQL Server tinyint is unsigned (byte), MySQL tinyint signed is sbyte
+            // Note: SQL Server tinyint is unsigned (byte), MySQL tinyint signed is sbyte
+            // This mapping assumes byte for compatibility. Use unsigned detection for MySQL.
+            "tinyint" => typeof(byte),
 
             // Boolean
             "bit" or "bool" or "boolean" => typeof(bool),

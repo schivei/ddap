@@ -172,7 +172,12 @@ public class EntityFrameworkDataProvider<TContext> : IDataProvider
             }
             else
             {
-                relationshipType = RelationshipType.OneToMany; // Default to OneToMany
+                // navigation.IsCollection == false and foreignKey.IsUnique == false:
+                // from the current entity's perspective this is a many-to-one navigation
+                // (current entity is on the "many" side). Since RelationshipType only has
+                // OneToOne, OneToMany and ManyToMany, we represent this as OneToMany
+                // from the principal/parent entity's perspective.
+                relationshipType = RelationshipType.OneToMany;
             }
 
             relationships.Add(

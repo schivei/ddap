@@ -52,10 +52,7 @@ public class EntityLoaderHostedService : IHostedService
 
             foreach (var entity in entities)
             {
-                if (_entityRepository is EntityRepository repository)
-                {
-                    repository.AddOrUpdateEntity(entity);
-                }
+                _entityRepository.AddOrUpdateEntity(entity);
             }
 
             _logger.LogInformation("Loaded {Count} entity configurations.", entities.Count);
