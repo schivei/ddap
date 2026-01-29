@@ -58,6 +58,25 @@ public class DdapGraphQLExtensionsTests
     }
 
     [Fact]
+    public void AddGraphQL_Should_Support_Configuration_Callback()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var builder = services.AddDdap(options => { });
+        var wasConfigureCalled = false;
+
+        // Act
+        builder.AddGraphQL(graphql =>
+        {
+            wasConfigureCalled = true;
+            graphql.Should().NotBeNull();
+        });
+
+        // Assert
+        wasConfigureCalled.Should().BeTrue();
+    }
+
+    [Fact]
     public void AddGraphQL_Should_Add_Query_Type()
     {
         // Arrange

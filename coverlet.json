@@ -1,0 +1,47 @@
+{
+  "excludeByFile": [
+    "**/*.g.cs",
+    "**/Generated/**/*.cs",
+    "**/obj/**/*.cs",
+    "**/bin/**/*.cs",
+    "**/*AssemblyInfo.cs",
+    "**/*AssemblyAttributes.cs"
+  ],
+  "excludeByAttribute": [
+    "Obsolete",
+    "GeneratedCode",
+    "CompilerGenerated",
+    "ExcludeFromCodeCoverage"
+  ],
+  "exclude": [
+    "[*.Tests]*",
+    "[*.Tests.*]*",
+    "[Ddap.Example.*]*",
+    "[*.Example.*]*",
+    "[Ddap.Data.Dapper.MySQL]*",
+    "[Ddap.Data.Dapper.PostgreSQL]*",
+    "[Ddap.Data.Dapper.SqlServer]*",
+    "[Ddap.Data.EntityFramework]*",
+    "[Ddap.Data.Dapper]*",
+    "[Ddap.Data]*",
+    "[Ddap.Auth]*",
+    "[Ddap.CodeGen]*",
+    "[Ddap.Memory]*",
+    "[Ddap.Subscriptions]*",
+    "[Ddap.Core]Ddap.Core.Internals.*",
+    "[Ddap.Core]Ddap.Core.AutoReloadOptions"
+  ],
+  "include": [
+    "[Ddap.Core]*",
+    "[Ddap.Rest]*",
+    "[Ddap.GraphQL]*",
+    "[Ddap.Grpc]*",
+    "[Ddap.Aspire]*"
+  ],
+
+  "skipAutoProps": true,
+  "useSourceLink": true,
+  "singleHit": false,
+  "includeTestAssembly": false,
+  "deterministic": true
+}

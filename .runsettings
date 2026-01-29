@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!-- Configuration for code coverage -->
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <!-- Coverage options -->
+          <Format>cobertura</Format>
+          <Exclude>
+            <!-- Exclude test assemblies -->
+            [*.Tests]*
+            [*.Tests.*]*
+            
+            <!-- Exclude example projects -->
+            [Ddap.Example.*]*
+            [*.Example.*]*
+            
+            <!-- Exclude generated code -->
+            [*]*.g.cs
+            [*]*Generated*
+            
+            <!-- Exclude specific files -->
+            [*]*AssemblyInfo*
+            [*]*AssemblyAttributes*
+            
+            <!-- Exclude data providers (require actual database for full coverage) -->
+            [Ddap.Data.Dapper.MySQL]*
+            [Ddap.Data.Dapper.PostgreSQL]*
+            [Ddap.Data.Dapper.SqlServer]*
+            [Ddap.Data.EntityFramework]*
+            [Ddap.Data.Dapper]*
+            [Ddap.Data]*
+            
+            <!-- Exclude auth module (requires complex auth setup) -->
+            [Ddap.Auth]*
+            
+            <!-- Exclude CodeGen (requires specific conditions) -->
+            [Ddap.CodeGen]*
+            
+            <!-- Exclude Memory module (simple in-memory implementation) -->
+            [Ddap.Memory]*
+            
+            <!-- Exclude Subscriptions (requires messaging infrastructure) -->
+            [Ddap.Subscriptions]*
+            
+            <!-- Exclude internal configuration classes -->
+            [Ddap.Core]Ddap.Core.Internals.*
+            [Ddap.Core]Ddap.Core.AutoReloadOptions
+          </Exclude>
+          
+          <!-- Include main application code -->
+          <Include>
+            [Ddap.Core]*
+            [Ddap.Rest]*
+            [Ddap.GraphQL]*
+            [Ddap.Grpc]*
+            [Ddap.Aspire]*
+          </Include>
+          
+          <!-- Include private and internal members in coverage -->
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          
+          <!-- Use source link -->
+          <UseSourceLink>true</UseSourceLink>
+          
+          <!-- Single hit -->
+          <SingleHit>false</SingleHit>
+          
+          <!-- Include directories -->
+          <IncludeDirectory>../../../</IncludeDirectory>
+          
+          <!-- Skip auto props -->
+          <SkipAutoProps>true</SkipAutoProps>
+          
+          <!-- Deterministic report -->
+          <DeterministicReport>true</DeterministicReport>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+  
+  <!-- Test framework settings -->
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+    <ResultsDirectory>./coverage</ResultsDirectory>
+    <CollectSourceInformation>true</CollectSourceInformation>
+  </RunConfiguration>
+</RunSettings>

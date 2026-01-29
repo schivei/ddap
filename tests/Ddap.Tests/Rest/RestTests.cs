@@ -2,6 +2,7 @@ using System.Text;
 using Ddap.Core;
 using Ddap.Core.Internals;
 using Ddap.Rest;
+using Ddap.Rest.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +64,196 @@ public class DdapRestExtensionsTests
     }
 }
 
+public class QueryParametersTests
+{
+    [Fact]
+    public void PageNumber_Should_Default_To_One()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.PageNumber.Should().Be(1);
+    }
+
+    [Fact]
+    public void PageSize_Should_Default_To_Ten()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.PageSize.Should().Be(10);
+    }
+
+    [Fact]
+    public void PageSize_Should_Accept_Valid_Values()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageSize = 50;
+
+        // Assert
+        queryParams.PageSize.Should().Be(50);
+    }
+
+    [Fact]
+    public void PageSize_Should_Cap_At_MaxPageSize_When_Exceeding()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageSize = 200; // Exceeds max of 100
+
+        // Assert
+        queryParams.PageSize.Should().Be(100);
+    }
+
+    [Fact]
+    public void PageSize_Should_Cap_At_MaxPageSize_Exactly()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageSize = 101; // Just over max
+
+        // Assert
+        queryParams.PageSize.Should().Be(100);
+    }
+
+    [Fact]
+    public void Filter_Should_Be_Null_By_Default()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.Filter.Should().BeNull();
+    }
+
+    [Fact]
+    public void Filter_Should_Accept_Value()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.Filter = "name eq 'John'";
+
+        // Assert
+        queryParams.Filter.Should().Be("name eq 'John'");
+    }
+
+    [Fact]
+    public void OrderBy_Should_Be_Null_By_Default()
+    {
+        // Arrange & Act
+        var queryParams = new QueryParameters();
+
+        // Assert
+        queryParams.OrderBy.Should().BeNull();
+    }
+
+    [Fact]
+    public void OrderBy_Should_Accept_Value()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.OrderBy = "name desc";
+
+        // Assert
+        queryParams.OrderBy.Should().Be("name desc");
+    }
+
+    [Fact]
+    public void PageNumber_Should_Accept_Value()
+    {
+        // Arrange
+        var queryParams = new QueryParameters();
+
+        // Act
+        queryParams.PageNumber = 5;
+
+        // Assert
+        queryParams.PageNumber.Should().Be(5);
+    }
+}
+
+public class PagedResultTests
+{
+    [Fact]
+    public void PagedResult_Should_Initialize_Properties()
+    {
+        // Arrange
+        var items = new List<string> { "item1", "item2" };
+
+        // Act
+        var result = new PagedResult<string>(items, 100, 2, 10);
+
+        // Assert
+        result.Items.Should().BeEquivalentTo(items);
+        result.TotalCount.Should().Be(100);
+        result.PageNumber.Should().Be(2);
+        result.PageSize.Should().Be(10);
+    }
+
+    [Fact]
+    public void PagedResult_Should_Calculate_TotalPages()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 95, 1, 10);
+
+        // Assert
+        result.TotalPages.Should().Be(10); // 95 items / 10 per page = 10 pages
+    }
+
+    [Fact]
+    public void PagedResult_HasPrevious_Should_Be_False_For_First_Page()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 1, 10);
+
+        // Assert
+        result.HasPrevious.Should().BeFalse();
+    }
+
+    [Fact]
+    public void PagedResult_HasPrevious_Should_Be_True_For_Second_Page()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 2, 10);
+
+        // Assert
+        result.HasPrevious.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PagedResult_HasNext_Should_Be_True_When_More_Pages_Exist()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 1, 10);
+
+        // Assert
+        result.HasNext.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PagedResult_HasNext_Should_Be_False_On_Last_Page()
+    {
+        // Arrange & Act
+        var result = new PagedResult<string>(new List<string>(), 100, 10, 10);
+
+        // Assert
+        result.HasNext.Should().BeFalse();
+    }
+}
+
 public class EntityControllerTests
 {
     private readonly Mock<IEntityRepository> _mockRepository;
@@ -96,7 +287,7 @@ public class EntityControllerTests
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
 
         // Act
-        var result = _controller.GetAllEntities(new Ddap.Rest.Models.QueryParameters());
+        var result = _controller.GetAllEntities(new QueryParameters());
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -111,7 +302,7 @@ public class EntityControllerTests
         _mockRepository.Setup(r => r.GetAllEntities()).Returns(new List<IEntityConfiguration>());
 
         // Act
-        var result = _controller.GetAllEntities(new Ddap.Rest.Models.QueryParameters());
+        var result = _controller.GetAllEntities(new QueryParameters());
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -278,6 +469,490 @@ public class EntityControllerTests
         mockEntity.Setup(e => e.Indexes).Returns(indexes);
         mockEntity.Setup(e => e.Relationships).Returns(relationships);
         return mockEntity.Object;
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Apply_Pagination_Correctly()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>();
+        for (int i = 0; i < 50; i++)
+        {
+            entities.Add(CreateTestEntity($"Entity{i}", "dbo", 1));
+        }
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        var parameters = new QueryParameters { PageNumber = 2, PageSize = 10 };
+
+        // Act
+        var result = _controller.GetAllEntities(parameters);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        var pagedResultType = pagedResult!.GetType();
+        var pageNumber = (int)pagedResultType.GetProperty("PageNumber")!.GetValue(pagedResult)!;
+        var pageSize = (int)pagedResultType.GetProperty("PageSize")!.GetValue(pagedResult)!;
+        var totalCount = (int)pagedResultType.GetProperty("TotalCount")!.GetValue(pagedResult)!;
+        var items =
+            pagedResultType.GetProperty("Items")!.GetValue(pagedResult) as IEnumerable<object>;
+
+        pageNumber.Should().Be(2);
+        pageSize.Should().Be(10);
+        totalCount.Should().Be(50);
+        items.Should().HaveCount(10);
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Include_PropertyCount()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>
+        {
+            CreateTestEntity("Entity1", "dbo", 5),
+            CreateTestEntity("Entity2", "schema1", 10),
+        };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(new QueryParameters());
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+        var itemsProperty = pagedResult!.GetType().GetProperty("Items");
+        var items = itemsProperty!.GetValue(pagedResult) as IEnumerable<object>;
+
+        var itemsList = items!.ToList();
+        itemsList.Should().HaveCount(2);
+
+        // Verify PropertyCount is included in each item
+        var firstItem = itemsList[0];
+        var propertyCountProp = firstItem.GetType().GetProperty("PropertyCount");
+        propertyCountProp.Should().NotBeNull();
+        var propertyCount = (int)propertyCountProp!.GetValue(firstItem)!;
+        propertyCount.Should().Be(5);
+
+        var secondItem = itemsList[1];
+        var propertyCount2 = (int)propertyCountProp.GetValue(secondItem)!;
+        propertyCount2.Should().Be(10);
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Handle_Large_Page_Number()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration> { CreateTestEntity("Entity1", "dbo", 1) };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        var parameters = new QueryParameters { PageNumber = 100, PageSize = 10 };
+
+        // Act
+        var result = _controller.GetAllEntities(parameters);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Indexes()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult!.Value.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Relationships()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        // Verify Relationships property exists and contains the expected relationship
+        var relationshipsProp = metadata!.GetType().GetProperty("Relationships");
+        relationshipsProp.Should().NotBeNull();
+        var relationships = relationshipsProp!.GetValue(metadata) as IEnumerable<object>;
+        relationships.Should().NotBeNull();
+        relationships.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Property_Type_Names()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Include_Relationship_Type_As_String()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Return_Correct_TotalCount()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>();
+        for (int i = 0; i < 25; i++)
+        {
+            entities.Add(CreateTestEntity($"Entity{i}", "dbo", 1));
+        }
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(new QueryParameters { PageSize = 10 });
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        var totalCount = (int)
+            pagedResult!.GetType().GetProperty("TotalCount")!.GetValue(pagedResult)!;
+        totalCount.Should().Be(25);
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Skip_Correct_Number_Of_Items()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>();
+        for (int i = 0; i < 30; i++)
+        {
+            entities.Add(CreateTestEntity($"Entity{i}", "dbo", 1));
+        }
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        var parameters = new QueryParameters { PageNumber = 3, PageSize = 10 };
+
+        // Act
+        var result = _controller.GetAllEntities(parameters);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        // Verify pagination metadata
+        var pageNumberProp = pagedResult!.GetType().GetProperty("PageNumber");
+        var pageSizeProp = pagedResult.GetType().GetProperty("PageSize");
+        var itemsProp = pagedResult.GetType().GetProperty("Items");
+
+        pageNumberProp!.GetValue(pagedResult).Should().Be(3);
+        pageSizeProp!.GetValue(pagedResult).Should().Be(10);
+
+        var items = itemsProp!.GetValue(pagedResult) as IEnumerable<object>;
+        var itemsList = items!.ToList();
+        itemsList.Should().HaveCount(10);
+
+        // Verify we got items 20-29 (page 3 with page size 10 skips first 20)
+        var firstItemNameProp = itemsList[0].GetType().GetProperty("EntityName");
+        var firstName = firstItemNameProp!.GetValue(itemsList[0]) as string;
+        firstName.Should().Be("Entity20");
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Return_Correct_Entity_Data()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>
+        {
+            CreateTestEntity("User", "dbo", 5),
+            CreateTestEntity("Product", "sales", 10),
+        };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(new QueryParameters());
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+        pagedResult.Should().NotBeNull();
+
+        // Use reflection to check the PagedResult structure
+        var pagedResultType = pagedResult!.GetType();
+        var itemsProperty = pagedResultType.GetProperty("Items");
+        var items = itemsProperty!.GetValue(pagedResult) as IEnumerable<object>;
+        items.Should().NotBeNull();
+        items.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Include_EntityName_SchemaName_PropertyCount()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration> { CreateTestEntity("User", "dbo", 7) };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(new QueryParameters());
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        var pagedResultType = pagedResult!.GetType();
+        var itemsProperty = pagedResultType.GetProperty("Items");
+        var items = (itemsProperty!.GetValue(pagedResult) as IEnumerable<object>)!.ToList();
+
+        var firstItem = items.First();
+        var firstItemType = firstItem.GetType();
+
+        var entityName = firstItemType.GetProperty("EntityName")!.GetValue(firstItem);
+        var schemaName = firstItemType.GetProperty("SchemaName")!.GetValue(firstItem);
+        var propertyCount = firstItemType.GetProperty("PropertyCount")!.GetValue(firstItem);
+
+        entityName.Should().Be("User");
+        schemaName.Should().Be("dbo");
+        propertyCount.Should().Be(7);
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Return_Complete_Property_Information()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        var metadataType = metadata!.GetType();
+        var entityName = metadataType.GetProperty("EntityName")!.GetValue(metadata);
+        var schemaName = metadataType.GetProperty("SchemaName")!.GetValue(metadata);
+        var properties = metadataType.GetProperty("Properties")!.GetValue(metadata);
+
+        entityName.Should().Be("TestEntity");
+        schemaName.Should().Be("dbo");
+        properties.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Return_Properties_With_All_Details()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        var metadataType = metadata!.GetType();
+        var properties =
+            metadataType.GetProperty("Properties")!.GetValue(metadata) as IEnumerable<object>;
+        properties.Should().NotBeNull();
+
+        var propertiesList = properties!.ToList();
+        propertiesList.Should().HaveCount(2);
+
+        var firstProp = propertiesList.First();
+        var propType = firstProp.GetType();
+
+        propType.GetProperty("PropertyName").Should().NotBeNull();
+        propType.GetProperty("ColumnName").Should().NotBeNull();
+        propType.GetProperty("PropertyType").Should().NotBeNull();
+        propType.GetProperty("DatabaseType").Should().NotBeNull();
+        propType.GetProperty("IsPrimaryKey").Should().NotBeNull();
+        propType.GetProperty("IsNullable").Should().NotBeNull();
+        propType.GetProperty("IsAutoGenerated").Should().NotBeNull();
+        propType.GetProperty("MaxLength").Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Return_Indexes_With_All_Details()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        var metadataType = metadata!.GetType();
+        var indexes =
+            metadataType.GetProperty("Indexes")!.GetValue(metadata) as IEnumerable<object>;
+        indexes.Should().NotBeNull();
+
+        var indexesList = indexes!.ToList();
+        indexesList.Should().HaveCount(1);
+
+        var firstIndex = indexesList.First();
+        var indexType = firstIndex.GetType();
+
+        indexType.GetProperty("IndexName").Should().NotBeNull();
+        indexType.GetProperty("PropertyNames").Should().NotBeNull();
+        indexType.GetProperty("IsUnique").Should().NotBeNull();
+        indexType.GetProperty("IsClustered").Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Return_Relationships_With_All_Details()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        var metadataType = metadata!.GetType();
+        var relationships =
+            metadataType.GetProperty("Relationships")!.GetValue(metadata) as IEnumerable<object>;
+        relationships.Should().NotBeNull();
+
+        var relationshipsList = relationships!.ToList();
+        relationshipsList.Should().HaveCount(1);
+
+        var firstRel = relationshipsList.First();
+        var relType = firstRel.GetType();
+
+        relType.GetProperty("RelationshipName").Should().NotBeNull();
+        relType.GetProperty("RelatedEntityName").Should().NotBeNull();
+        relType.GetProperty("RelationshipType").Should().NotBeNull();
+        relType.GetProperty("ForeignKeyProperties").Should().NotBeNull();
+        relType.GetProperty("PrincipalKeyProperties").Should().NotBeNull();
+        relType.GetProperty("IsRequired").Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Convert_RelationshipType_To_String()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        var metadataType = metadata!.GetType();
+        var relationships =
+            metadataType.GetProperty("Relationships")!.GetValue(metadata) as IEnumerable<object>;
+        var relationshipsList = relationships!.ToList();
+        var firstRel = relationshipsList.First();
+        var relType = firstRel.GetType();
+
+        var relationshipType = relType.GetProperty("RelationshipType")!.GetValue(firstRel);
+        relationshipType.Should().BeOfType<string>();
+        relationshipType.Should().Be("OneToMany");
+    }
+
+    [Fact]
+    public void GetEntityMetadata_Should_Convert_PropertyType_To_String()
+    {
+        // Arrange
+        var entity = CreateTestEntityWithDetails("TestEntity", "dbo");
+        _mockRepository.Setup(r => r.GetEntity("TestEntity")).Returns(entity);
+
+        // Act
+        var result = _controller.GetEntityMetadata("TestEntity");
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var metadata = okResult!.Value;
+
+        var metadataType = metadata!.GetType();
+        var properties =
+            metadataType.GetProperty("Properties")!.GetValue(metadata) as IEnumerable<object>;
+        var propertiesList = properties!.ToList();
+        var firstProp = propertiesList.First();
+        var propType = firstProp.GetType();
+
+        var propertyType = propType.GetProperty("PropertyType")!.GetValue(firstProp);
+        propertyType.Should().BeOfType<string>();
+        propertyType.Should().Be("Int32");
+    }
+
+    [Fact]
+    public void GetAllEntities_Should_Return_PagedResult_With_Correct_Structure()
+    {
+        // Arrange
+        var entities = new List<IEntityConfiguration>
+        {
+            CreateTestEntity("Entity1", "dbo", 1),
+            CreateTestEntity("Entity2", "dbo", 1),
+        };
+        _mockRepository.Setup(r => r.GetAllEntities()).Returns(entities);
+
+        // Act
+        var result = _controller.GetAllEntities(
+            new QueryParameters { PageNumber = 1, PageSize = 10 }
+        );
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        var pagedResult = okResult!.Value;
+
+        var pagedResultType = pagedResult!.GetType();
+        pagedResultType.GetProperty("Items").Should().NotBeNull();
+        pagedResultType.GetProperty("TotalCount").Should().NotBeNull();
+        pagedResultType.GetProperty("PageNumber").Should().NotBeNull();
+        pagedResultType.GetProperty("PageSize").Should().NotBeNull();
     }
 }
 

@@ -152,7 +152,7 @@ public class ProtoGenerator
             "Int64" => "int64",
             "Boolean" => "bool",
             "Double" => "double",
-            "Float" => "float",
+            "Single" => "float",
             "Decimal" => "double",
             "DateTime" => "string",
             "Guid" => "string",

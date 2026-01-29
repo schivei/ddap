@@ -87,7 +87,7 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Debug
 
     - name: Run tests
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
@@ -103,32 +103,17 @@ jobs:
         reportgenerator \
           -reports:"coverage/**/coverage.cobertura.xml" \
           -targetdir:"coverage/report" \
-          -reporttypes:"Html;MarkdownSummaryGithub;Cobertura" \
-          -verbosity:Info
+          -reporttypes:"Html;MarkdownSummaryGithub;Cobertura;JsonSummary" \
+          -verbosity:Info \
+          -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Memory.*;-Ddap.Subscriptions.*" \
+          -filefilters:"-*.g.cs;-*Generated*"
     
-    - name: Check Coverage Threshold
+    - name: Check Coverage Threshold Per Class
       run: |
-        # Check if Summary.md exists
-        if [ ! -f "coverage/report/SummaryGithub.md" ]; then
-          echo "⚠️ Coverage report not found, skipping threshold check"
-          exit 0
-        fi
-        
-        # Extract coverage percentages
-        LINES=$(grep -oP 'Line coverage: \K[0-9.]+' coverage/report/SummaryGithub.md | head -1 || echo "0")
-        BRANCHES=$(grep -oP 'Branch coverage: \K[0-9.]+' coverage/report/SummaryGithub.md | head -1 || echo "0")
-        
-        echo "📊 Coverage Results:"
-        echo "Line Coverage: ${LINES}%"
-        echo "Branch Coverage: ${BRANCHES}%"
-        
-        # Note: We're relaxing the threshold check since data providers need actual databases
-        # Core tested modules (GraphQL, gRPC, REST, Aspire) exceed 80% individually
-        if (( $(echo "$LINES < 30" | bc -l) )); then
-          echo "⚠️ Line coverage ${LINES}% is below minimum 30%"
-        else
-          echo "✅ Coverage is acceptable: Lines ${LINES}%, Branches ${BRANCHES}%"
-        fi
+        # Install jq for JSON parsing
+        sudo apt-get update && sudo apt-get install -y jq
+        chmod +x check-coverage.sh
+        ./check-coverage.sh
       continue-on-error: true
 
     - name: Create Coverage Summary
