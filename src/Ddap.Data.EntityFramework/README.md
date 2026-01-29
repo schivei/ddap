@@ -67,7 +67,7 @@ app.Run();
 ```csharp
 builder.Services.AddPooledDbContextFactory<MyDbContext>(options =>
 {
-    options.UseMySQL(connectionString, mysql =>
+    options.UseMySql(connectionString, mysql =>
     {
         mysql.EnableRetryOnFailure(
             maxRetryCount: 5,

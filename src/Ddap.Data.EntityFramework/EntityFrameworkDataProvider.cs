@@ -185,7 +185,7 @@ public class EntityFrameworkDataProvider<TContext> : IDataProvider
                     PrincipalKeyProperties = foreignKey
                         .PrincipalKey.Properties.Select(p => p.Name)
                         .ToList(),
-                    IsRequired = !foreignKey.IsRequired,
+                    IsRequired = foreignKey.IsRequired, // Fixed: removed negation
                 }
             );
         }

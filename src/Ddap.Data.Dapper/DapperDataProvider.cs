@@ -95,17 +95,22 @@ public class DapperDataProvider : IDataProvider
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_TYPE = 'BASE TABLE'";
 
+        // Apply schema filters using parameterization to prevent SQL injection
+        var parameters = new DynamicParameters();
+
         if (_options.IncludeSchemas?.Count > 0)
         {
-            query += $" AND TABLE_SCHEMA IN ('{string.Join("','", _options.IncludeSchemas)}')";
+            query += " AND TABLE_SCHEMA IN @IncludeSchemas";
+            parameters.Add("IncludeSchemas", _options.IncludeSchemas);
         }
 
         if (_options.ExcludeSchemas?.Count > 0)
         {
-            query += $" AND TABLE_SCHEMA NOT IN ('{string.Join("','", _options.ExcludeSchemas)}')";
+            query += " AND TABLE_SCHEMA NOT IN @ExcludeSchemas";
+            parameters.Add("ExcludeSchemas", _options.ExcludeSchemas);
         }
 
-        var result = await connection.QueryAsync<(string, string)>(query);
+        var result = await connection.QueryAsync<(string, string)>(query, parameters);
         return result.ToList();
     }
 

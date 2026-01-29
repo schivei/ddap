@@ -22,7 +22,7 @@ public static class DdapEntityFrameworkExtensions
     /// // First, register the DbContext factory (developer has full control)
     /// services.AddPooledDbContextFactory&lt;MyDbContext&gt;(options =>
     /// {
-    ///     options.UseMySQL(connectionString, mysql =>
+    ///     options.UseMySql(connectionString, mysql =>
     ///     {
     ///         mysql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
     ///     });

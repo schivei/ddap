@@ -16,6 +16,7 @@ public class EntityLoaderHostedService<TContext> : IHostedService
     private readonly IEntityRepository _entityRepository;
     private readonly ILogger<EntityLoaderHostedService<TContext>> _logger;
     private readonly DdapOptions _options;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EntityLoaderHostedService{TContext}"/> class.
@@ -24,17 +25,20 @@ public class EntityLoaderHostedService<TContext> : IHostedService
     /// <param name="entityRepository">The entity repository.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="options">The DDAP options.</param>
+    /// <param name="serviceProvider">The service provider for callbacks.</param>
     public EntityLoaderHostedService(
         IDataProvider dataProvider,
         IEntityRepository entityRepository,
         ILogger<EntityLoaderHostedService<TContext>> logger,
-        DdapOptions options
+        DdapOptions options,
+        IServiceProvider serviceProvider
     )
     {
         _dataProvider = dataProvider;
         _entityRepository = entityRepository;
         _logger = logger;
         _options = options;
+        _serviceProvider = serviceProvider;
     }
 
     /// <inheritdoc/>
@@ -63,11 +67,7 @@ public class EntityLoaderHostedService<TContext> : IHostedService
             if (_options.OnStartupAsync != null)
             {
                 _logger.LogDebug("Invoking OnStartup callback...");
-                var serviceProvider = (_entityRepository as dynamic)?.ServiceProvider;
-                if (serviceProvider != null)
-                {
-                    await _options.OnStartupAsync(serviceProvider);
-                }
+                await _options.OnStartupAsync(_serviceProvider);
             }
         }
         catch (Exception ex)
@@ -77,11 +77,7 @@ public class EntityLoaderHostedService<TContext> : IHostedService
             // Invoke OnError callback if provided
             if (_options.OnErrorAsync != null)
             {
-                var serviceProvider = (_entityRepository as dynamic)?.ServiceProvider;
-                if (serviceProvider != null)
-                {
-                    await _options.OnErrorAsync(serviceProvider, ex);
-                }
+                await _options.OnErrorAsync(_serviceProvider, ex);
             }
 
             throw;
