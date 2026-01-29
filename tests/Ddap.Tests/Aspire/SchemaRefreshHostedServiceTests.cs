@@ -22,7 +22,7 @@ public class SchemaRefreshHostedServiceTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var service = new TestSchemaRefreshHostedService(serviceProvider, 60);
+        using var service = new TestSchemaRefreshHostedService(serviceProvider, 60);
         using var cts = new CancellationTokenSource();
 
         // Act
@@ -57,7 +57,7 @@ public class SchemaRefreshHostedServiceTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var service = new TestSchemaRefreshHostedService(serviceProvider, 1); // 1 second interval
+        using var service = new TestSchemaRefreshHostedService(serviceProvider, 1); // 1 second interval
         using var cts = new CancellationTokenSource();
 
         // Act
@@ -92,7 +92,7 @@ public class SchemaRefreshHostedServiceTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
+        using var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
         using var cts = new CancellationTokenSource();
 
         // Act
@@ -129,7 +129,7 @@ public class SchemaRefreshHostedServiceTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
+        using var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
         using var cts = new CancellationTokenSource();
 
         // Act
@@ -173,7 +173,7 @@ public class SchemaRefreshHostedServiceTests
         var entityRepository =
             serviceProvider.GetRequiredService<IEntityRepository>() as EntityRepository;
 
-        var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
+        using var service = new TestSchemaRefreshHostedService(serviceProvider, 1);
         using var cts = new CancellationTokenSource();
 
         // Act
@@ -227,6 +227,10 @@ public class SchemaRefreshHostedServiceTests
         public void Dispose()
         {
             _stoppingCts?.Dispose();
+            if (_innerService is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 
