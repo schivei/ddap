@@ -91,13 +91,11 @@ ddapBuilder.AddGrpc();
 
 #if (include-auth)
 // Add authentication
-ddapBuilder.AddAuthentication(options =>
-{
-    options.JwtSecretKey = builder.Configuration["Jwt:SecretKey"] 
-        ?? throw new InvalidOperationException("JWT SecretKey is not configured. Use user secrets or appsettings.json.");
-    options.JwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "DdapApi";
-    options.JwtAudience = builder.Configuration["Jwt:Audience"] ?? "DdapApi";
-});
+ddapBuilder.AddDdapAuthentication(
+    builder.Configuration["Jwt:Issuer"] ?? "DdapApi",
+    builder.Configuration["Jwt:Audience"] ?? "DdapApi",
+    builder.Configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured. Use user secrets or appsettings.json.")
+);
 #endif
 
 #if (include-subscriptions)
