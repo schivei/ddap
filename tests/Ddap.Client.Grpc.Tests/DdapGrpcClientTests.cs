@@ -35,17 +35,14 @@ public class DdapGrpcClientTests
     }
 
     [Fact]
-    public void Dispose_ShouldDisposeChannel()
+    public void Dispose_CalledMultipleTimes_ShouldNotThrow()
     {
         // Arrange
         var options = new DdapClientOptions { BaseUrl = "https://api.example.com" };
         var client = new DdapGrpcClient(options);
-        var channel = client.GetChannel();
 
-        // Act
+        // Act & Assert - no exception should be thrown
         client.Dispose();
-
-        // Assert - no exception should be thrown
-        Assert.True(true);
+        client.Dispose();
     }
 }

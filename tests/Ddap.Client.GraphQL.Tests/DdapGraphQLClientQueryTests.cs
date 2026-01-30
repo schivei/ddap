@@ -185,7 +185,7 @@ public class DdapGraphQLClientQueryTests
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>()
             )
-            .ReturnsAsync(
+            .ReturnsAsync(() =>
                 new HttpResponseMessage
                 {
                     StatusCode = statusCode,

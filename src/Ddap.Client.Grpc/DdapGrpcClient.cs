@@ -10,36 +10,34 @@ namespace Ddap.Client.Grpc;
 public class DdapGrpcClient : IDdapClient, IDisposable
 {
     private readonly DdapClientOptions _options;
-    private GrpcChannel? _channel;
+    private readonly Lazy<GrpcChannel> _channel;
 
     public DdapGrpcClient(DdapClientOptions options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
-    }
-
-    public string BaseUrl => _options.BaseUrl;
-
-    public bool IsConnected =>
-        _channel != null && _channel.State == GrpcCore.ConnectivityState.Ready;
-
-    /// <summary>
-    /// Gets or creates the gRPC channel
-    /// </summary>
-    public GrpcChannel GetChannel()
-    {
-        if (_channel == null)
-        {
-            _channel = GrpcChannel.ForAddress(
+        _channel = new Lazy<GrpcChannel>(() =>
+            GrpcChannel.ForAddress(
                 _options.BaseUrl,
                 new GrpcChannelOptions
                 {
                     MaxReceiveMessageSize = 16 * 1024 * 1024, // 16 MB
                     MaxSendMessageSize = 16 * 1024 * 1024, // 16 MB
                 }
-            );
-        }
+            )
+        );
+    }
 
-        return _channel;
+    public string BaseUrl => _options.BaseUrl;
+
+    public bool IsConnected =>
+        _channel.IsValueCreated && _channel.Value.State == GrpcCore.ConnectivityState.Ready;
+
+    /// <summary>
+    /// Gets or creates the gRPC channel
+    /// </summary>
+    public GrpcChannel GetChannel()
+    {
+        return _channel.Value;
     }
 
     public async Task<bool> TestConnectionAsync(CancellationToken cancellationToken = default)
@@ -77,7 +75,10 @@ public class DdapGrpcClient : IDdapClient, IDisposable
 
     public void Dispose()
     {
-        _channel?.Dispose();
+        if (_channel.IsValueCreated)
+        {
+            _channel.Value.Dispose();
+        }
         GC.SuppressFinalize(this);
     }
 }

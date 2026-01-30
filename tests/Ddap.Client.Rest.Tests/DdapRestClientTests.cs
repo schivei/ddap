@@ -21,7 +21,7 @@ public class DdapRestClientTests
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>()
             )
-            .ReturnsAsync(
+            .ReturnsAsync(() =>
                 new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,

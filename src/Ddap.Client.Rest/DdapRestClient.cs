@@ -18,8 +18,16 @@ public class DdapRestClient : IDdapClient
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _options = options ?? throw new ArgumentNullException(nameof(options));
 
-        _httpClient.BaseAddress = new Uri(_options.BaseUrl);
-        _httpClient.Timeout = _options.Timeout;
+        // Set BaseAddress and Timeout if not already configured by DI
+        if (_httpClient.BaseAddress == null)
+        {
+            _httpClient.BaseAddress = new Uri(_options.BaseUrl);
+        }
+        // Only set timeout if it's the default value (100 seconds)
+        if (_httpClient.Timeout == TimeSpan.FromSeconds(100))
+        {
+            _httpClient.Timeout = _options.Timeout;
+        }
 
         _jsonOptions = new JsonSerializerOptions
         {
@@ -108,7 +116,7 @@ public class DdapRestClient : IDdapClient
     )
     {
         var json = JsonSerializer.Serialize(entity, _jsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(endpoint, content, cancellationToken);
 
@@ -142,7 +150,7 @@ public class DdapRestClient : IDdapClient
     )
     {
         var json = JsonSerializer.Serialize(entity, _jsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PutAsync($"{endpoint}/{id}", content, cancellationToken);
 
