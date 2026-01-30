@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 
 namespace Ddap.Templates.Tests;
