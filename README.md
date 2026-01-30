@@ -199,14 +199,23 @@ public partial class EntityController
 
 | Package | Description | Status |
 |---------|-------------|--------|
+| **Server Packages** | | |
 | `Ddap.Core` | Core abstractions and infrastructure | ✅ Stable |
 | `Ddap.Data.Dapper` | Dapper provider (database-agnostic) | ✅ Stable |
 | `Ddap.Data.EntityFramework` | Entity Framework Core provider | ✅ Stable |
 | `Ddap.Rest` | REST API endpoints | ✅ Stable |
 | `Ddap.GraphQL` | GraphQL API (HotChocolate) | ✅ Stable |
 | `Ddap.Grpc` | gRPC services | ✅ Stable |
+| `Ddap.Auth` | Authentication and authorization | ✅ Stable |
+| `Ddap.Subscriptions` | Real-time subscriptions | ✅ Stable |
 | `Ddap.Aspire` | .NET Aspire orchestration | ✅ Stable |
 | `Ddap.Templates` | Project templates | ✅ Stable |
+| `Ddap.CodeGen` | Source generators | ✅ Stable |
+| **Client Packages** | | |
+| `Ddap.Client.Core` | Core client abstractions | ✅ Stable |
+| `Ddap.Client.Rest` | REST client | ✅ Stable |
+| `Ddap.Client.GraphQL` | GraphQL client | ✅ Stable |
+| `Ddap.Client.Grpc` | gRPC client | ✅ Stable |
 
 ---
 
