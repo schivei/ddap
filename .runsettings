@@ -82,7 +82,7 @@
             [Ddap.Core]*
             [Ddap.Rest]*
             [Ddap.GraphQL]*
-            [Ddap.Grpc]*
+            <!-- [Ddap.Grpc]* REMOVED: Was re-including excluded protobuf files -->
             [Ddap.Aspire]*
             [Ddap.Client.Core]*
             [Ddap.Client.Rest]*
