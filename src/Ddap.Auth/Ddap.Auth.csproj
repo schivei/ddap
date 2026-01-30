@@ -16,5 +16,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Authentication and authorization support for DDAP with JWT Bearer token integration and ASP.NET Core authorization policies.</Description>
+    <PackageTags>ddap;auth;authentication;authorization;jwt;security;bearer</PackageTags>
   </PropertyGroup>
 </Project>

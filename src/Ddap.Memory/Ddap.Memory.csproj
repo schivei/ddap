@@ -3,5 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>In-memory data provider for DDAP for testing and rapid prototyping scenarios without a database.</Description>
+    <PackageTags>ddap;memory;inmemory;testing;provider;mock</PackageTags>
   </PropertyGroup>
 </Project>

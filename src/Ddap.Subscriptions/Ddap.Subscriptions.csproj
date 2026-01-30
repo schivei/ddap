@@ -18,5 +18,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Real-time subscription support for DDAP using SignalR and GraphQL subscriptions for live data updates.</Description>
+    <PackageTags>ddap;subscriptions;realtime;signalr;graphql;websockets;live</PackageTags>
   </PropertyGroup>
 </Project>

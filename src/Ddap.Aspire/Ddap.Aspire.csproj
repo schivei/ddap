@@ -13,5 +13,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>.NET Aspire integration for DDAP with automatic service discovery, connection string resolution, and rapid API development for agile teams.</Description>
+    <PackageTags>ddap;aspire;cloud;distributed;microservices;orchestration;devops</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>

@@ -13,5 +13,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Dapper data provider for DDAP with MySQL optimized queries for enhanced metadata discovery.</Description>
+    <PackageTags>ddap;dapper;mysql;mariadb;data;provider;database</PackageTags>
   </PropertyGroup>
 </Project>
