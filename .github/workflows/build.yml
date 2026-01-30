@@ -197,15 +197,15 @@ jobs:
     - name: Check for changes in package code
       id: check
       run: |
-        # Default to publishing in case of errors or manual triggers
-        SHOULD_PUBLISH="true"
+        # Initialize as unset - will be determined based on changed files
+        SHOULD_PUBLISH=""
         
         # Get the list of changed files based on event type
         if [ "${{ github.event_name }}" == "pull_request" ]; then
           echo "📋 Pull request event detected"
           # Fetch base branch to ensure we have the commit
-          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=50
-          MERGE_BASE=$(git merge-base HEAD origin/${{ github.event.pull_request.base.ref }})
+          git fetch origin ${{ github.base_ref }} --depth=50
+          MERGE_BASE=$(git merge-base HEAD origin/${{ github.base_ref }})
           CHANGED_FILES=$(git diff --name-only "$MERGE_BASE" HEAD 2>/dev/null)
         elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
           echo "🔧 Manual workflow trigger - defaulting to publish"
@@ -224,7 +224,7 @@ jobs:
         fi
         
         # If we successfully got changed files list, check if package code changed
-        if [ -n "$CHANGED_FILES" ] && [ "$SHOULD_PUBLISH" != "true" ]; then
+        if [ -n "$CHANGED_FILES" ] && [ -z "$SHOULD_PUBLISH" ]; then
           echo ""
           echo "Changed files:"
           echo "$CHANGED_FILES"
@@ -239,6 +239,10 @@ jobs:
             SHOULD_PUBLISH="false"
             echo "⏭️ No package code changes detected - skipping publish"
           fi
+        elif [ -z "$SHOULD_PUBLISH" ]; then
+          # If SHOULD_PUBLISH is still unset (error case), default to true
+          echo "⚠️ Could not determine changed files - defaulting to publish"
+          SHOULD_PUBLISH="true"
         else
           echo "ℹ️ Publishing will proceed (default behavior for this event type)"
         fi
