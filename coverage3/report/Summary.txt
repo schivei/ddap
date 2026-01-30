@@ -1,0 +1,88 @@
+Summary
+  Generated on: 01/30/2026 - 17:47:48
+  Coverage date: 01/30/2026 - 17:47:32
+  Parser: Cobertura
+  Assemblies: 6
+  Classes: 56
+  Files: 47
+  Line coverage: 16.1%
+  Covered lines: 354
+  Uncovered lines: 1836
+  Coverable lines: 2190
+  Total lines: 5652
+  Branch coverage: 13.9% (105 of 753)
+  Covered branches: 105
+  Total branches: 753
+  Method coverage: 17% (60 of 351)
+  Full method coverage: 15.6% (55 of 351)
+  Covered methods: 60
+  Fully covered methods: 55
+  Total methods: 351
+
+Ddap.Aspire                                          0%
+  Ddap.Aspire.DdapAspireExtensions                   0%
+  Ddap.Aspire.DdapResource                           0%
+  Ddap.Aspire.DdapServiceExtensions                  0%
+  Ddap.Aspire.SchemaRefreshHostedService             0%
+
+Ddap.Auth                                            0%
+  Ddap.Auth.Attributes.DdapAuthorizeAttribute        0%
+  Ddap.Auth.DdapAuthExtensions                       0%
+  Ddap.Auth.Policies.AllowAllRawQueryPolicy          0%
+  Ddap.Auth.Policies.DefaultRawQueryPolicy           0%
+  Ddap.Auth.Policies.DenyAllRawQueryPolicy           0%
+  Ddap.Auth.Policies.RawQueryContext                 0%
+
+Ddap.Core                                            0%
+  Ddap.Core.AutoReloadOptions                        0%
+  Ddap.Core.CachingOptions                           0%
+  Ddap.Core.DdapBuilder                              0%
+  Ddap.Core.DdapOptions                              0%
+  Ddap.Core.DdapServiceCollectionExtensions          0%
+  Ddap.Core.EntityRepository                         0%
+  Ddap.Core.Internals.EntityConfiguration            0%
+  Ddap.Core.Internals.IndexConfiguration             0%
+  Ddap.Core.Internals.PropertyConfiguration          0%
+  Ddap.Core.Internals.RelationshipConfiguration      0%
+  Ddap.Core.ObservabilityOptions                     0%
+
+Ddap.GraphQL                                      87.1%
+  Ddap.GraphQL.DdapGraphQLExtensions                68%
+  Ddap.GraphQL.EntityMetadata                        0%
+  Ddap.GraphQL.Mutation                              0%
+  Ddap.GraphQL.Query                                 0%
+  Ddap.GraphQL.Scalars.DateOnlyType               98.5%
+  Ddap.GraphQL.Scalars.DateTimeOffsetType         88.2%
+  Ddap.GraphQL.Scalars.DateTimeValueNode          92.2%
+  Ddap.GraphQL.Scalars.SByteType                   100%
+  Ddap.GraphQL.Scalars.TimeOnlyType               98.5%
+  Ddap.GraphQL.Scalars.UIntType                    100%
+  Ddap.GraphQL.Scalars.ULongType                   100%
+  Ddap.GraphQL.Scalars.UShortType                  100%
+
+Ddap.Grpc                                            0%
+  Ddap.Grpc.Controllers.ProtoFileController          0%
+  Ddap.Grpc.DdapGrpcExtensions                       0%
+  Ddap.Grpc.EntityListResponse                       0%
+  Ddap.Grpc.EntityService                            0%
+  Ddap.Grpc.GrpcServiceProvider                      0%
+  Ddap.Grpc.ProtoGenerator                           0%
+  Ddap.Grpc.QueryAnalyzer                            0%
+  Ddap.Grpc.RawQuery.MultipleResult                  0%
+  Ddap.Grpc.RawQuery.RawqueryReflection              0%
+  Ddap.Grpc.RawQuery.RawQueryRequest                 0%
+  Ddap.Grpc.RawQuery.RawQueryService                 0%
+  Ddap.Grpc.RawQuery.ScalarResult                    0%
+  Ddap.Grpc.RawQuery.SingleResult                    0%
+  Ddap.Grpc.RawQuery.VoidResult                      0%
+  Ddap.Grpc.RawQueryBinarySerializer                 0%
+  Ddap.Grpc.RawQueryServiceExtensions                0%
+  Ddap.Grpc.Services.RawQueryServiceImpl             0%
+
+Ddap.Rest                                            0%
+  Ddap.Rest.DdapRestExtensions                       0%
+  Ddap.Rest.EntityController                         0%
+  Ddap.Rest.Filters.QueryFilterBuilder               0%
+  Ddap.Rest.Models.PagedResult<T>                    0%
+  Ddap.Rest.Models.QueryParameters                   0%
+  Ddap.Rest.RestApiProvider                          0%

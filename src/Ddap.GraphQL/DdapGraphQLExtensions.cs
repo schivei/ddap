@@ -92,16 +92,18 @@ public static class DdapGraphQLExtensions
         builder.BindRuntimeType<ushort, UShortType>();
         builder.BindRuntimeType<sbyte, SByteType>();
 
-        // Add custom scalar types for DateOnly and TimeOnly
+        // Add custom scalar types for DateOnly, TimeOnly, and DateTimeOffset
         builder.AddType(new DateOnlyType());
         builder.AddType(new TimeOnlyType());
+        builder.AddType(new DateTimeOffsetType());
 
         // Bind runtime types to their GraphQL scalar types
         builder.BindRuntimeType<DateOnly, DateOnlyType>();
         builder.BindRuntimeType<TimeOnly, TimeOnlyType>();
+        builder.BindRuntimeType<DateTimeOffset, DateTimeOffsetType>();
 
-        // TimeSpan and DateTimeOffset have built-in support in HotChocolate
-        // They will be automatically handled by the framework
+        // TimeSpan has built-in support in HotChocolate
+        // It will be automatically handled by the framework
 
         return builder;
     }

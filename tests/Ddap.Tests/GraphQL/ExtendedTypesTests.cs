@@ -556,6 +556,182 @@ public class ExtendedTypesTests
     }
 
     [Fact]
+    public void DateTimeOffsetType_ParseLiteral_Should_Parse_Valid_Value()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateTimeOffset = new DateTimeOffset(2024, 1, 29, 14, 30, 0, TimeSpan.FromHours(-5));
+        var valueSyntax = new DateTimeValueNode(dateTimeOffset);
+
+        // Act
+        var result = dateTimeOffsetType.ParseLiteral(valueSyntax);
+
+        // Assert
+        result.Should().Be(dateTimeOffset);
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_ParseValue_Should_Create_ValueNode()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateTimeOffset = new DateTimeOffset(2024, 1, 29, 14, 30, 0, TimeSpan.FromHours(2));
+
+        // Act
+        var result = dateTimeOffsetType.ParseValue(dateTimeOffset);
+
+        // Assert
+        result.Should().BeOfType<DateTimeValueNode>();
+        ((DateTimeValueNode)result).TryToDateTimeOffset(out var dto).Should().BeTrue();
+        dto.Should().Be(dateTimeOffset);
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_ParseResult_Should_Handle_DateTimeOffset()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateTimeOffset = new DateTimeOffset(2024, 1, 29, 14, 30, 0, TimeSpan.Zero);
+
+        // Act
+        var result = dateTimeOffsetType.ParseResult(dateTimeOffset);
+
+        // Assert
+        result.Should().BeOfType<DateTimeValueNode>();
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_ParseResult_Should_Handle_String()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateString = "2024-01-29T14:30:00.000+00:00";
+
+        // Act
+        var result = dateTimeOffsetType.ParseResult(dateString);
+
+        // Assert
+        result.Should().BeOfType<DateTimeValueNode>();
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_ParseResult_Should_Handle_Null()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+
+        // Act
+        var result = dateTimeOffsetType.ParseResult(null);
+
+        // Assert
+        result.Should().BeOfType<NullValueNode>();
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TrySerialize_Should_Serialize_DateTimeOffset()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateTimeOffset = new DateTimeOffset(2024, 1, 29, 14, 30, 0, TimeSpan.FromHours(3));
+
+        // Act
+        var result = dateTimeOffsetType.TrySerialize(dateTimeOffset, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().BeOfType<string>();
+        resultValue.Should().Be("2024-01-29T14:30:00.000+03:00");
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TrySerialize_Should_Handle_Null()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+
+        // Act
+        var result = dateTimeOffsetType.TrySerialize(null, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TrySerialize_Should_Return_False_For_Invalid_Type()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+
+        // Act
+        var result = dateTimeOffsetType.TrySerialize(12345, out var resultValue);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TryDeserialize_Should_Deserialize_String()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateString = "2024-01-29T14:30:00.000-08:00";
+
+        // Act
+        var result = dateTimeOffsetType.TryDeserialize(dateString, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeOfType<DateTimeOffset>();
+        ((DateTimeOffset)runtimeValue!).Year.Should().Be(2024);
+        ((DateTimeOffset)runtimeValue!).Month.Should().Be(1);
+        ((DateTimeOffset)runtimeValue!).Day.Should().Be(29);
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TryDeserialize_Should_Handle_Null()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+
+        // Act
+        var result = dateTimeOffsetType.TryDeserialize(null, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TryDeserialize_Should_Handle_DateTimeOffset()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+        var dateTimeOffset = new DateTimeOffset(2024, 1, 29, 14, 30, 0, TimeSpan.Zero);
+
+        // Act
+        var result = dateTimeOffsetType.TryDeserialize(dateTimeOffset, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeOfType<DateTimeOffset>();
+        ((DateTimeOffset)runtimeValue!).Should().Be(dateTimeOffset);
+    }
+
+    [Fact]
+    public void DateTimeOffsetType_TryDeserialize_Should_Return_False_For_Invalid_Type()
+    {
+        // Arrange
+        var dateTimeOffsetType = new DateTimeOffsetType();
+
+        // Act
+        var result = dateTimeOffsetType.TryDeserialize(12345, out var runtimeValue);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public void DateTimeValueNode_Should_Handle_DateTime()
     {
         // Arrange
