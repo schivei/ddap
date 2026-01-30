@@ -11,5 +11,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>REST API provider for DDAP with automatic endpoint generation, content negotiation (JSON/XML), and standard HTTP verb support.</Description>
+    <PackageTags>ddap;rest;api;http;json;xml;endpoints;controller</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>
