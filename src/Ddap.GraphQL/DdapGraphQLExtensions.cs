@@ -65,6 +65,7 @@ public static class DdapGraphQLExtensions
     /// <summary>
     /// Adds support for extended types including unsigned integers (uint, ulong, ushort, sbyte)
     /// and modern .NET date/time types (DateOnly, TimeOnly, TimeSpan, DateTimeOffset).
+    /// Uses proper scalar types instead of unsafe type conversions.
     /// </summary>
     /// <param name="builder">The GraphQL request executor builder.</param>
     /// <returns>The GraphQL request executor builder for chaining.</returns>
@@ -78,22 +79,18 @@ public static class DdapGraphQLExtensions
     /// </example>
     public static IRequestExecutorBuilder AddExtendedTypes(this IRequestExecutorBuilder builder)
     {
-        // Add type converters for unsigned integer types
-        // These map to their signed equivalents in GraphQL using unchecked conversions.
-        // WARNING: Values exceeding signed type ranges will wrap around (e.g., uint.MaxValue becomes -1).
-        // Consider validating value ranges in your application logic if overflow is a concern.
-        builder.AddTypeConverter<uint, int>(value => unchecked((int)value));
-        builder.AddTypeConverter<int, uint>(value => unchecked((uint)value));
+        // Add proper scalar types for unsigned integer types
+        // These provide type-safe handling without dangerous unchecked conversions
+        builder.AddType(new UIntType());
+        builder.AddType(new ULongType());
+        builder.AddType(new UShortType());
+        builder.AddType(new SByteType());
 
-        builder.AddTypeConverter<ulong, long>(value => unchecked((long)value));
-        builder.AddTypeConverter<long, ulong>(value => unchecked((ulong)value));
-
-        builder.AddTypeConverter<ushort, short>(value => unchecked((short)value));
-        builder.AddTypeConverter<short, ushort>(value => unchecked((ushort)value));
-
-        // sbyte maps to short (Int16) for better GraphQL compatibility
-        builder.AddTypeConverter<sbyte, short>(value => value);
-        builder.AddTypeConverter<short, sbyte>(value => unchecked((sbyte)value));
+        // Bind runtime types to their GraphQL scalar types
+        builder.BindRuntimeType<uint, UIntType>();
+        builder.BindRuntimeType<ulong, ULongType>();
+        builder.BindRuntimeType<ushort, UShortType>();
+        builder.BindRuntimeType<sbyte, SByteType>();
 
         // Add custom scalar types for DateOnly and TimeOnly
         builder.AddType(new DateOnlyType());

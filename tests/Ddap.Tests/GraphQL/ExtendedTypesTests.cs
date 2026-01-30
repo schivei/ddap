@@ -19,8 +19,76 @@ public class ExtendedTypesTests
         // Act
         services.AddGraphQLServer().AddQueryType<DummyQuery>().AddExtendedTypes();
 
-        // Assert - If no exception is thrown, the type converters are registered
+        // Assert - If no exception is thrown, the scalar types are registered
         services.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void UIntType_Should_Parse_And_Serialize_Values()
+    {
+        // Arrange
+        var uintType = new UIntType();
+        uint expectedValue = 4294967295; // uint.MaxValue
+
+        // Act
+        var valueNode = uintType.ParseValue(expectedValue);
+        var parsedValue = uintType.ParseLiteral(valueNode);
+
+        // Assert
+        valueNode.Should().NotBeNull();
+        valueNode.Should().BeOfType<IntValueNode>();
+        parsedValue.Should().Be(expectedValue);
+    }
+
+    [Fact]
+    public void ULongType_Should_Parse_And_Serialize_Values()
+    {
+        // Arrange
+        var ulongType = new ULongType();
+        ulong expectedValue = 18446744073709551615; // ulong.MaxValue
+
+        // Act
+        var valueNode = ulongType.ParseValue(expectedValue);
+        var parsedValue = ulongType.ParseLiteral(valueNode);
+
+        // Assert
+        valueNode.Should().NotBeNull();
+        valueNode.Should().BeOfType<IntValueNode>();
+        parsedValue.Should().Be(expectedValue);
+    }
+
+    [Fact]
+    public void UShortType_Should_Parse_And_Serialize_Values()
+    {
+        // Arrange
+        var ushortType = new UShortType();
+        ushort expectedValue = 65535; // ushort.MaxValue
+
+        // Act
+        var valueNode = ushortType.ParseValue(expectedValue);
+        var parsedValue = ushortType.ParseLiteral(valueNode);
+
+        // Assert
+        valueNode.Should().NotBeNull();
+        valueNode.Should().BeOfType<IntValueNode>();
+        parsedValue.Should().Be(expectedValue);
+    }
+
+    [Fact]
+    public void SByteType_Should_Parse_And_Serialize_Values()
+    {
+        // Arrange
+        var sbyteType = new SByteType();
+        sbyte expectedValue = -128; // sbyte.MinValue
+
+        // Act
+        var valueNode = sbyteType.ParseValue(expectedValue);
+        var parsedValue = sbyteType.ParseLiteral(valueNode);
+
+        // Assert
+        valueNode.Should().NotBeNull();
+        valueNode.Should().BeOfType<IntValueNode>();
+        parsedValue.Should().Be(expectedValue);
     }
 
     [Fact]
