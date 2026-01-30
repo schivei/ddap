@@ -2,6 +2,10 @@
   <Folder Name="/src/">
     <Project Path="src/Ddap.Aspire/Ddap.Aspire.csproj" />
     <Project Path="src/Ddap.Auth/Ddap.Auth.csproj" />
+    <Project Path="src/Ddap.Client.Core/Ddap.Client.Core.csproj" />
+    <Project Path="src/Ddap.Client.GraphQL/Ddap.Client.GraphQL.csproj" />
+    <Project Path="src/Ddap.Client.Grpc/Ddap.Client.Grpc.csproj" />
+    <Project Path="src/Ddap.Client.Rest/Ddap.Client.Rest.csproj" />
     <Project Path="src/Ddap.CodeGen/Ddap.CodeGen.csproj" />
     <Project Path="src/Ddap.Core/Ddap.Core.csproj" />
     <Project Path="src/Ddap.Data.EntityFramework/Ddap.Data.EntityFramework.csproj" />
@@ -13,6 +17,10 @@
     <Project Path="src/Ddap.Templates/Ddap.Templates.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Ddap.Client.Core.Tests/Ddap.Client.Core.Tests.csproj" />
+    <Project Path="tests/Ddap.Client.GraphQL.Tests/Ddap.Client.GraphQL.Tests.csproj" />
+    <Project Path="tests/Ddap.Client.Grpc.Tests/Ddap.Client.Grpc.Tests.csproj" />
+    <Project Path="tests/Ddap.Client.Rest.Tests/Ddap.Client.Rest.Tests.csproj" />
     <Project Path="tests/Ddap.Tests/Ddap.Tests.csproj" />
     <Project Path="tests/Ddap.Templates.Tests/Ddap.Templates.Tests.csproj" />
   </Folder>
