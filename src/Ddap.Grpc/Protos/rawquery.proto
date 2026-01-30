@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+option csharp_namespace = "Ddap.Grpc.RawQuery";
+
+package ddap.rawquery;
+
+// Service for executing raw SQL queries with policy-based security
+service RawQueryService {
+  // Execute a scalar query (returns single value)
+  rpc ExecuteScalar(RawQueryRequest) returns (ScalarResult);
+  
+  // Execute a single row query
+  rpc ExecuteSingle(RawQueryRequest) returns (SingleResult);
+  
+  // Execute a multiple rows query
+  rpc ExecuteMultiple(RawQueryRequest) returns (MultipleResult);
+  
+  // Execute a non-query command (INSERT, UPDATE, DELETE)
+  rpc ExecuteNonQuery(RawQueryRequest) returns (VoidResult);
+}
+
+// Request message for raw query execution
+message RawQueryRequest {
+  // The SQL query to execute
+  string query = 1;
+  
+  // Optional query parameters in JSON format
+  string parameters_json = 2;
+}
+
+// Result for scalar queries (single value)
+message ScalarResult {
+  // Binary-encoded value
+  bytes value = 1;
+  
+  // Type name for deserialization
+  string type_name = 2;
+  
+  // Indicates if the value is null
+  bool is_null = 3;
+}
+
+// Result for single row queries
+message SingleResult {
+  // Binary-encoded row data
+  bytes row_data = 1;
+  
+  // Column names
+  repeated string column_names = 2;
+  
+  // Column types
+  repeated string column_types = 3;
+  
+  // Indicates if no row was found
+  bool is_empty = 4;
+}
+
+// Result for multiple rows queries
+message MultipleResult {
+  // Binary-encoded rows data
+  bytes rows_data = 1;
+  
+  // Column names
+  repeated string column_names = 2;
+  
+  // Column types
+  repeated string column_types = 3;
+  
+  // Total row count
+  int32 row_count = 4;
+}
+
+// Result for non-query commands
+message VoidResult {
+  // Number of rows affected
+  int32 rows_affected = 1;
+}
