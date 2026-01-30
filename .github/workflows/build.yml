@@ -194,8 +194,8 @@ jobs:
 
     - name: Update version in Directory.Build.props for prerelease
       run: |
-        # Append run number to VersionPrefix
-        sed -i "s/<\/VersionPrefix>/.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
+        # Update VersionPrefix to append run number (handles existing run numbers)
+        perl -i -pe 's/<VersionPrefix>(\d+\.\d+\.\d+)(?:\.\d+)?<\/VersionPrefix>/<VersionPrefix>$1.${{ github.run_number }}<\/VersionPrefix>/g' Directory.Build.props
         # Force VersionSuffix to be prerelease regardless of configuration
         perl -i -0777 -pe 's/<VersionSuffix\b[^>]*>.*?<\/VersionSuffix\s*>/<VersionSuffix>preview-${{ github.run_number }}<\/VersionSuffix>/gs' Directory.Build.props
 
