@@ -16,5 +16,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Generic Dapper data provider for DDAP that works with ANY database supporting IDbConnection. Database-agnostic with zero database-specific dependencies.</Description>
+    <PackageTags>ddap;dapper;data;provider;orm;database;agnostic;generic</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>

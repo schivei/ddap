@@ -16,5 +16,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>GraphQL API provider for DDAP powered by HotChocolate with automatic schema generation, queries, mutations, and introspection support.</Description>
+    <PackageTags>ddap;graphql;hotchocolate;api;schema;queries;mutations</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>
