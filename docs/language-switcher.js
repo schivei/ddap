@@ -108,34 +108,14 @@
      * Build URL for a specific language
      */
     function buildLanguageUrl(language, pagePath) {
-        // Get current path without leading slash
-        const currentPath = window.location.pathname;
-        const pathParts = currentPath.split('/').filter(p => p);
-        
-        // Check if we're already in a locale directory
-        const locales = Object.keys(SUPPORTED_LANGUAGES);
-        let currentLocale = null;
-        let actualPath = pagePath;
-        
-        // Remove base path if present (e.g., 'ddap' from the path parts)
-        let startIndex = 0;
-        if (pathParts.length > 0 && BASE_PATH && pathParts[0] === BASE_PATH.substring(1)) {
-            startIndex = 1;
-        }
-        
-        // Remove any existing locale from path
-        if (pathParts.length > startIndex && locales.includes(pathParts[startIndex])) {
-            currentLocale = pathParts[startIndex];
-            actualPath = pathParts.slice(startIndex + 1).join('/') || 'index.html';
-        } else {
-            actualPath = pathParts.slice(startIndex).join('/') || 'index.html';
-        }
+        // pagePath should already be relative to the base (without base path or locale)
+        // e.g., "index.html" or "get-started.html"
         
         // For English, use base path + page path; for others, use base path + /locale/ + page path
         if (language === 'en' || language === DEFAULT_LANGUAGE) {
-            return `${BASE_PATH}/${actualPath}`;
+            return `${BASE_PATH}/${pagePath}`;
         } else {
-            return `${BASE_PATH}/${language}/${actualPath}`;
+            return `${BASE_PATH}/${language}/${pagePath}`;
         }
     }
     
