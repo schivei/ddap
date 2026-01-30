@@ -1,0 +1,184 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "schivei",
+  "classifications": [ "Web", "API", "Database", "DDAP" ],
+  "identity": "Ddap.Templates.Api",
+  "name": "DDAP API",
+  "shortName": "ddap-api",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "DdapApi",
+  "preferNameDirectory": true,
+  "symbols": {
+    "database-provider": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "dapper",
+      "choices": [
+        {
+          "choice": "dapper",
+          "description": "Use Dapper for data access (lightweight, high-performance)"
+        },
+        {
+          "choice": "entityframework",
+          "description": "Use Entity Framework Core (full ORM with LINQ support)"
+        }
+      ],
+      "description": "ORM/data access provider to use"
+    },
+    "database-type": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "sqlserver",
+      "choices": [
+        {
+          "choice": "sqlserver",
+          "description": "Microsoft SQL Server"
+        },
+        {
+          "choice": "mysql",
+          "description": "MySQL or MariaDB"
+        },
+        {
+          "choice": "postgresql",
+          "description": "PostgreSQL"
+        },
+        {
+          "choice": "sqlite",
+          "description": "SQLite (file-based database)"
+        }
+      ],
+      "description": "Target database system"
+    },
+    "api-providers": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "rest",
+      "description": "API protocols to enable (comma-separated: rest,graphql,grpc)",
+      "replaces": "API_PROVIDERS_PLACEHOLDER"
+    },
+    "EnableRest": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Enable REST API (alternative to api-providers)"
+    },
+    "EnableGraphQL": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Enable GraphQL (alternative to api-providers)"
+    },
+    "EnableGrpc": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Enable gRPC (alternative to api-providers)"
+    },
+    "connection-string": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "",
+      "replaces": "CONNECTION_STRING_PLACEHOLDER",
+      "description": "Database connection string (optional, can be set via user secrets)"
+    },
+    "include-auth": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Include JWT authentication and authorization"
+    },
+    "include-subscriptions": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Include real-time subscriptions support"
+    },
+    "use-aspire": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Include .NET Aspire orchestration and observability"
+    },
+    "UseDapper": {
+      "type": "computed",
+      "value": "(database-provider == \"dapper\")"
+    },
+    "UseEntityFramework": {
+      "type": "computed",
+      "value": "(database-provider == \"entityframework\")"
+    },
+    "UseSqlServer": {
+      "type": "computed",
+      "value": "(database-type == \"sqlserver\")"
+    },
+    "UseMySQL": {
+      "type": "computed",
+      "value": "(database-type == \"mysql\")"
+    },
+    "UsePostgreSQL": {
+      "type": "computed",
+      "value": "(database-type == \"postgresql\")"
+    },
+    "UseSQLite": {
+      "type": "computed",
+      "value": "(database-type == \"sqlite\")"
+    },
+    "IncludeRest": {
+      "type": "computed",
+      "value": "(EnableRest || api-providers == \"rest\" || api-providers.IndexOf(\"rest\") >= 0)"
+    },
+    "IncludeGraphQL": {
+      "type": "computed",
+      "value": "(EnableGraphQL || api-providers.IndexOf(\"graphql\") >= 0)"
+    },
+    "IncludeGrpc": {
+      "type": "computed",
+      "value": "(EnableGrpc || api-providers.IndexOf(\"grpc\") >= 0)"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!use-aspire)",
+          "exclude": [
+            "*.AppHost/**",
+            "*.ServiceDefaults/**"
+          ]
+        }
+      ]
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(use-aspire)",
+      "description": "Add Aspire projects to solution",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet sln add *.AppHost/*.AppHost.csproj *.ServiceDefaults/*.ServiceDefaults.csproj' to add Aspire projects to solution"
+        }
+      ],
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": "dotnet",
+        "args": "sln add *.AppHost/*.AppHost.csproj *.ServiceDefaults/*.ServiceDefaults.csproj",
+        "redirectStandardOutput": false,
+        "redirectStandardError": false
+      },
+      "continueOnError": true
+    },
+    {
+      "description": "Restore NuGet packages",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore' to restore packages"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

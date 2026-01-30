@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DdapApi</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core DDAP package -->
+    <PackageReference Include="Ddap.Core" Version="1.0.*" />
+
+    <!--#if (UseDapper && UseSqlServer) -->
+    <PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (UseDapper && UseMySQL) -->
+    <PackageReference Include="Ddap.Data.Dapper.MySQL" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (UseDapper && UsePostgreSQL) -->
+    <PackageReference Include="Ddap.Data.Dapper.PostgreSQL" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (UseDapper && UseSQLite) -->
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.*" />
+    <!--#endif -->
+
+    <!--#if (UseEntityFramework) -->
+    <PackageReference Include="Ddap.Data.EntityFramework" Version="1.0.*" />
+    <!--#if (UseSqlServer) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.*" />
+    <!--#endif -->
+    <!--#if (UseMySQL) -->
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.*" />
+    <!--#endif -->
+    <!--#if (UsePostgreSQL) -->
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.*" />
+    <!--#endif -->
+    <!--#if (UseSQLite) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.*" />
+    <!--#endif -->
+    <!--#endif -->
+
+    <!--#if (IncludeRest) -->
+    <PackageReference Include="Ddap.Rest" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (IncludeGraphQL) -->
+    <PackageReference Include="Ddap.GraphQL" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (IncludeGrpc) -->
+    <PackageReference Include="Ddap.Grpc" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (include-auth) -->
+    <PackageReference Include="Ddap.Auth" Version="1.0.*" />
+    <!--#endif -->
+    <!--#if (include-subscriptions) -->
+    <PackageReference Include="Ddap.Subscriptions" Version="1.0.*" />
+    <!--#endif -->
+  </ItemGroup>
+
+  <!--#if (use-aspire) -->
+  <ItemGroup>
+    <ProjectReference Include="..\DdapApi.ServiceDefaults\DdapApi.ServiceDefaults.csproj" />
+  </ItemGroup>
+  <!--#endif -->
+</Project>
