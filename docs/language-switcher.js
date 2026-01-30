@@ -20,17 +20,46 @@
     const DEFAULT_LANGUAGE = 'en';
     const STORAGE_KEY = 'ddap-language';
     
+    // Base path for the site (e.g., '/ddap' for GitHub Pages deployment)
+    // Auto-detects the '/ddap' prefix; otherwise uses an empty string for root-relative paths
+    const BASE_PATH = (function() {
+        // Check if we're running on GitHub Pages at /ddap
+        const path = window.location.pathname;
+        if (path.startsWith('/ddap/') || path === '/ddap') {
+            return '/ddap';
+        }
+        // Default to root for local development (no base path prefix)
+        return '';
+    })();
+    
+    /**
+     * Helper function to get path parts with base path removed
+     * Returns an object with pathParts array and startIndex after base path
+     */
+    function getPathPartsWithoutBase(pathname) {
+        const pathParts = pathname.split('/').filter(p => p);
+        let startIndex = 0;
+        
+        // Remove base path if present (e.g., 'ddap' from the path parts)
+        if (pathParts.length > 0 && BASE_PATH && pathParts[0] === BASE_PATH.substring(1)) {
+            startIndex = 1;
+        }
+        
+        return { pathParts, startIndex };
+    }
+    
     /**
      * Get the user's preferred language
      * Priority: URL path > localStorage > navigator.language > default (en)
      */
     function getPreferredLanguage() {
-        // Check URL path first (e.g., /pt-br/get-started.html)
-        const pathParts = window.location.pathname.split('/').filter(p => p);
-        if (pathParts.length > 0) {
-            const firstPart = pathParts[0];
-            if (SUPPORTED_LANGUAGES[firstPart]) {
-                return firstPart;
+        // Check URL path first (e.g., /ddap/pt-br/get-started.html or /pt-br/get-started.html)
+        const { pathParts, startIndex } = getPathPartsWithoutBase(window.location.pathname);
+        
+        if (pathParts.length > startIndex) {
+            const potentialLang = pathParts[startIndex];
+            if (SUPPORTED_LANGUAGES[potentialLang]) {
+                return potentialLang;
             }
         }
         
@@ -66,45 +95,30 @@
      * Get current page path relative to docs root
      */
     function getCurrentPagePath() {
-        const path = window.location.pathname;
-        const pathParts = path.split('/').filter(p => p);
+        const { pathParts, startIndex } = getPathPartsWithoutBase(window.location.pathname);
         
         // Check if we're in a locale directory
         const locales = Object.keys(SUPPORTED_LANGUAGES);
-        if (pathParts.length > 0 && locales.includes(pathParts[0])) {
+        if (pathParts.length > startIndex && locales.includes(pathParts[startIndex])) {
             // Remove locale from path
-            return pathParts.slice(1).join('/') || 'index.html';
+            return pathParts.slice(startIndex + 1).join('/') || 'index.html';
         }
         
-        return pathParts.join('/') || 'index.html';
+        return pathParts.slice(startIndex).join('/') || 'index.html';
     }
     
     /**
      * Build URL for a specific language
      */
     function buildLanguageUrl(language, pagePath) {
-        // Get current path without leading slash
-        const currentPath = window.location.pathname;
-        const pathParts = currentPath.split('/').filter(p => p);
+        // pagePath should already be relative to the base (without base path or locale)
+        // e.g., "index.html" or "get-started.html"
         
-        // Check if we're already in a locale directory
-        const locales = Object.keys(SUPPORTED_LANGUAGES);
-        let currentLocale = null;
-        let actualPath = pagePath;
-        
-        // Remove any existing locale from path
-        if (pathParts.length > 0 && locales.includes(pathParts[0])) {
-            currentLocale = pathParts[0];
-            actualPath = pathParts.slice(1).join('/') || 'index.html';
-        } else {
-            actualPath = pathParts.join('/') || 'index.html';
-        }
-        
-        // For English, use root path; for others, use /locale/ prefix
+        // For English, use base path + page path; for others, use base path + /locale/ + page path
         if (language === 'en' || language === DEFAULT_LANGUAGE) {
-            return `/${actualPath}`;
+            return `${BASE_PATH}/${pagePath}`;
         } else {
-            return `/${language}/${actualPath}`;
+            return `${BASE_PATH}/${language}/${pagePath}`;
         }
     }
     
