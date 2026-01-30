@@ -107,12 +107,21 @@ public static class QueryAnalyzer
         if (string.IsNullOrWhiteSpace(query))
             return false;
 
-        // If the query contains parameter placeholders (@, :, $), it's likely parameterized
-        if (query.Contains('@') || query.Contains(':') || query.Contains('$'))
-            return false;
+        // Check for suspicious patterns that indicate SQL injection attempts
+        // These patterns look for common injection techniques
+        var suspiciousPatterns = new[]
+        {
+            new Regex(
+                @"\b(OR|AND)\b\s*\d+\s*=\s*\d+",
+                RegexOptions.IgnoreCase | RegexOptions.Compiled
+            ), // OR 1=1, AND 1=1
+            new Regex(@"UNION\s+SELECT", RegexOptions.IgnoreCase | RegexOptions.Compiled), // UNION SELECT attacks
+            new Regex(@"DROP\s+TABLE", RegexOptions.IgnoreCase | RegexOptions.Compiled), // DROP TABLE
+            new Regex(@";.*--", RegexOptions.Compiled), // Statement termination with comment
+            new Regex(@"xp_\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled), // SQL Server extended procedures
+        };
 
-        // Check for common injection patterns only in non-parameterized queries
-        foreach (var pattern in InjectionPatterns)
+        foreach (var pattern in suspiciousPatterns)
         {
             if (pattern.IsMatch(query))
                 return true;
