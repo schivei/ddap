@@ -23,6 +23,7 @@
     <Project Path="tests/Ddap.Client.Rest.Tests/Ddap.Client.Rest.Tests.csproj" />
     <Project Path="tests/Ddap.Docs.Tests/Ddap.Docs.Tests.csproj" />
     <Project Path="tests/Ddap.Tests/Ddap.Tests.csproj" />
+    <Project Path="tests/Ddap.Grpc.Tests/Ddap.Grpc.Tests.csproj" />
     <Project Path="tests/Ddap.Templates.Tests/Ddap.Templates.Tests.csproj" />
   </Folder>
 </Solution>
