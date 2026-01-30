@@ -1,22 +1,25 @@
 using Ddap.Core;
-using Ddap.Data.Dapper.SqlServer;
+using Ddap.Data.Dapper;
 using Ddap.GraphQL;
 using Ddap.Grpc;
 using Ddap.Rest;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure DDAP with multiple providers
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Server=localhost;Database=SampleDb;Trusted_Connection=True;";
+
 builder
     .Services.AddDdap(options =>
     {
         // Example configuration for SQL Server
         // In production, use configuration from appsettings.json
-        options.ConnectionString =
-            builder.Configuration.GetConnectionString("DefaultConnection")
-            ?? "Server=localhost;Database=SampleDb;Trusted_Connection=True;";
+        options.ConnectionString = connectionString;
     })
-    .AddSqlServerDapper() // Add SQL Server provider with Dapper
+    .AddDapper(() => new SqlConnection(connectionString)) // Add unified Dapper provider
     .AddRest() // Add REST API support with JSON/XML/YAML
     .AddGrpc() // Add gRPC support
     .AddGraphQL(); // Add GraphQL support

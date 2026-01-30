@@ -54,10 +54,19 @@ else
 fi
 
 echo ""
-echo "Step 5: Run tests"
-if dotnet test Ddap.slnx --no-build --configuration Debug --verbosity quiet > /dev/null 2>&1; then
-    TEST_COUNT=$(dotnet test Ddap.slnx --no-build --configuration Debug --verbosity quiet 2>&1 | grep "Total tests:" | awk '{print $3}')
-    PASSED_COUNT=$(dotnet test Ddap.slnx --no-build --configuration Debug --verbosity quiet 2>&1 | grep "Passed:" | awk '{print $2}')
+echo "Step 5: Pack template package (for tests)"
+if dotnet pack src/Ddap.Templates/Ddap.Templates.csproj --no-build --configuration Debug --output ./artifacts > /dev/null 2>&1; then
+    print_status "Template package created"
+else
+    print_warning "Template package creation failed (not critical)"
+fi
+
+echo ""
+echo "Step 6: Run tests"
+# Exclude slow template tests from regular pipeline runs
+if dotnet test Ddap.slnx --no-build --configuration Debug --filter "FullyQualifiedName!~Ddap.Templates.Tests" --verbosity quiet > /dev/null 2>&1; then
+    TEST_COUNT=$(dotnet test Ddap.slnx --no-build --configuration Debug --filter "FullyQualifiedName!~Ddap.Templates.Tests" --verbosity quiet 2>&1 | grep "Total tests:" | awk '{print $3}')
+    PASSED_COUNT=$(dotnet test Ddap.slnx --no-build --configuration Debug --filter "FullyQualifiedName!~Ddap.Templates.Tests" --verbosity quiet 2>&1 | grep "Passed:" | awk '{print $2}')
     print_status "All tests passed ($PASSED_COUNT/$TEST_COUNT)"
 else
     print_error "Some tests failed"
@@ -65,7 +74,7 @@ else
 fi
 
 echo ""
-echo "Step 6: DocFX - Generate API metadata"
+echo "Step 7: DocFX - Generate API metadata"
 if docfx metadata docs/docfx.json > /dev/null 2>&1; then
     print_status "API metadata generated"
 else
@@ -74,7 +83,7 @@ else
 fi
 
 echo ""
-echo "Step 7: DocFX - Build documentation"
+echo "Step 8: DocFX - Build documentation"
 if docfx build docs/docfx.json > /dev/null 2>&1; then
     print_status "Documentation built successfully"
 else
@@ -83,7 +92,7 @@ else
 fi
 
 echo ""
-echo "Step 8: Pack NuGet packages"
+echo "Step 9: Pack all NuGet packages"
 if dotnet pack Ddap.slnx --no-build --configuration Debug --output ./artifacts > /dev/null 2>&1; then
     PACKAGE_COUNT=$(ls -1 ./artifacts/*.nupkg 2>/dev/null | wc -l)
     print_status "NuGet packages created ($PACKAGE_COUNT packages)"
