@@ -11,6 +11,19 @@ REPORT_FILE="coverage/report/Summary.json"
 MIN_LINE_COVERAGE=80
 MIN_BRANCH_COVERAGE=80
 
+# Files to skip from validation (protobuf generated + E2E-only)
+SKIP_FILES=(
+    "Ddap.Grpc.RawQuery.MultipleResult"
+    "Ddap.Grpc.RawQuery.RawqueryReflection"
+    "Ddap.Grpc.RawQuery.RawQueryRequest"
+    "Ddap.Grpc.RawQuery.RawQueryService"
+    "Ddap.Grpc.RawQuery.ScalarResult"
+    "Ddap.Grpc.RawQuery.SingleResult"
+    "Ddap.Grpc.RawQuery.VoidResult"
+    "Ddap.Grpc.RawQueryServiceExtensions"
+    "Ddap.Grpc.Services.RawQueryServiceImpl"
+)
+
 if [ ! -f "$REPORT_FILE" ]; then
     echo "❌ Coverage report not found at $REPORT_FILE"
     exit 1
@@ -52,6 +65,22 @@ while IFS= read -r assembly; do
     # Get all classes in the assembly
     echo "$assembly" | jq -c '.classesinassembly[]' | while IFS= read -r class; do
         CLASS_NAME=$(echo "$class" | jq -r '.name')
+        
+        # Check if this file should be skipped
+        SKIP=0
+        for skip_file in "${SKIP_FILES[@]}"; do
+            if [[ "$CLASS_NAME" == *"$skip_file"* ]]; then
+                echo "⏭️  $CLASS_NAME - Skipped (protobuf/E2E-only)"
+                SKIP=1
+                break
+            fi
+        done
+        
+        # Skip validation if file is in skip list
+        if [ "$SKIP" = "1" ]; then
+            continue
+        fi
+        
         LINE_COV=$(echo "$class" | jq -r '.coverage')
         BRANCH_COV=$(echo "$class" | jq -r '.branchcoverage')
         
