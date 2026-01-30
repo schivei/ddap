@@ -6,62 +6,129 @@ namespace Ddap.GraphQL.Scalars;
 /// <summary>
 /// Scalar type for DateOnly values in GraphQL.
 /// Maps DateOnly to a string in ISO 8601 format (yyyy-MM-dd).
+/// Uses DateTimeValueNode for proper serialization without type inference.
 /// </summary>
-public class DateOnlyType : ScalarType<DateOnly, StringValueNode>
+public class DateOnlyType : ScalarType<DateOnly, DateTimeValueNode>
 {
+    private const string SpecifiedByUrl = "https://www.graphql-scalars.com/date-time";
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="DateOnlyType"/> class.
+    /// Initializes a new instance of the <see cref="DateOnlyType"/> class with full configuration.
+    /// </summary>
+    public DateOnlyType(
+        string name,
+        string? description = null,
+        BindingBehavior bind = BindingBehavior.Explicit
+    )
+        : base(name, bind)
+    {
+        Description = description;
+        SpecifiedBy = new Uri(SpecifiedByUrl);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DateOnlyType"/> class with default configuration.
     /// </summary>
     public DateOnlyType()
-        : base("DateOnly", BindingBehavior.Implicit)
-    {
-        Description = "Represents a date without time information in ISO 8601 format (yyyy-MM-dd).";
-    }
+        : this(
+            "DateOnly",
+            "Represents a date without time information in ISO 8601 format (yyyy-MM-dd).",
+            BindingBehavior.Implicit
+        ) { }
 
     /// <summary>
-    /// Parse the literal value node.
+    /// Parse the literal value node from GraphQL query.
     /// </summary>
-    protected override DateOnly ParseLiteral(StringValueNode valueSyntax)
+    protected override DateOnly ParseLiteral(DateTimeValueNode valueSyntax)
     {
-        // Validate input is not null or whitespace
-        if (string.IsNullOrWhiteSpace(valueSyntax.Value))
-        {
-            throw new SerializationException("DateOnly value cannot be null or whitespace.", this);
-        }
-
-        if (DateOnly.TryParse(valueSyntax.Value, out var dateOnly))
-        {
-            return dateOnly;
-        }
-
-        throw new SerializationException(
-            $"Unable to deserialize string to DateOnly: '{valueSyntax.Value}'. Expected format: yyyy-MM-dd (e.g., 2024-01-29).",
-            this
-        );
+        return valueSyntax.TryToDateOnly(out var value)
+            ? value
+            : throw new SerializationException(
+                "The string value is not a valid DateOnly representation.",
+                this
+            );
     }
 
     /// <summary>
-    /// Serialize the value.
+    /// Serialize the runtime value to a value node.
     /// </summary>
-    protected override StringValueNode ParseValue(DateOnly runtimeValue)
+    protected override DateTimeValueNode ParseValue(DateOnly runtimeValue)
     {
-        return new StringValueNode(runtimeValue.ToString("yyyy-MM-dd"));
+        return new DateTimeValueNode(runtimeValue);
     }
 
     /// <summary>
-    /// Check if the value syntax is valid.
+    /// Parse result from execution engine.
     /// </summary>
     public override IValueNode ParseResult(object? resultValue)
     {
         return resultValue switch
         {
             null => NullValueNode.Default,
-            string s => new StringValueNode(s),
-            DateOnly d => new StringValueNode(d.ToString("yyyy-MM-dd")),
+            string s => new DateTimeValueNode(s),
+            DateOnly d => ParseValue(d),
+            DateTime dt => ParseValue(DateOnly.FromDateTime(dt)),
             _ => throw new SerializationException(
-                $"Unable to serialize {resultValue.GetType().Name} to DateOnly",
+                "The result value is not a valid DateOnly representation.",
                 this
             ),
         };
+    }
+
+    /// <summary>
+    /// Try to serialize runtime value to result value.
+    /// </summary>
+    public override bool TrySerialize(object? runtimeValue, out object? resultValue)
+    {
+        resultValue = runtimeValue;
+        if (runtimeValue is null)
+        {
+            return true;
+        }
+
+        if (runtimeValue is DateOnly t)
+        {
+            resultValue = new DateTimeValueNode(t).Value;
+            return true;
+        }
+
+        if (runtimeValue is DateTimeValueNode d)
+        {
+            resultValue = d.Value;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Try to deserialize result value to runtime value.
+    /// </summary>
+    public override bool TryDeserialize(object? resultValue, out object? runtimeValue)
+    {
+        runtimeValue = resultValue;
+        if (resultValue is null)
+        {
+            return true;
+        }
+
+        if (resultValue is string s)
+        {
+            resultValue = new DateTimeValueNode(s);
+        }
+
+        if (resultValue is DateOnly)
+        {
+            runtimeValue = resultValue;
+            return true;
+        }
+
+        if (resultValue is DateTimeValueNode dt && dt.TryToDateOnly(out var d))
+        {
+            runtimeValue = d;
+            return true;
+        }
+
+        return false;
     }
 }

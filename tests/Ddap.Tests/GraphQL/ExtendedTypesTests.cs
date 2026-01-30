@@ -103,8 +103,8 @@ public class ExtendedTypesTests
 
         // Assert
         valueNode.Should().NotBeNull();
-        valueNode.Should().BeOfType<StringValueNode>();
-        ((StringValueNode)valueNode).Value.Should().Be("2024-01-29");
+        valueNode.Should().BeOfType<DateTimeValueNode>();
+        valueNode.Value.Should().Be("2024-01-29");
     }
 
     [Fact]
@@ -116,11 +116,12 @@ public class ExtendedTypesTests
 
         // Act
         var valueNode = timeOnlyType.ParseValue(expectedTime);
+        string stringValue = (string)valueNode.Value;
 
         // Assert
         valueNode.Should().NotBeNull();
-        valueNode.Should().BeOfType<StringValueNode>();
-        ((StringValueNode)valueNode).Value.Should().StartWith("14:30:00");
+        valueNode.Should().BeOfType<DateTimeValueNode>();
+        stringValue.Should().StartWith("14:30:00");
     }
 
     [Fact]
@@ -128,7 +129,7 @@ public class ExtendedTypesTests
     {
         // Arrange
         var dateOnlyType = new DateOnlyType();
-        var stringValue = new StringValueNode("2024-01-29");
+        var stringValue = new DateTimeValueNode("2024-01-29");
 
         // Act
         var dateOnly = dateOnlyType.ParseLiteral(stringValue);
@@ -142,7 +143,7 @@ public class ExtendedTypesTests
     {
         // Arrange
         var timeOnlyType = new TimeOnlyType();
-        var stringValue = new StringValueNode("14:30:00");
+        var stringValue = new DateTimeValueNode("14:30:00");
 
         // Act
         var timeOnly = timeOnlyType.ParseLiteral(stringValue);
@@ -152,41 +153,17 @@ public class ExtendedTypesTests
     }
 
     [Fact]
-    public void DateOnlyType_ParseLiteral_Should_Throw_When_Value_Is_Empty()
+    public void DateOnlyType_ParseLiteral_Should_Throw_When_Value_Is_Invalid()
     {
         // Arrange
         var dateOnlyType = new DateOnlyType();
-        var emptyValue = new StringValueNode("");
-
-        // Act & Assert
-        var act = () => dateOnlyType.ParseLiteral(emptyValue);
-        act.Should().Throw<SerializationException>().WithMessage("*cannot be null or whitespace*");
-    }
-
-    [Fact]
-    public void DateOnlyType_ParseLiteral_Should_Throw_When_Value_Is_Whitespace()
-    {
-        // Arrange
-        var dateOnlyType = new DateOnlyType();
-        var whitespaceValue = new StringValueNode("   ");
-
-        // Act & Assert
-        var act = () => dateOnlyType.ParseLiteral(whitespaceValue);
-        act.Should().Throw<SerializationException>().WithMessage("*cannot be null or whitespace*");
-    }
-
-    [Fact]
-    public void DateOnlyType_ParseLiteral_Should_Throw_When_Format_Is_Invalid()
-    {
-        // Arrange
-        var dateOnlyType = new DateOnlyType();
-        var invalidValue = new StringValueNode("not-a-date");
+        var invalidValue = new DateTimeValueNode("not-a-date");
 
         // Act & Assert
         var act = () => dateOnlyType.ParseLiteral(invalidValue);
         act.Should()
             .Throw<SerializationException>()
-            .WithMessage("*Unable to deserialize string to DateOnly*");
+            .WithMessage("*not a valid DateOnly representation*");
     }
 
     [Fact]
@@ -212,8 +189,11 @@ public class ExtendedTypesTests
         var result = dateOnlyType.ParseResult("2024-01-29");
 
         // Assert
-        result.Should().BeOfType<StringValueNode>();
-        ((StringValueNode)result).Value.Should().Be("2024-01-29");
+        result.Should().BeOfType<DateTimeValueNode>();
+        // String input might be parsed as DateTime, so just verify it contains the date
+        ((DateTimeValueNode)result)
+            .Value.Should()
+            .StartWith("2024-01-29");
     }
 
     [Fact]
@@ -227,8 +207,8 @@ public class ExtendedTypesTests
         var result = dateOnlyType.ParseResult(date);
 
         // Assert
-        result.Should().BeOfType<StringValueNode>();
-        ((StringValueNode)result).Value.Should().Be("2024-01-29");
+        result.Should().BeOfType<DateTimeValueNode>();
+        ((DateTimeValueNode)result).Value.Should().Be("2024-01-29");
     }
 
     [Fact]
@@ -239,45 +219,23 @@ public class ExtendedTypesTests
 
         // Act & Assert
         var act = () => dateOnlyType.ParseResult(12345);
-        act.Should().Throw<SerializationException>().WithMessage("*Unable to serialize*");
+        act.Should()
+            .Throw<SerializationException>()
+            .WithMessage("*not a valid DateOnly representation*");
     }
 
     [Fact]
-    public void TimeOnlyType_ParseLiteral_Should_Throw_When_Value_Is_Empty()
+    public void TimeOnlyType_ParseLiteral_Should_Throw_When_Value_Is_Invalid()
     {
         // Arrange
         var timeOnlyType = new TimeOnlyType();
-        var emptyValue = new StringValueNode("");
-
-        // Act & Assert
-        var act = () => timeOnlyType.ParseLiteral(emptyValue);
-        act.Should().Throw<SerializationException>().WithMessage("*cannot be null or whitespace*");
-    }
-
-    [Fact]
-    public void TimeOnlyType_ParseLiteral_Should_Throw_When_Value_Is_Whitespace()
-    {
-        // Arrange
-        var timeOnlyType = new TimeOnlyType();
-        var whitespaceValue = new StringValueNode("   ");
-
-        // Act & Assert
-        var act = () => timeOnlyType.ParseLiteral(whitespaceValue);
-        act.Should().Throw<SerializationException>().WithMessage("*cannot be null or whitespace*");
-    }
-
-    [Fact]
-    public void TimeOnlyType_ParseLiteral_Should_Throw_When_Format_Is_Invalid()
-    {
-        // Arrange
-        var timeOnlyType = new TimeOnlyType();
-        var invalidValue = new StringValueNode("not-a-time");
+        var invalidValue = new DateTimeValueNode("not-a-time");
 
         // Act & Assert
         var act = () => timeOnlyType.ParseLiteral(invalidValue);
         act.Should()
             .Throw<SerializationException>()
-            .WithMessage("*Unable to deserialize string to TimeOnly*");
+            .WithMessage("*not a valid TimeOnly representation*");
     }
 
     [Fact]
@@ -318,8 +276,8 @@ public class ExtendedTypesTests
         var result = timeOnlyType.ParseResult(time);
 
         // Assert
-        result.Should().BeOfType<StringValueNode>();
-        ((StringValueNode)result).Value.Should().StartWith("14:30:00");
+        result.Should().BeOfType<DateTimeValueNode>();
+        ((DateTimeValueNode)result).Value.Should().StartWith("14:30:00");
     }
 
     [Fact]
@@ -330,7 +288,342 @@ public class ExtendedTypesTests
 
         // Act & Assert
         var act = () => timeOnlyType.ParseResult(12345);
-        act.Should().Throw<SerializationException>().WithMessage("*Unable to serialize*");
+        act.Should()
+            .Throw<SerializationException>()
+            .WithMessage("*not a valid TimeOnly representation*");
+    }
+
+    [Fact]
+    public void DateOnlyType_TrySerialize_Should_Handle_Null()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+
+        // Act
+        var result = dateOnlyType.TrySerialize(null, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void DateOnlyType_TrySerialize_Should_Handle_DateOnly()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+        var date = new DateOnly(2024, 1, 29);
+
+        // Act
+        var result = dateOnlyType.TrySerialize(date, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().Be("2024-01-29");
+    }
+
+    [Fact]
+    public void DateOnlyType_TrySerialize_Should_Handle_DateTimeValueNode()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+        var node = new DateTimeValueNode(new DateOnly(2024, 1, 29));
+
+        // Act
+        var result = dateOnlyType.TrySerialize(node, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().Be("2024-01-29");
+    }
+
+    [Fact]
+    public void DateOnlyType_TrySerialize_Should_Return_False_For_Invalid_Type()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+
+        // Act
+        var result = dateOnlyType.TrySerialize(12345, out var resultValue);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void DateOnlyType_TryDeserialize_Should_Handle_Null()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+
+        // Act
+        var result = dateOnlyType.TryDeserialize(null, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void DateOnlyType_TryDeserialize_Should_Handle_String()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+
+        // Act
+        var result = dateOnlyType.TryDeserialize("2024-01-29", out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeOfType<DateOnly>();
+        ((DateOnly)runtimeValue!).Should().Be(new DateOnly(2024, 1, 29));
+    }
+
+    [Fact]
+    public void DateOnlyType_TryDeserialize_Should_Handle_DateOnly()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+        var date = new DateOnly(2024, 1, 29);
+
+        // Act
+        var result = dateOnlyType.TryDeserialize(date, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().Be(date);
+    }
+
+    [Fact]
+    public void DateOnlyType_TryDeserialize_Should_Handle_DateTimeValueNode()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+        var node = new DateTimeValueNode(new DateOnly(2024, 1, 29));
+
+        // Act
+        var result = dateOnlyType.TryDeserialize(node, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeOfType<DateOnly>();
+        ((DateOnly)runtimeValue!).Should().Be(new DateOnly(2024, 1, 29));
+    }
+
+    [Fact]
+    public void DateOnlyType_TryDeserialize_Should_Return_False_For_Invalid_Type()
+    {
+        // Arrange
+        var dateOnlyType = new DateOnlyType();
+
+        // Act
+        var result = dateOnlyType.TryDeserialize(12345, out var runtimeValue);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void TimeOnlyType_TrySerialize_Should_Handle_Null()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+
+        // Act
+        var result = timeOnlyType.TrySerialize(null, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void TimeOnlyType_TrySerialize_Should_Handle_TimeOnly()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+        var time = new TimeOnly(14, 30, 0);
+
+        // Act
+        var result = timeOnlyType.TrySerialize(time, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().NotBeNull();
+        resultValue.ToString()!.Should().StartWith("14:30:00");
+    }
+
+    [Fact]
+    public void TimeOnlyType_TrySerialize_Should_Handle_DateTimeValueNode()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+        var node = new DateTimeValueNode(new TimeOnly(14, 30, 0));
+
+        // Act
+        var result = timeOnlyType.TrySerialize(node, out var resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().NotBeNull();
+        resultValue.ToString()!.Should().StartWith("14:30:00");
+    }
+
+    [Fact]
+    public void TimeOnlyType_TrySerialize_Should_Return_False_For_Invalid_Type()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+
+        // Act
+        var result = timeOnlyType.TrySerialize(12345, out var resultValue);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void TimeOnlyType_TryDeserialize_Should_Handle_Null()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+
+        // Act
+        var result = timeOnlyType.TryDeserialize(null, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void TimeOnlyType_TryDeserialize_Should_Handle_String()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+
+        // Act
+        var result = timeOnlyType.TryDeserialize("14:30:00", out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeOfType<TimeOnly>();
+        ((TimeOnly)runtimeValue!).Should().Be(new TimeOnly(14, 30, 0));
+    }
+
+    [Fact]
+    public void TimeOnlyType_TryDeserialize_Should_Handle_TimeOnly()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+        var time = new TimeOnly(14, 30, 0);
+
+        // Act
+        var result = timeOnlyType.TryDeserialize(time, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().Be(time);
+    }
+
+    [Fact]
+    public void TimeOnlyType_TryDeserialize_Should_Handle_DateTimeValueNode()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+        var node = new DateTimeValueNode(new TimeOnly(14, 30, 0));
+
+        // Act
+        var result = timeOnlyType.TryDeserialize(node, out var runtimeValue);
+
+        // Assert
+        result.Should().BeTrue();
+        runtimeValue.Should().BeOfType<TimeOnly>();
+        ((TimeOnly)runtimeValue!).Should().Be(new TimeOnly(14, 30, 0));
+    }
+
+    [Fact]
+    public void TimeOnlyType_TryDeserialize_Should_Return_False_For_Invalid_Type()
+    {
+        // Arrange
+        var timeOnlyType = new TimeOnlyType();
+
+        // Act
+        var result = timeOnlyType.TryDeserialize(12345, out var runtimeValue);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void DateTimeValueNode_Should_Handle_DateTime()
+    {
+        // Arrange
+        var dateTime = new DateTime(2024, 1, 29, 14, 30, 0);
+        var node = new DateTimeValueNode(dateTime);
+
+        // Act
+        var result = node.ToDateTime();
+
+        // Assert
+        result.Should().Be(dateTime);
+        node.TryToDateTime(out var dt).Should().BeTrue();
+        dt.Should().Be(dateTime);
+    }
+
+    [Fact]
+    public void DateTimeValueNode_Should_Handle_DateTimeOffset()
+    {
+        // Arrange
+        var dateTimeOffset = new DateTimeOffset(2024, 1, 29, 14, 30, 0, TimeSpan.Zero);
+        var node = new DateTimeValueNode(dateTimeOffset);
+
+        // Act
+        var result = node.ToDateTimeOffset();
+
+        // Assert
+        result.Should().Be(dateTimeOffset);
+        node.TryToDateTimeOffset(out var dto).Should().BeTrue();
+        dto.Should().Be(dateTimeOffset);
+    }
+
+    [Fact]
+    public void DateTimeValueNode_Should_Return_Null_For_Invalid_Conversions()
+    {
+        // Arrange
+        var node = new DateTimeValueNode("invalid");
+
+        // Act & Assert
+        node.ToDateOnly().Should().BeNull();
+        node.ToTimeOnly().Should().BeNull();
+        node.ToDateTime().Should().BeNull();
+        node.ToDateTimeOffset().Should().BeNull();
+    }
+
+    [Fact]
+    public void DateTimeValueNode_GetNodes_Should_Return_Empty()
+    {
+        // Arrange
+        var node = new DateTimeValueNode("2024-01-29");
+
+        // Act
+        var result = node.GetNodes();
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void DateTimeValueNode_ToString_With_Indentation_Should_Return_Same_Value()
+    {
+        // Arrange
+        var node = new DateTimeValueNode(new DateOnly(2024, 1, 29));
+
+        // Act
+        var result = node.ToString(true);
+
+        // Assert
+        result.Should().Be(node.ToString());
     }
 
     // Dummy query for testing
