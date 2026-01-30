@@ -38,8 +38,7 @@
           "toc.yml"
         ],
         "exclude": [
-          "_site/**",
-          "locales/**"
+          "_site/**"
         ]
       },
       {

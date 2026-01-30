@@ -96,15 +96,14 @@
         // Update language switcher UI
         updateLanguageSwitcher(language);
         
-        // Load translations
-        loadTranslations(language);
-        
         // Announce to screen readers
         announceLanguageChange(language);
     }
     
     /**
      * Switch to a different language
+     * Note: This performs a page reload to navigate to the localized content.
+     * For DocFX-based documentation, this is more reliable than dynamic content loading.
      */
     function switchLanguage(language) {
         if (!SUPPORTED_LANGUAGES[language]) {
@@ -114,8 +113,7 @@
         
         applyLanguage(language);
         
-        // For now, reload the page to apply language
-        // In a real implementation, we'd dynamically load content
+        // Reload page to navigate to localized content
         const currentPage = getCurrentPagePath();
         window.location.href = buildLanguageUrl(language, currentPage);
     }
@@ -153,30 +151,6 @@
                 item.removeAttribute('aria-current');
             }
         });
-    }
-    
-    /**
-     * Load translations for the current language
-     */
-    function loadTranslations(language) {
-        // This would load translation files in a real implementation
-        // For now, we'll just update the UI strings
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            const translation = getTranslation(language, key);
-            if (translation) {
-                element.textContent = translation;
-            }
-        });
-    }
-    
-    /**
-     * Get a translation for a key (stub for now)
-     */
-    function getTranslation(language, key) {
-        // In a real implementation, this would load from JSON files
-        // For now, return null to use default content
-        return null;
     }
     
     /**
@@ -346,6 +320,8 @@
             return Object.keys(SUPPORTED_LANGUAGES);
         },
         reset: function() {
+            // Clear stored preference and revert to browser-detected language
+            // Note: This updates the UI without reloading the page
             localStorage.removeItem(STORAGE_KEY);
             applyLanguage(getPreferredLanguage(), false);
         }

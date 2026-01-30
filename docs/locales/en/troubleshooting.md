@@ -214,8 +214,10 @@ Unable to connect to any of the specified MySQL hosts
 
    **⚠️ Development-only (DO NOT USE IN PRODUCTION):**
    ```sql
-   -- Only for local development with proper firewall protection
-   GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password';
+   -- Use a strong, unique password and restrict network access to trusted hosts only
+   -- Replace 'your-strong-dev-password' and 'your_database' as appropriate
+   CREATE USER 'ddap_app_dev'@'%' IDENTIFIED BY 'your-strong-dev-password';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON your_database.* TO 'ddap_app_dev'@'%';
    FLUSH PRIVILEGES;
    ```
 

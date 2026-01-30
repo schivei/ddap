@@ -199,20 +199,13 @@ public class LanguageSwitcherTests : PageTest
     [Test]
     public async Task LocalStorage_OverridesBrowserDetection()
     {
-        // Arrange: Set Portuguese in localStorage
-        await Page.EvaluateAsync(
-            @"
-            localStorage.setItem('ddap-language', 'pt-br');
-        "
-        );
-
         // Create a new page with English browser language
         var context = await Browser.NewContextAsync(
             new BrowserNewContextOptions { Locale = "en-US" }
         );
         var page = await context.NewPageAsync();
 
-        // Set localStorage in the new context
+        // Navigate to page and set Portuguese in localStorage before reload
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
         await page.EvaluateAsync(
             @"
@@ -220,7 +213,7 @@ public class LanguageSwitcherTests : PageTest
         "
         );
 
-        // Act: Reload page
+        // Act: Reload page to trigger language detection with localStorage preference
         await page.ReloadAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
