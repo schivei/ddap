@@ -1138,3 +1138,80 @@ html {
         transform: translateX(-50%) translateY(0);
     }
 }
+
+/* Documentation page styles */
+.doc-page {
+    background: var(--bg-primary);
+    min-height: calc(100vh - 200px);
+    padding: 2rem 0;
+}
+
+.doc-page .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.doc-content {
+    background: var(--bg-secondary);
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Make markdown content responsive */
+.doc-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.doc-content pre {
+    overflow-x: auto;
+}
+
+/* Wrap tables for horizontal scrolling */
+.doc-content table {
+    width: 100%;
+}
+
+.doc-content > table {
+    display: block;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .doc-content {
+        padding: 1.5rem;
+    }
+    
+    .doc-page {
+        padding: 1rem 0;
+    }
+}
+
+/* Dark mode adjustments for markdown content */
+[data-theme="dark"] .doc-content {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .markdown-body {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .markdown-body a {
+    color: var(--color-primary);
+}
+
+[data-theme="dark"] .markdown-body code {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .markdown-body pre {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .markdown-body blockquote {
+    color: var(--text-secondary);
+    border-left-color: var(--color-primary);
+}

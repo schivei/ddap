@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Fournisseur d'API de Données Dynamiques. Développeur aux Commandes. Générez des APIs REST, GraphQL et gRPC à partir de votre base de données sans contraintes.">
+    <meta name="keywords" content="DDAP, API, REST, GraphQL, gRPC, Dapper, Entity Framework, .NET, C#, Database">
+    <meta name="author" content="DDAP Contributors">
+    <title>DDAP - Développeur aux Commandes | Fournisseur d'API de Données Dynamiques</title>
+    
+    <!-- hreflang tags for SEO -->
+    <link rel="alternate" hreflang="en" href="https://schivei.github.io/ddap/index.html?lang=en" />
+    <link rel="alternate" hreflang="pt-BR" href="https://schivei.github.io/ddap/pt-br/index.html" />
+    <link rel="alternate" hreflang="es" href="https://schivei.github.io/ddap/es/index.html" />
+    <link rel="alternate" hreflang="fr" href="https://schivei.github.io/ddap/fr/index.html" />
+    <link rel="alternate" hreflang="de" href="https://schivei.github.io/ddap/de/index.html" />
+    <link rel="alternate" hreflang="ja" href="https://schivei.github.io/ddap/ja/index.html" />
+    <link rel="alternate" hreflang="zh" href="https://schivei.github.io/ddap/zh/index.html" />
+    <link rel="alternate" hreflang="x-default" href="https://schivei.github.io/ddap/index.html" />
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Passer au contenu principal</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                <span class="brand-name">DDAP</span>
+            </div>
+            <div class="nav-links">
+                <a href="../get-started.html">Commencer</a>
+                <a href="../philosophy.html">Philosophie</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content">
+        <!-- Hero section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 id="hero-title" class="hero-title">
+                        <span class="hero-logo" aria-hidden="true">🎛️</span>
+                        DDAP
+                    </h1>
+                    <p class="hero-tagline">Fournisseur d'API de Données Dynamiques</p>
+                    <p class="hero-subtitle">Vous contrôlez tout. Nous gérons le code standard.</p>
+                    
+                    <div class="philosophy-highlight">
+                        <h2 class="philosophy-title">Développeur aux Commandes</h2>
+                        <p class="philosophy-description">
+                            Contrairement aux frameworks qui vous imposent des décisions, DDAP ne fournit que l'infrastructure. Vous choisissez votre base de données, ORM, sérialiseur et style d'API. Nous découvrons votre schéma, générons des types de base et nous écartons de votre chemin.
+                        </p>
+                    </div>
+
+                    <div class="hero-cta">
+                        <a href="../get-started.html" class="btn btn-primary">
+                            Commencer
+                            <span aria-hidden="true">→</span>
+                        </a>
+                        <a href="#quick-start" class="btn btn-secondary">
+                            Voir l'Exemple
+                            <span aria-hidden="true">↓</span>
+                        </a>
+                    </div>
+
+                    <div class="badges">
+                        <a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/nuget/v/Ddap.Core" alt="NuGet version">
+                        </a>
+                        <a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/github/license/schivei/ddap" alt="License">
+                        </a>
+                        <a href="https://github.com/schivei/ddap/actions" target="_blank" rel="noopener noreferrer">
+                            <img src="https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml" alt="Build status">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features grid -->
+        <section class="features" aria-labelledby="features-title">
+            <div class="container">
+                <h2 id="features-title" class="section-title">Pourquoi DDAP?</h2>
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🗄️</div>
+                        <h3 class="feature-title">Database Agnostic</h3>
+                        <p class="feature-description">
+                            Works with ANY IDbConnection via Dapper (SQL Server, MySQL, PostgreSQL, SQLite, Oracle)
+                            or use Entity Framework with your existing DbContext.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🌐</div>
+                        <h3 class="feature-title">Multi-Protocol APIs</h3>
+                        <p class="feature-description">
+                            Generate REST, GraphQL, and gRPC endpoints from the same schema.
+                            Use one, two, or all three—your choice.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🔄</div>
+                        <h3 class="feature-title">Auto-Reload System</h3>
+                        <p class="feature-description">
+                            Automatically reloads database schema after idle periods with 3 strategies,
+                            3 behaviors, and 3 detection methods.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🎯</div>
+                        <h3 class="feature-title">Zero Opinions</h3>
+                        <p class="feature-description">
+                            No forced dependencies. No hidden configurations. No magic behavior.
+                            You configure everything explicitly.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🔧</div>
+                        <h3 class="feature-title">Fully Extensible</h3>
+                        <p class="feature-description">
+                            Extend generated controllers and services via partial classes.
+                            Add custom endpoints, business logic, and hooks.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">📦</div>
+                        <h3 class="feature-title">Project Templates</h3>
+                        <p class="feature-description">
+                            Scaffold new projects with dotnet new. Choose your database provider,
+                            ORM, and API providers from the command line.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🔒</div>
+                        <h3 class="feature-title">Raw SQL Queries</h3>
+                        <p class="feature-description">
+                            Execute custom SQL queries with policy-based authorization, 
+                            audit logging, and injection prevention built-in.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">🌍</div>
+                        <h3 class="feature-title">Multi-Language Support</h3>
+                        <p class="feature-description">
+                            Documentation available in English, Portuguese, Spanish, French, 
+                            German, Japanese, and Chinese.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon" aria-hidden="true">📱</div>
+                        <h3 class="feature-title">Client Libraries</h3>
+                        <p class="feature-description">
+                            Ready-to-use client libraries for REST, GraphQL, and gRPC. 
+                            Connect to your DDAP APIs with minimal setup.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick start example -->
+        <section id="quick-start" class="quick-start" aria-labelledby="quick-start-title">
+            <div class="container">
+                <h2 id="quick-start-title" class="section-title">Démarrage Rapide</h2>
+                
+                <div class="quick-start-steps">
+                    <div class="step">
+                        <div class="step-number" aria-hidden="true">1</div>
+                        <h3 class="step-title">Install Packages</h3>
+                        <pre class="code-block"><code>dotnet add package Ddap.Core
+dotnet add package Ddap.Data.Dapper
+dotnet add package Ddap.Rest
+dotnet add package Ddap.GraphQL</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number" aria-hidden="true">2</div>
+                        <h3 class="step-title">Configure Your API</h3>
+                        <pre class="code-block"><code><span class="keyword">using</span> Microsoft.Data.SqlClient;
+
+<span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);
+
+<span class="comment">// YOU choose the database connection</span>
+builder.Services.AddDdap()
+    .AddDapper(<span class="keyword">() =></span> <span class="keyword">new</span> SqlConnection(
+        builder.Configuration.GetConnectionString(<span class="string">"DefaultConnection"</span>)
+    ))
+    .AddRest()
+    .AddGraphQL(graphql <span class="keyword">=></span>
+    {
+        <span class="comment">// YOU configure HotChocolate</span>
+        graphql.AddFiltering()
+               .AddSorting()
+               .AddProjections();
+    });
+
+<span class="keyword">var</span> app = builder.Build();
+app.MapControllers();
+app.MapGraphQL();
+app.Run();</code></pre>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number" aria-hidden="true">3</div>
+                        <h3 class="step-title">Done! 🎉</h3>
+                        <div class="endpoints">
+                            <div class="endpoint">
+                                <strong>REST:</strong> <code>GET /api/entity</code>
+                            </div>
+                            <div class="endpoint">
+                                <strong>GraphQL:</strong> <code>POST /graphql { entities { name } }</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-option">
+                    <h3>Or Use the Template</h3>
+                    <pre class="code-block"><code>dotnet new install Ddap.Templates
+dotnet new ddap-api --name MyApi --database-provider dapper --database-type mysql
+cd MyApi
+dotnet run</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison section -->
+        <section class="comparison" aria-labelledby="comparison-title">
+            <div class="container">
+                <h2 id="comparison-title" class="section-title">DDAP vs Autres Frameworks</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-card other-frameworks">
+                        <h3>🚫 Opinionated Frameworks</h3>
+                        <ul>
+                            <li>❌ Force Newtonsoft.Json</li>
+                            <li>❌ Hardcode XML/YAML formatters</li>
+                            <li>❌ Database-specific packages</li>
+                            <li>❌ Hidden configurations</li>
+                            <li>❌ Lock you into patterns</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card ddap-framework">
+                        <h3>✅ DDAP - Developer in Control</h3>
+                        <ul>
+                            <li>✅ You choose serializer</li>
+                            <li>✅ You configure formatters</li>
+                            <li>✅ Single Dapper, ANY database</li>
+                            <li>✅ Everything explicit</li>
+                            <li>✅ You own the architecture</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation links -->
+        <section class="documentation" aria-labelledby="documentation-title">
+            <div class="container">
+                <h2 id="documentation-title" class="section-title">Documentation</h2>
+                <nav class="doc-links" aria-label="Documentation links">
+                    <a href="../philosophy.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🎯</span>
+                        <span class="doc-name">Philosophy</span>
+                        <span class="doc-description">Developer in Control</span>
+                    </a>
+                    <a href="../get-started.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">📖</span>
+                        <span class="doc-name">Getting Started</span>
+                        <span class="doc-description">Step-by-step guide</span>
+                    </a>
+                    <a href="../database-providers.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🗄️</span>
+                        <span class="doc-name">Database Providers</span>
+                        <span class="doc-description">Dapper vs Entity Framework</span>
+                    </a>
+                    <a href="../api-providers.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🌐</span>
+                        <span class="doc-name">API Providers</span>
+                        <span class="doc-description">REST, GraphQL, gRPC</span>
+                    </a>
+                    <a href="../auto-reload.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🔄</span>
+                        <span class="doc-name">Auto-Reload</span>
+                        <span class="doc-description">Schema refresh system</span>
+                    </a>
+                    <a href="../templates.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">📦</span>
+                        <span class="doc-name">Templates</span>
+                        <span class="doc-description">dotnet new guide</span>
+                    </a>
+                    <a href="../architecture.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🏗️</span>
+                        <span class="doc-name">Architecture</span>
+                        <span class="doc-description">How it works</span>
+                    </a>
+                    <a href="../advanced.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🔧</span>
+                        <span class="doc-name">Advanced Usage</span>
+                        <span class="doc-description">Extensibility patterns</span>
+                    </a>
+                    <a href="../troubleshooting.html" class="doc-link">
+                        <span class="doc-icon" aria-hidden="true">🔍</span>
+                        <span class="doc-name">Troubleshooting</span>
+                        <span class="doc-description">Common issues</span>
+                    </a>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Packages section -->
+        <section class="packages" aria-labelledby="packages-title">
+            <div class="container">
+                <h2 id="packages-title" class="section-title">Packages</h2>
+                <div class="packages-grid">
+                    <div class="package-card">
+                        <h3>Ddap.Core</h3>
+                        <p>Core abstractions and infrastructure</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.Data.Dapper</h3>
+                        <p>Dapper provider (database-agnostic)</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.Data.EntityFramework</h3>
+                        <p>Entity Framework Core provider</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.Rest</h3>
+                        <p>REST API endpoints</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.GraphQL</h3>
+                        <p>GraphQL API (HotChocolate)</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.Grpc</h3>
+                        <p>gRPC services</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.Aspire</h3>
+                        <p>.NET Aspire orchestration</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                    <div class="package-card">
+                        <h3>Ddap.Templates</h3>
+                        <p>Project templates</p>
+                        <span class="package-status">✅ Stable</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Construit avec ❤️ par des développeurs qui croient au contrôle, pas aux contraintes.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Ressources</h3>
+                    <ul>
+                        <li><a href="../get-started.html">Commencer</a></li>
+                        <li><a href="../philosophy.html">Philosophie</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Communauté</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Légal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="build-info">
+                    Build: <a href="https://github.com/schivei/ddap/actions/runs/{{RUN_ID}}" target="_blank" rel="noopener noreferrer">#{{RUN_NUMBER}}</a>
+                    | v{{VERSION}}
+                    | {{BUILD_DATE}}
+                    | <a href="https://github.com/schivei/ddap/commit/{{COMMIT_SHA}}" target="_blank" rel="noopener noreferrer">{{COMMIT_SHA_SHORT}}</a>
+                </div>
+                <p class="copyright">© 2024 Contributeurs DDAP. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+</body>
+</html>

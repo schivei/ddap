@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>DDAP REST Client - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../ja/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>DDAP REST Client</h1>
+<p>The DDAP REST Client provides a simple, strongly-typed HTTP client for consuming RESTful DDAP APIs.</p>
+<h2>Installation</h2>
+<pre><code class="language-bash">dotnet add package Ddap.Client.Rest
+</code></pre>
+<h2>Configuration</h2>
+<h3>Basic Setup</h3>
+<pre><code class="language-csharp">using Ddap.Client.Core;
+using Ddap.Client.Rest;
+using Microsoft.Extensions.DependencyInjection;
+
+var services = new ServiceCollection();
+services.AddDdapRestClient(options =&gt;
+{
+    options.BaseUrl = "https://api.example.com";
+    options.Timeout = TimeSpan.FromSeconds(30);
+    options.RetryCount = 3;
+    options.UseExponentialBackoff = true;
+});
+
+var serviceProvider = services.BuildServiceProvider();
+var client = serviceProvider.GetRequiredService&lt;DdapRestClient&gt;();
+</code></pre>
+<h2>CRUD Operations</h2>
+<h3>Get All Entities</h3>
+<pre><code class="language-csharp">// Get all users
+var users = await client.GetAsync&lt;User&gt;("/api/users");
+
+foreach (var user in users)
+{
+    Console.WriteLine($"{user.Id}: {user.Name}");
+}
+</code></pre>
+<h3>Get Single Entity by ID</h3>
+<pre><code class="language-csharp">// Get user by ID
+var user = await client.GetByIdAsync&lt;User&gt;("/api/users", 1);
+
+if (user != null)
+{
+    Console.WriteLine($"Found: {user.Name}");
+}
+</code></pre>
+<h3>Create Entity</h3>
+<pre><code class="language-csharp">// Create a new user
+var newUser = new User
+{
+    Name = "John Doe",
+    Email = "john@example.com"
+};
+
+var created = await client.CreateAsync("/api/users", newUser);
+Console.WriteLine($"Created user with ID: {created.Id}");
+</code></pre>
+<h3>Update Entity</h3>
+<pre><code class="language-csharp">// Update existing user
+var user = await client.GetByIdAsync&lt;User&gt;("/api/users", 1);
+user.Name = "Jane Doe";
+
+var updated = await client.UpdateAsync("/api/users", 1, user);
+Console.WriteLine($"Updated: {updated.Name}");
+</code></pre>
+<h3>Delete Entity</h3>
+<pre><code class="language-csharp">// Delete user
+var deleted = await client.DeleteAsync("/api/users", 1);
+
+if (deleted)
+{
+    Console.WriteLine("User deleted successfully");
+}
+</code></pre>
+<h2>Resilience Policies</h2>
+<p>The REST client automatically includes retry policies with exponential backoff:</p>
+<pre><code class="language-csharp">services.AddDdapRestClient(options =&gt;
+{
+    options.RetryCount = 5; // Retry up to 5 times
+    options.RetryDelay = TimeSpan.FromSeconds(2); // Initial delay
+    options.UseExponentialBackoff = true; // Double delay each retry
+});
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Handling API Errors</h3>
+<pre><code class="language-csharp">try
+{
+    var user = await client.GetByIdAsync&lt;User&gt;("/api/users", 999);
+}
+catch (DdapApiException ex) when (ex.StatusCode == 404)
+{
+    Console.WriteLine("User not found");
+}
+catch (DdapApiException ex)
+{
+    Console.WriteLine($"API Error: {ex.Message} (Status: {ex.StatusCode})");
+}
+</code></pre>
+<h3>Handling Connection Errors</h3>
+<pre><code class="language-csharp">try
+{
+    var users = await client.GetAsync&lt;User&gt;("/api/users");
+}
+catch (DdapConnectionException ex)
+{
+    Console.WriteLine($"Connection failed: {ex.Message}");
+}
+</code></pre>
+<h2>Custom Entity Types</h2>
+<p>Define your entity types:</p>
+<pre><code class="language-csharp">public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int Stock { get; set; }
+}
+</code></pre>
+<h2>Async/Await Patterns</h2>
+<p>All operations are fully async:</p>
+<pre><code class="language-csharp">// Sequential operations
+var user = await client.GetByIdAsync&lt;User&gt;("/api/users", 1);
+var updated = await client.UpdateAsync("/api/users", 1, user);
+
+// Parallel operations
+var usersTask = client.GetAsync&lt;User&gt;("/api/users");
+var productsTask = client.GetAsync&lt;Product&gt;("/api/products");
+
+await Task.WhenAll(usersTask, productsTask);
+
+var users = await usersTask;
+var products = await productsTask;
+</code></pre>
+<h2>Cancellation Support</h2>
+<p>All operations support cancellation tokens:</p>
+<pre><code class="language-csharp">using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+try
+{
+    var users = await client.GetAsync&lt;User&gt;("/api/users", cts.Token);
+}
+catch (OperationCanceledException)
+{
+    Console.WriteLine("Operation cancelled");
+}
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Reuse Client Instances</strong>: Register the client as a singleton in DI</li>
+<li><strong>Use Cancellation Tokens</strong>: Always pass cancellation tokens for long operations</li>
+<li><strong>Handle Specific Exceptions</strong>: Catch and handle specific exception types</li>
+<li><strong>Configure Timeouts</strong>: Set appropriate timeouts based on your API</li>
+<li><strong>Use Retry Policies</strong>: Enable exponential backoff for transient failures</li>
+</ol>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="client-graphql.md">GraphQL Client Documentation</a></li>
+<li><a href="client-grpc.md">gRPC Client Documentation</a></li>
+<li><a href="client-getting-started.md">Getting Started Guide</a></li>
+</ul>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'ja');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
+</html>

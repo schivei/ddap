@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>DDAP gRPC Client - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../de/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>DDAP gRPC Client</h1>
+<p>The DDAP gRPC Client provides high-performance, strongly-typed access to DDAP gRPC services.</p>
+<h2>Installation</h2>
+<pre><code class="language-bash">dotnet add package Ddap.Client.Grpc
+</code></pre>
+<h2>Configuration</h2>
+<h3>Basic Setup</h3>
+<pre><code class="language-csharp">using Ddap.Client.Core;
+using Ddap.Client.Grpc;
+using Microsoft.Extensions.DependencyInjection;
+
+var services = new ServiceCollection();
+services.AddDdapGrpcClient(options =&gt;
+{
+    options.BaseUrl = "https://api.example.com";
+    options.Timeout = TimeSpan.FromSeconds(30);
+});
+
+var serviceProvider = services.BuildServiceProvider();
+var client = serviceProvider.GetRequiredService&lt;DdapGrpcClient&gt;();
+</code></pre>
+<h2>Creating Service Clients</h2>
+<p>The gRPC client manages channel creation and provides factory methods for service clients:</p>
+<pre><code class="language-csharp">// Create a service client
+var userService = client.CreateClient&lt;UserServiceClient&gt;();
+
+// Use the service client
+var response = await userService.GetUserAsync(new GetUserRequest { Id = 1 });
+Console.WriteLine($"User: {response.Name}");
+</code></pre>
+<h2>Channel Management</h2>
+<p>The client automatically manages gRPC channels:</p>
+<pre><code class="language-csharp">// Get the underlying channel (for advanced scenarios)
+var channel = client.GetChannel();
+
+// The channel is reused for all service clients
+var userService = client.CreateClient&lt;UserServiceClient&gt;();
+var orderService = client.CreateClient&lt;OrderServiceClient&gt;();
+</code></pre>
+<h2>Streaming Operations</h2>
+<h3>Server Streaming</h3>
+<pre><code class="language-csharp">var request = new GetUsersRequest();
+var call = userService.GetUsers(request);
+
+await foreach (var user in call.ResponseStream.ReadAllAsync())
+{
+    Console.WriteLine($"User: {user.Name}");
+}
+</code></pre>
+<h3>Client Streaming</h3>
+<pre><code class="language-csharp">var call = userService.CreateUsers();
+
+foreach (var user in users)
+{
+    await call.RequestStream.WriteAsync(new CreateUserRequest
+    {
+        Name = user.Name,
+        Email = user.Email
+    });
+}
+
+await call.RequestStream.CompleteAsync();
+var response = await call;
+</code></pre>
+<h3>Bidirectional Streaming</h3>
+<pre><code class="language-csharp">var call = userService.Chat();
+
+// Start reading responses
+var readTask = Task.Run(async () =&gt;
+{
+    await foreach (var message in call.ResponseStream.ReadAllAsync())
+    {
+        Console.WriteLine($"Received: {message.Text}");
+    }
+});
+
+// Send messages
+await call.RequestStream.WriteAsync(new ChatMessage { Text = "Hello" });
+await call.RequestStream.WriteAsync(new ChatMessage { Text = "World" });
+await call.RequestStream.CompleteAsync();
+
+await readTask;
+</code></pre>
+<h2>Deadlines and Cancellation</h2>
+<h3>Setting Deadlines</h3>
+<pre><code class="language-csharp">var options = new CallOptions(deadline: DateTime.UtcNow.AddSeconds(5));
+var response = await userService.GetUserAsync(
+    new GetUserRequest { Id = 1 },
+    options
+);
+</code></pre>
+<h3>Using Cancellation Tokens</h3>
+<pre><code class="language-csharp">using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+try
+{
+    var response = await userService.GetUserAsync(
+        new GetUserRequest { Id = 1 },
+        cancellationToken: cts.Token
+    );
+}
+catch (OperationCanceledException)
+{
+    Console.WriteLine("Operation cancelled");
+}
+</code></pre>
+<h2>Error Handling</h2>
+<h3>gRPC Status Codes</h3>
+<pre><code class="language-csharp">using Grpc.Core;
+
+try
+{
+    var response = await userService.GetUserAsync(new GetUserRequest { Id = 999 });
+}
+catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
+{
+    Console.WriteLine("User not found");
+}
+catch (RpcException ex)
+{
+    Console.WriteLine($"gRPC error: {ex.Status.Detail}");
+}
+</code></pre>
+<h2>Metadata and Headers</h2>
+<h3>Adding Metadata</h3>
+<pre><code class="language-csharp">var metadata = new Metadata
+{
+    { "authorization", "Bearer token123" },
+    { "x-request-id", Guid.NewGuid().ToString() }
+};
+
+var options = new CallOptions(headers: metadata);
+var response = await userService.GetUserAsync(
+    new GetUserRequest { Id = 1 },
+    options
+);
+</code></pre>
+<h3>Reading Response Headers</h3>
+<pre><code class="language-csharp">var call = userService.GetUserAsync(new GetUserRequest { Id = 1 });
+var headers = await call.ResponseHeadersAsync;
+
+foreach (var entry in headers)
+{
+    Console.WriteLine($"{entry.Key}: {entry.Value}");
+}
+
+var response = await call;
+</code></pre>
+<h2>Performance Optimization</h2>
+<h3>Channel Options</h3>
+<p>The client configures channels with optimized settings:</p>
+<ul>
+<li>Max message size: 16 MB</li>
+<li>Connection reuse</li>
+<li>HTTP/2 multiplexing</li>
+</ul>
+<h3>Connection Pooling</h3>
+<p>The client reuses the same channel for all service clients:</p>
+<pre><code class="language-csharp">// Both services share the same channel
+var userService = client.CreateClient&lt;UserServiceClient&gt;();
+var orderService = client.CreateClient&lt;OrderServiceClient&gt;();
+</code></pre>
+<h2>Disposal</h2>
+<p>The client implements <code>IDisposable</code> for proper resource cleanup:</p>
+<pre><code class="language-csharp">using var client = new DdapGrpcClient(options);
+var userService = client.CreateClient&lt;UserServiceClient&gt;();
+// Use the service...
+// Channel is automatically disposed
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Reuse Channels</strong>: Use a single client instance per application</li>
+<li><strong>Use Streaming</strong>: Leverage streaming for large datasets</li>
+<li><strong>Set Deadlines</strong>: Always specify deadlines for operations</li>
+<li><strong>Handle Status Codes</strong>: Catch and handle specific RPC status codes</li>
+<li><strong>Dispose Properly</strong>: Ensure the client is disposed to release resources</li>
+</ol>
+<h2>Proto File Example</h2>
+<p>Define your gRPC services in <code>.proto</code> files:</p>
+<pre><code class="language-protobuf">syntax = "proto3";
+
+package ddap.users;
+
+service UserService {
+    rpc GetUser (GetUserRequest) returns (User);
+    rpc GetUsers (GetUsersRequest) returns (stream User);
+    rpc CreateUser (CreateUserRequest) returns (User);
+    rpc UpdateUser (UpdateUserRequest) returns (User);
+    rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message User {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+message GetUserRequest {
+    int32 id = 1;
+}
+
+message GetUsersRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message CreateUserRequest {
+    string name = 1;
+    string email = 2;
+}
+
+message UpdateUserRequest {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+message DeleteUserRequest {
+    int32 id = 1;
+}
+
+message DeleteUserResponse {
+    bool success = 1;
+}
+</code></pre>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="client-rest.md">REST Client Documentation</a></li>
+<li><a href="client-graphql.md">GraphQL Client Documentation</a></li>
+<li><a href="client-getting-started.md">Getting Started Guide</a></li>
+</ul>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'de');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
+</html>
