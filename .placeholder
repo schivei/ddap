@@ -1,0 +1,8 @@
+@copilot
+
+Avaliando aqui e:
+1. O site não está trocando os idiomas, algum problema no switch e no script de detecção de idioma
+2. As demais páginas de documentação não possuem outro idioma e deveriam estar no mesmo layout do site ao invés de estarem embedadas no docfx
+
+Notas:
+- O docfx não precisa de outro idioma e deve conter o mesmo menu que tem agora mas as páginas de documentação que não foram geradas pelo docfx devem ser do site
