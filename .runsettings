@@ -7,6 +7,17 @@
         <Configuration>
           <!-- Coverage options -->
           <Format>cobertura</Format>
+          
+          <!-- ExcludeByFile: Excludes files by path BEFORE Include filters -->
+          <ExcludeByFile>
+            <!-- Protobuf generated code (7 files in RawQuery folder) -->
+            **/RawQuery/*.cs
+            
+            <!-- E2E-only code (2 files - require running servers) -->
+            **/Services/RawQueryServiceImpl.cs
+            **/RawQueryServiceExtensions.cs
+          </ExcludeByFile>
+          
           <Exclude>
             <!-- Exclude test assemblies -->
             [*.Tests]*
