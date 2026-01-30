@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="pt-br" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>Database Providers - DDAP</title>
     
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="lib/github-markdown.min.css">
-    <script src="lib/marked.min.js"></script>
-    <script src="lib/purify.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <header class="site-header">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../pt-br/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                     <span class="logo" aria-label="DDAP Logo">🎛️</span>
                     <span class="brand-name">DDAP</span>
                 </a>
@@ -43,7 +43,1044 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Database Providers</h1>
+<p>DDAP provides <strong>two unified packages</strong> that work with any database you choose. You're in control of the database driver, connection string, and pooling configuration.</p>
+<h2>Overview</h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Purpose</th>
+<th>Database Support</th>
+<th>You Provide</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ddap.Data.Dapper</code></td>
+<td>Unified Dapper provider</td>
+<td><strong>ANY</strong> database with an <code>IDbConnection</code></td>
+<td>ADO.NET driver + connection factory</td>
+</tr>
+<tr>
+<td><code>Ddap.Data.EntityFramework</code></td>
+<td>Unified EF Core provider</td>
+<td><strong>ANY</strong> EF Core supported database</td>
+<td>EF Core provider + DbContext</td>
+</tr>
+</tbody></table>
+<h2>🔥 Key Architecture Changes</h2>
+<h3>✅ Before (Old - Database-Specific Packages)</h3>
+<pre><code class="language-csharp">// ❌ OLD: Separate package per database
+dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Data.Dapper.MySql
+dotnet add package Ddap.Data.Dapper.PostgreSql
+</code></pre>
+<h3>✅ Now (New - Unified Package)</h3>
+<pre><code class="language-csharp">// ✅ NEW: ONE package for ALL databases
+dotnet add package Ddap.Data.Dapper
+dotnet add package Microsoft.Data.SqlClient  // YOU choose the driver
+</code></pre>
+<h3>What is Ddap.Data.Dapper?</h3>
+<p><strong>ONE package</strong> that works with <strong>ANY database</strong> that has an ADO.NET driver (<code>IDbConnection</code> implementation).</p>
+<h3>Core Concept</h3>
+<pre><code class="language-csharp">.AddDapper(() =&gt; new YourDbConnection(connectionString))
+           ↑               ↑
+     Connection Factory  You choose this
+</code></pre>
+<p>You provide:</p>
+<ol>
+<li>A <strong>connection factory</strong> - a lambda that creates <code>IDbConnection</code> instances</li>
+<li>Your <strong>database driver</strong> - installed as a separate NuGet package</li>
+<li>Your <strong>connection string</strong> - with pooling configured as you need</li>
+</ol>
+<h3>Installation</h3>
+<h4>Step 1: Install Ddap.Data.Dapper</h4>
+<pre><code class="language-bash">dotnet add package Ddap.Data.Dapper
+</code></pre>
+<h4>Step 2: Install YOUR Database Driver</h4>
+<pre><code class="language-bash"># SQL Server
+dotnet add package Microsoft.Data.SqlClient
+
+# MySQL
+dotnet add package MySqlConnector
+
+# PostgreSQL
+dotnet add package Npgsql
+
+# SQLite
+dotnet add package Microsoft.Data.Sqlite
+
+# Oracle
+dotnet add package Oracle.ManagedDataAccess.Core
+</code></pre>
+<hr>
+<h2>Database Examples</h2>
+<h3>SQL Server</h3>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;
+
+var connectionString = "Server=localhost;Database=MyDb;Integrated Security=true;";
+
+builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new SqlConnection(connectionString));
+</code></pre>
+<p><strong>Connection String Options:</strong></p>
+<pre><code class="language-csharp">// Windows Authentication
+"Server=localhost;Database=MyDb;Integrated Security=true;"
+
+// SQL Authentication
+"Server=localhost;Database=MyDb;User Id=sa;Password=YourPassword;"
+
+// Connection Pooling (recommended)
+"Server=localhost;Database=MyDb;Integrated Security=true;Min Pool Size=5;Max Pool Size=100;"
+
+// Azure SQL Database
+"Server=tcp:myserver.database.windows.net,1433;Database=MyDb;User ID=admin;Password=pass;Encrypt=True;"
+
+// Multiple Active Result Sets
+"Server=localhost;Database=MyDb;Integrated Security=true;MultipleActiveResultSets=true;"
+</code></pre>
+<p><strong>Data Types:</strong></p>
+<ul>
+<li>Standard types: <code>int</code>, <code>bigint</code>, <code>varchar</code>, <code>nvarchar</code>, <code>datetime</code>, <code>datetime2</code>, <code>bit</code>, <code>decimal</code></li>
+<li>SQL Server specific: <code>uniqueidentifier</code> → <code>Guid</code>, <code>hierarchyid</code>, <code>geography</code>, <code>geometry</code></li>
+</ul>
+<hr>
+<h3>MySQL</h3>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;
+using MySqlConnector;
+
+var connectionString = "Server=localhost;Database=MyDb;User=root;Password=secret;";
+
+builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new MySqlConnection(connectionString));
+</code></pre>
+<p><strong>Connection String Options:</strong></p>
+<pre><code class="language-csharp">// Basic
+"Server=localhost;Database=MyDb;User=root;Password=secret;"
+
+// Custom Port
+"Server=localhost;Port=3306;Database=MyDb;User=root;Password=secret;"
+
+// SSL Required
+"Server=localhost;Database=MyDb;User=root;Password=secret;SslMode=Required;"
+
+// Connection Pooling
+"Server=localhost;Database=MyDb;User=root;Password=secret;MinimumPoolSize=5;MaximumPoolSize=100;"
+
+// UTF-8 Encoding (recommended)
+"Server=localhost;Database=MyDb;User=root;Password=secret;CharSet=utf8mb4;"
+</code></pre>
+<p><strong>Data Types:</strong></p>
+<ul>
+<li>Standard: <code>INT</code>, <code>BIGINT</code>, <code>VARCHAR</code>, <code>TEXT</code>, <code>DATETIME</code>, <code>TIMESTAMP</code>, <code>BOOLEAN</code></li>
+<li>MySQL specific: <code>JSON</code> → <code>String</code>, <code>ENUM</code>, <code>SET</code></li>
+</ul>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Use <code>utf8mb4</code> character set for full Unicode support</li>
+<li>Use <code>InnoDB</code> engine for foreign key support</li>
+<li>MySQL 5.7+ for JSON column support</li>
+</ul>
+<hr>
+<h3>PostgreSQL</h3>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;
+using Npgsql;
+
+var connectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=secret;";
+
+builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new NpgsqlConnection(connectionString));
+</code></pre>
+<p><strong>Connection String Options:</strong></p>
+<pre><code class="language-csharp">// Basic
+"Host=localhost;Database=MyDb;Username=postgres;Password=secret;"
+
+// Custom Port
+"Host=localhost;Port=5432;Database=MyDb;Username=postgres;Password=secret;"
+
+// SSL Required
+"Host=localhost;Database=MyDb;Username=postgres;Password=secret;SSL Mode=Require;"
+
+// Connection Pooling
+"Host=localhost;Database=MyDb;Username=postgres;Password=secret;Minimum Pool Size=5;Maximum Pool Size=100;"
+
+// Timeouts
+"Host=localhost;Database=MyDb;Username=postgres;Password=secret;Timeout=30;Command Timeout=30;"
+</code></pre>
+<p><strong>Data Types:</strong></p>
+<ul>
+<li>Standard: <code>integer</code>, <code>bigint</code>, <code>varchar</code>, <code>text</code>, <code>timestamp</code>, <code>boolean</code>, <code>decimal</code></li>
+<li>PostgreSQL specific: <code>uuid</code> → <code>Guid</code>, <code>json</code>/<code>jsonb</code> → <code>String</code>, <code>array</code> → .NET arrays</li>
+</ul>
+<p><strong>PostgreSQL-Specific Features:</strong></p>
+<ul>
+<li>Schemas for organization (<code>CREATE SCHEMA app;</code>)</li>
+<li>UUID primary keys</li>
+<li>Array types (<code>TEXT[]</code>, <code>INT[]</code>)</li>
+<li>JSONB for structured data</li>
+<li>Full-text search</li>
+</ul>
+<hr>
+<h3>SQLite</h3>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;
+using Microsoft.Data.Sqlite;
+
+var connectionString = "Data Source=myapp.db;";
+
+builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new SqliteConnection(connectionString));
+</code></pre>
+<p><strong>Connection String Options:</strong></p>
+<pre><code class="language-csharp">// File database
+"Data Source=myapp.db;"
+
+// In-memory database
+"Data Source=:memory:;"
+
+// Read-only
+"Data Source=myapp.db;Mode=ReadOnly;"
+
+// Shared cache
+"Data Source=myapp.db;Cache=Shared;"
+</code></pre>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Use <code>AUTOINCREMENT</code> sparingly (performance cost)</li>
+<li>Enable foreign keys: <code>PRAGMA foreign_keys = ON;</code></li>
+<li>Use Write-Ahead Logging: <code>PRAGMA journal_mode=WAL;</code></li>
+</ul>
+<hr>
+<h3>Oracle</h3>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;
+using Oracle.ManagedDataAccess.Client;
+
+var connectionString = "User Id=system;Password=oracle;Data Source=localhost:1521/ORCLPDB1;";
+
+builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new OracleConnection(connectionString));
+</code></pre>
+<p><strong>Connection String Options:</strong></p>
+<pre><code class="language-csharp">// Basic
+"User Id=system;Password=oracle;Data Source=localhost:1521/ORCLPDB1;"
+
+// With TNS Name
+"User Id=system;Password=oracle;Data Source=ORCL;"
+
+// Connection Pooling
+"User Id=system;Password=oracle;Data Source=ORCL;Pooling=true;Min Pool Size=5;Max Pool Size=100;"
+</code></pre>
+<hr>
+<h2>Advanced Configuration</h2>
+<h3>Custom Provider Options</h3>
+<pre><code class="language-csharp">builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new SqlConnection(connectionString), options =&gt;
+    {
+        options.ProviderName = "MyCustomName";
+        options.UseInformationSchema = true;  // Standard SQL metadata
+        
+        // Override metadata queries for specific database features
+        options.CustomTableQuery = @"
+            SELECT TABLE_SCHEMA, TABLE_NAME
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_TYPE = 'BASE TABLE'";
+    });
+</code></pre>
+<h3>Multiple Databases</h3>
+<pre><code class="language-csharp">// SQL Server (Primary)
+builder.Services
+    .AddDdap("Primary")
+    .AddDapper(() =&gt; new SqlConnection(sqlServerConnString));
+
+// PostgreSQL (Analytics)
+builder.Services
+    .AddDdap("Analytics")
+    .AddDapper(() =&gt; new NpgsqlConnection(postgresConnString));
+
+// SQLite (Cache)
+builder.Services
+    .AddDdap("Cache")
+    .AddDapper(() =&gt; new SqliteConnection("Data Source=cache.db;"));
+</code></pre>
+<hr>
+<h2>When to Use Dapper</h2>
+<p>✅ <strong>Use Dapper when:</strong></p>
+<ul>
+<li>Performance is critical</li>
+<li>You need maximum control over SQL</li>
+<li>Simple CRUD operations</li>
+<li>Database-first development</li>
+<li>Working with stored procedures</li>
+<li>Minimal dependencies</li>
+</ul>
+<p>❌ <strong>Avoid Dapper when:</strong></p>
+<ul>
+<li>You need change tracking</li>
+<li>Complex object graphs with lazy loading</li>
+<li>Code-first with migrations</li>
+<li>Heavy use of LINQ queries</li>
+</ul>
+<hr>
+<h2>Entity Framework Provider</h2>
+<h3>What is Ddap.Data.EntityFramework?</h3>
+<p><strong>ONE package</strong> that works with <strong>ANY EF Core provider</strong>. Your existing DbContext, your existing EF configuration.</p>
+<h3>Core Concept</h3>
+<pre><code class="language-csharp">.AddEntityFramework&lt;MyDbContext&gt;()
+                    ↑
+            Your existing DbContext
+</code></pre>
+<p>You provide:</p>
+<ol>
+<li>A <strong>DbContext</strong> - already registered in DI</li>
+<li>An <strong>EF Core provider</strong> - SQL Server, PostgreSQL, SQLite, etc.</li>
+<li>Your <strong>existing configuration</strong> - we use it as-is</li>
+</ol>
+<h3>Installation</h3>
+<pre><code class="language-bash"># Install DDAP EF provider
+dotnet add package Ddap.Data.EntityFramework
+
+# Install YOUR EF Core provider (if not already installed)
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+# OR
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+# OR
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+# OR
+dotnet add package Pomelo.EntityFrameworkCore.MySql
+</code></pre>
+<hr>
+<h2>Configuration Examples</h2>
+<h3>SQL Server</h3>
+<pre><code class="language-csharp">using Ddap.Data.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
+public class MyDbContext : DbContext
+{
+    public MyDbContext(DbContextOptions&lt;MyDbContext&gt; options) : base(options) { }
+    
+    public DbSet&lt;User&gt; Users { get; set; }
+    public DbSet&lt;Order&gt; Orders { get; set; }
+}
+
+// Step 1: Register your DbContext (standard EF Core)
+builder.Services.AddDbContext&lt;MyDbContext&gt;(options =&gt;
+    options.UseSqlServer(connectionString));
+
+// Step 2: Add DDAP with Entity Framework provider
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;MyDbContext&gt;();
+</code></pre>
+<hr>
+<h3>PostgreSQL</h3>
+<pre><code class="language-csharp">using Ddap.Data.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }
+    
+    public DbSet&lt;Product&gt; Products { get; set; }
+}
+
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseNpgsql(connectionString));
+
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;AppDbContext&gt;();
+</code></pre>
+<hr>
+<h3>MySQL</h3>
+<pre><code class="language-csharp">using Ddap.Data.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
+public class ShopContext : DbContext
+{
+    public ShopContext(DbContextOptions&lt;ShopContext&gt; options) : base(options) { }
+    
+    public DbSet&lt;Customer&gt; Customers { get; set; }
+}
+
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 33));
+
+builder.Services.AddDbContext&lt;ShopContext&gt;(options =&gt;
+    options.UseMySql(connectionString, serverVersion));
+
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;ShopContext&gt;();
+</code></pre>
+<hr>
+<h3>SQLite</h3>
+<pre><code class="language-csharp">using Ddap.Data.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
+public class LocalDbContext : DbContext
+{
+    public LocalDbContext(DbContextOptions&lt;LocalDbContext&gt; options) : base(options) { }
+    
+    public DbSet&lt;Note&gt; Notes { get; set; }
+}
+
+builder.Services.AddDbContext&lt;LocalDbContext&gt;(options =&gt;
+    options.UseSqlite("Data Source=app.db"));
+
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;LocalDbContext&gt;();
+</code></pre>
+<hr>
+<h3>In-Memory (Testing)</h3>
+<pre><code class="language-csharp">using Ddap.Data.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
+builder.Services.AddDbContext&lt;TestDbContext&gt;(options =&gt;
+    options.UseInMemoryDatabase("TestDb"));
+
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;TestDbContext&gt;();
+</code></pre>
+<hr>
+<h2>Advanced Configuration</h2>
+<h3>Entity Filtering</h3>
+<pre><code class="language-csharp">builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;MyDbContext&gt;(options =&gt;
+    {
+        // Only expose specific entities
+        options.EntityFilter = type =&gt; type.Namespace == "MyApp.Models.Public";
+        
+        // Discover from DbSet properties (default: true)
+        options.DiscoverFromDbSets = true;
+        
+        // Use EF model metadata (default: true)
+        options.UseModelMetadata = true;
+    });
+</code></pre>
+<h3>Pooled DbContext Factory</h3>
+<p>For better performance in high-throughput scenarios:</p>
+<pre><code class="language-csharp">// Use pooled factory instead of AddDbContext
+builder.Services.AddPooledDbContextFactory&lt;MyDbContext&gt;(options =&gt;
+    options.UseSqlServer(connectionString));
+
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;MyDbContext&gt;();
+</code></pre>
+<h3>Multiple DbContexts</h3>
+<pre><code class="language-csharp">// Users database
+builder.Services.AddDbContext&lt;UsersDbContext&gt;(options =&gt;
+    options.UseSqlServer(usersConnString));
+
+builder.Services
+    .AddDdap("Users")
+    .AddEntityFramework&lt;UsersDbContext&gt;();
+
+// Orders database
+builder.Services.AddDbContext&lt;OrdersDbContext&gt;(options =&gt;
+    options.UseNpgsql(ordersConnString));
+
+builder.Services
+    .AddDdap("Orders")
+    .AddEntityFramework&lt;OrdersDbContext&gt;();
+</code></pre>
+<hr>
+<h2>EF Core Features Support</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Supported</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Code-first</td>
+<td>✅</td>
+<td>Full support</td>
+</tr>
+<tr>
+<td>Database-first</td>
+<td>✅</td>
+<td>Full support</td>
+</tr>
+<tr>
+<td>Migrations</td>
+<td>✅</td>
+<td>Works with existing migrations</td>
+</tr>
+<tr>
+<td>Relationships</td>
+<td>✅</td>
+<td>One-to-many, many-to-many, etc.</td>
+</tr>
+<tr>
+<td>Inheritance</td>
+<td>✅</td>
+<td>TPH, TPT, TPC strategies</td>
+</tr>
+<tr>
+<td>Lazy Loading</td>
+<td>✅</td>
+<td>If enabled in your DbContext</td>
+</tr>
+<tr>
+<td>Change Tracking</td>
+<td>✅</td>
+<td>Standard EF behavior</td>
+</tr>
+<tr>
+<td>Transactions</td>
+<td>✅</td>
+<td>Full support</td>
+</tr>
+<tr>
+<td>Bulk Operations</td>
+<td>⚠️</td>
+<td>Depends on provider extensions</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>When to Use Entity Framework</h2>
+<p>✅ <strong>Use EF Core when:</strong></p>
+<ul>
+<li>You already have a DbContext</li>
+<li>Code-first development with migrations</li>
+<li>Complex object graphs with navigation properties</li>
+<li>Need change tracking</li>
+<li>Lazy loading is beneficial</li>
+<li>LINQ query composition</li>
+<li>Multiple database support needed</li>
+</ul>
+<p>❌ <strong>Avoid EF Core when:</strong></p>
+<ul>
+<li>Maximum performance is critical</li>
+<li>Memory footprint must be minimal</li>
+<li>Simple CRUD with hand-written SQL</li>
+<li>Working with legacy databases with unusual schemas</li>
+</ul>
+<hr>
+<h2>Comparison: Dapper vs Entity Framework</h2>
+<h3>Performance</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Dapper</th>
+<th>Entity Framework</th>
+<th>Winner</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Metadata Loading</td>
+<td>~50ms</td>
+<td>~150ms</td>
+<td>🏆 Dapper</td>
+</tr>
+<tr>
+<td>Simple Query</td>
+<td>~5ms</td>
+<td>~8ms</td>
+<td>🏆 Dapper</td>
+</tr>
+<tr>
+<td>Complex Query</td>
+<td>~15ms</td>
+<td>~25ms</td>
+<td>🏆 Dapper</td>
+</tr>
+<tr>
+<td>Bulk Insert (1000 rows)</td>
+<td>~100ms</td>
+<td>~500ms</td>
+<td>🏆 Dapper</td>
+</tr>
+<tr>
+<td>Insert with Relations</td>
+<td>~10ms</td>
+<td>~15ms</td>
+<td>🏆 Dapper</td>
+</tr>
+</tbody></table>
+<p><em>Benchmarks are approximate and vary by hardware, database, and configuration</em></p>
+<h3>Memory Usage</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Dapper</th>
+<th>Entity Framework</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Baseline</td>
+<td>~20 MB</td>
+<td>~50 MB</td>
+<td>+150%</td>
+</tr>
+<tr>
+<td>10K entities loaded</td>
+<td>~45 MB</td>
+<td>~120 MB</td>
+<td>+167%</td>
+</tr>
+<tr>
+<td>With change tracking</td>
+<td>N/A</td>
+<td>~200 MB</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<h3>Feature Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Dapper</th>
+<th>Entity Framework</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ORM Type</strong></td>
+<td>Micro-ORM</td>
+<td>Full ORM</td>
+</tr>
+<tr>
+<td><strong>Learning Curve</strong></td>
+<td>Low</td>
+<td>Medium-High</td>
+</tr>
+<tr>
+<td><strong>Performance</strong></td>
+<td>⚡ Excellent</td>
+<td>Good</td>
+</tr>
+<tr>
+<td><strong>SQL Control</strong></td>
+<td>✅ Full</td>
+<td>⚠️ Limited (LINQ)</td>
+</tr>
+<tr>
+<td><strong>Relationships</strong></td>
+<td>✅ Manual</td>
+<td>✅ Automatic</td>
+</tr>
+<tr>
+<td><strong>Change Tracking</strong></td>
+<td>❌ None</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><strong>Lazy Loading</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><strong>Migrations</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><strong>Database Agnostic</strong></td>
+<td>⚠️ Mostly</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><strong>Code-First</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><strong>Stored Procedures</strong></td>
+<td>✅ Excellent</td>
+<td>⚠️ Limited</td>
+</tr>
+<tr>
+<td><strong>Complex Types</strong></td>
+<td>⚠️ Manual</td>
+<td>✅ Automatic</td>
+</tr>
+<tr>
+<td><strong>Memory Footprint</strong></td>
+<td>🏆 Very Low</td>
+<td>Higher</td>
+</tr>
+<tr>
+<td><strong>Maintenance</strong></td>
+<td>Manual SQL</td>
+<td>Automatic</td>
+</tr>
+</tbody></table>
+<h3>Use Case Recommendations</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>High-performance API</td>
+<td>🏆 <strong>Dapper</strong></td>
+</tr>
+<tr>
+<td>Microservices</td>
+<td>🏆 <strong>Dapper</strong></td>
+</tr>
+<tr>
+<td>CRUD with complex relationships</td>
+<td>🏆 <strong>Entity Framework</strong></td>
+</tr>
+<tr>
+<td>Existing EF Core application</td>
+<td>🏆 <strong>Entity Framework</strong></td>
+</tr>
+<tr>
+<td>Code-first + migrations</td>
+<td>🏆 <strong>Entity Framework</strong></td>
+</tr>
+<tr>
+<td>Legacy database</td>
+<td>🏆 <strong>Dapper</strong></td>
+</tr>
+<tr>
+<td>Read-heavy workloads</td>
+<td>🏆 <strong>Dapper</strong></td>
+</tr>
+<tr>
+<td>Write-heavy with tracking</td>
+<td>🏆 <strong>Entity Framework</strong></td>
+</tr>
+<tr>
+<td>Maximum control over SQL</td>
+<td>🏆 <strong>Dapper</strong></td>
+</tr>
+<tr>
+<td>Rapid development</td>
+<td>🏆 <strong>Entity Framework</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Best Practices</h2>
+<h3>Connection String Management</h3>
+<h4>Use Configuration</h4>
+<pre><code class="language-csharp">// appsettings.json
+{
+  "ConnectionStrings": {
+    "Default": "Server=localhost;Database=MyDb;Integrated Security=true;"
+  }
+}
+
+// Program.cs
+var connectionString = builder.Configuration.GetConnectionString("Default");
+</code></pre>
+<h4>Use Environment Variables</h4>
+<pre><code class="language-bash"># .env or environment
+export ConnectionStrings__Default="Server=prod;Database=MyDb;User Id=app;Password=***;"
+</code></pre>
+<h4>Use Azure Key Vault / Secrets</h4>
+<pre><code class="language-csharp">builder.Configuration.AddAzureKeyVault(
+    new Uri($"https://{keyVaultName}.vault.azure.net/"),
+    new DefaultAzureCredential());
+
+var connectionString = builder.Configuration["ConnectionStrings:Default"];
+</code></pre>
+<h4>Never Hardcode Secrets</h4>
+<pre><code class="language-csharp">// ❌ BAD
+var connStr = "Server=prod;Password=SuperSecret123;";
+
+// ✅ GOOD
+var connStr = builder.Configuration.GetConnectionString("Default");
+</code></pre>
+<hr>
+<h3>Connection Pooling</h3>
+<h4>Dapper (via ADO.NET Driver)</h4>
+<p>Connection pooling is <strong>automatic</strong> in most ADO.NET drivers:</p>
+<pre><code class="language-csharp">// SQL Server
+"Server=localhost;Database=MyDb;Integrated Security=true;Min Pool Size=5;Max Pool Size=100;"
+
+// PostgreSQL
+"Host=localhost;Database=MyDb;Username=user;Password=pass;Minimum Pool Size=5;Maximum Pool Size=100;"
+
+// MySQL
+"Server=localhost;Database=MyDb;User=root;Password=pass;MinimumPoolSize=5;MaximumPoolSize=100;"
+</code></pre>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Set <code>Min Pool Size</code> to handle baseline load (typically 5-10)</li>
+<li>Set <code>Max Pool Size</code> based on database limits (typically 50-100)</li>
+<li>Monitor pool exhaustion with connection timeout errors</li>
+<li>Don't set pool size too high (wastes resources)</li>
+</ul>
+<h4>Entity Framework</h4>
+<pre><code class="language-csharp">// Use pooled DbContext for better performance
+builder.Services.AddPooledDbContextFactory&lt;MyDbContext&gt;(options =&gt;
+    options.UseSqlServer(connectionString));
+</code></pre>
+<hr>
+<h3>Performance Tips</h3>
+<h4>Dapper</h4>
+<ol>
+<li><strong>Reuse connections from pool</strong> (automatic)</li>
+<li><strong>Use parameterized queries</strong> (prevents SQL injection + caching)<pre><code class="language-csharp">connection.Query("SELECT * FROM Users WHERE Id = @Id", new { Id = userId });
+</code></pre>
+</li>
+<li><strong>Use buffered queries</strong> for large result sets:<pre><code class="language-csharp">var users = connection.Query&lt;User&gt;("SELECT * FROM Users", buffered: false);
+</code></pre>
+</li>
+<li><strong>Avoid N+1 queries</strong> with manual joins or multiple result sets</li>
+</ol>
+<h4>Entity Framework</h4>
+<ol>
+<li><strong>Disable change tracking</strong> for read-only queries:<pre><code class="language-csharp">dbContext.Users.AsNoTracking().ToList();
+</code></pre>
+</li>
+<li><strong>Use projection</strong> to select only needed columns:<pre><code class="language-csharp">dbContext.Users.Select(u =&gt; new { u.Id, u.Name }).ToList();
+</code></pre>
+</li>
+<li><strong>Eager load relationships</strong> to avoid N+1:<pre><code class="language-csharp">dbContext.Orders.Include(o =&gt; o.Customer).ThenInclude(c =&gt; c.Address).ToList();
+</code></pre>
+</li>
+<li><strong>Use compiled queries</strong> for frequently-executed queries</li>
+<li><strong>Split complex queries</strong> to avoid Cartesian explosion</li>
+</ol>
+<hr>
+<h3>Security</h3>
+<h4>Always Use Parameterized Queries</h4>
+<pre><code class="language-csharp">// ❌ DANGEROUS - SQL Injection vulnerability
+var sql = $"SELECT * FROM Users WHERE Name = '{userName}'";
+
+// ✅ SAFE - Parameterized query
+var sql = "SELECT * FROM Users WHERE Name = @Name";
+connection.Query&lt;User&gt;(sql, new { Name = userName });
+</code></pre>
+<h4>Least Privilege Database Users</h4>
+<pre><code class="language-sql">-- Create app-specific user with minimal permissions
+CREATE LOGIN app_user WITH PASSWORD = 'StrongPassword!';
+CREATE USER app_user FOR LOGIN app_user;
+
+-- Grant only necessary permissions
+GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO app_user;
+-- DENY DROP, ALTER, CREATE
+</code></pre>
+<h4>Encrypt Connections</h4>
+<pre><code class="language-csharp">// SQL Server
+"Server=prod;Database=MyDb;User Id=app;Password=***;Encrypt=True;TrustServerCertificate=False;"
+
+// PostgreSQL
+"Host=prod;Database=MyDb;Username=app;Password=***;SSL Mode=Require;"
+
+// MySQL
+"Server=prod;Database=MyDb;User=app;Password=***;SslMode=Required;"
+</code></pre>
+<hr>
+<h2>Migration Guide</h2>
+<h3>From Old Database-Specific Packages</h3>
+<h4>Before (Old Architecture)</h4>
+<pre><code class="language-csharp">// ❌ OLD: Multiple database-specific packages
+dotnet add package Ddap.Data.Dapper.SqlServer
+dotnet add package Ddap.Data.Dapper.MySql
+dotnet add package Ddap.Data.Dapper.PostgreSql
+
+builder.Services
+    .AddDdap()
+    .AddDapperSqlServer(connectionString);
+</code></pre>
+<h4>After (New Architecture)</h4>
+<pre><code class="language-csharp">// ✅ NEW: One package + your choice of driver
+dotnet add package Ddap.Data.Dapper
+dotnet add package Microsoft.Data.SqlClient
+
+builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new SqlConnection(connectionString));
+</code></pre>
+<h3>Migration Steps</h3>
+<ol>
+<li><p><strong>Uninstall old packages:</strong></p>
+<pre><code class="language-bash">dotnet remove package Ddap.Data.Dapper.SqlServer
+dotnet remove package Ddap.Data.Dapper.MySql
+dotnet remove package Ddap.Data.Dapper.PostgreSql
+</code></pre>
+</li>
+<li><p><strong>Install new unified package:</strong></p>
+<pre><code class="language-bash">dotnet add package Ddap.Data.Dapper
+</code></pre>
+</li>
+<li><p><strong>Ensure database driver is installed:</strong></p>
+<pre><code class="language-bash"># If not already installed
+dotnet add package Microsoft.Data.SqlClient
+</code></pre>
+</li>
+<li><p><strong>Update configuration:</strong></p>
+<pre><code class="language-csharp">// OLD
+.AddDapperSqlServer(connectionString)
+
+// NEW
+.AddDapper(() =&gt; new SqlConnection(connectionString))
+</code></pre>
+</li>
+<li><p><strong>Update usings (if needed):</strong></p>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;  // Same namespace
+using Microsoft.Data.SqlClient;  // Add driver namespace
+</code></pre>
+</li>
+</ol>
+<h3>Breaking Changes</h3>
+<table>
+<thead>
+<tr>
+<th>Old API</th>
+<th>New API</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.AddDapperSqlServer(connStr)</code></td>
+<td><code>.AddDapper(() =&gt; new SqlConnection(connStr))</code></td>
+<td>Pass factory function</td>
+</tr>
+<tr>
+<td><code>.AddDapperMySql(connStr)</code></td>
+<td><code>.AddDapper(() =&gt; new MySqlConnection(connStr))</code></td>
+<td>Pass factory function</td>
+</tr>
+<tr>
+<td><code>.AddDapperPostgreSql(connStr)</code></td>
+<td><code>.AddDapper(() =&gt; new NpgsqlConnection(connStr))</code></td>
+<td>Pass factory function</td>
+</tr>
+<tr>
+<td>Connection string in method</td>
+<td>Connection string in factory</td>
+<td>More control over lifetime</td>
+</tr>
+</tbody></table>
+<h3>Benefits of Migration</h3>
+<p>✅ <strong>Flexibility</strong>: Choose any database driver, any version<br>✅ <strong>Control</strong>: Manage connection creation and pooling<br>✅ <strong>Simplicity</strong>: One package to maintain<br>✅ <strong>Future-proof</strong>: Add new databases without waiting for DDAP updates<br>✅ <strong>Testability</strong>: Inject mock connections easily</p>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Cannot Connect to Database</h3>
+<p><strong>Problem</strong>: Connection errors or timeouts</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify connection string format for your database</li>
+<li>Check firewall rules allow connections</li>
+<li>Ensure database service is running</li>
+<li>Test connection with database-specific tool:<pre><code class="language-bash">sqlcmd -S localhost -U sa -P Password    # SQL Server
+mysql -h localhost -u root -p            # MySQL
+psql -h localhost -U postgres            # PostgreSQL
+</code></pre>
+</li>
+</ol>
+<h3>"No connection factory registered"</h3>
+<p><strong>Problem</strong>: <code>InvalidOperationException</code> when starting app</p>
+<p><strong>Solution</strong>: Ensure you call <code>.AddDapper(...)</code> with a factory:</p>
+<pre><code class="language-csharp">builder.Services
+    .AddDdap()
+    .AddDapper(() =&gt; new SqlConnection(connectionString));  // ← Required
+</code></pre>
+<h3>"Type 'X' is not registered as a DbContext"</h3>
+<p><strong>Problem</strong>: EF provider can't find DbContext</p>
+<p><strong>Solution</strong>: Register DbContext <strong>before</strong> DDAP:</p>
+<pre><code class="language-csharp">// Register DbContext first
+builder.Services.AddDbContext&lt;MyDbContext&gt;(options =&gt; ...);
+
+// Then add DDAP
+builder.Services
+    .AddDdap()
+    .AddEntityFramework&lt;MyDbContext&gt;();
+</code></pre>
+<h3>Poor Performance</h3>
+<p><strong>Problem</strong>: Slow queries or metadata loading</p>
+<p><strong>Solutions</strong>:</p>
+<p><strong>For Dapper:</strong></p>
+<ol>
+<li>Enable connection pooling in connection string</li>
+<li>Add database indexes on frequently-queried columns</li>
+<li>Use buffered queries for large result sets</li>
+<li>Profile queries with database tools (<code>EXPLAIN</code>, <code>ANALYZE</code>)</li>
+</ol>
+<p><strong>For Entity Framework:</strong></p>
+<ol>
+<li>Disable change tracking: <code>.AsNoTracking()</code></li>
+<li>Use projection: <code>Select(x =&gt; new { x.Id, x.Name })</code></li>
+<li>Eager load: <code>.Include(x =&gt; x.Related)</code></li>
+<li>Use compiled queries for repeated queries</li>
+<li>Consider splitting complex queries</li>
+</ol>
+<h3>"Table has no primary key"</h3>
+<p><strong>Problem</strong>: DDAP requires primary keys for entity operations</p>
+<p><strong>Solution</strong>: Add primary key to table or use views for read-only access:</p>
+<pre><code class="language-sql">-- Add primary key
+ALTER TABLE MyTable ADD CONSTRAINT PK_MyTable PRIMARY KEY (Id);
+
+-- Or create view with virtual key (read-only)
+CREATE VIEW MyTableView AS SELECT ROW_NUMBER() OVER (ORDER BY CreatedAt) AS Id, * FROM MyTable;
+</code></pre>
+<h3>Connection Pool Exhaustion</h3>
+<p><strong>Problem</strong>: <code>Timeout expired. The timeout period elapsed prior to obtaining a connection from the pool.</code></p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Increase <code>Max Pool Size</code> in connection string</li>
+<li>Ensure connections are properly disposed (use <code>using</code> statements)</li>
+<li>Check for connection leaks in application code</li>
+<li>Monitor active connections in database</li>
+<li>Reduce <code>Connection Timeout</code> to fail faster</li>
+</ol>
+<pre><code class="language-csharp">// Increase pool size
+"Server=localhost;Database=MyDb;Min Pool Size=10;Max Pool Size=200;"
+
+// Ensure proper disposal
+using (var connection = new SqlConnection(connectionString))
+{
+    // Use connection
+} // Automatically returned to pool
+</code></pre>
+<hr>
+<h2>Next Steps</h2>
+<ul>
+<li><strong><a href="./api-providers.md">API Providers</a></strong> - Expose your data via REST, gRPC, or GraphQL</li>
+<li><strong><a href="./advanced.md">Advanced Usage</a></strong> - Optimize performance and extend functionality  </li>
+<li><strong><a href="./get-started.md">Get Started</a></strong> - Quick start guide</li>
+<li><strong><a href="./troubleshooting.md">Troubleshooting</a></strong> - Common issues and solutions</li>
+</ul>
+<hr>
+<h2>Additional Resources</h2>
+<h3>Database Documentation</h3>
+<ul>
+<li><a href="https://docs.microsoft.com/sql/connect/ado-net/connection-string-syntax">SQL Server Connection Strings</a></li>
+<li><a href="https://dev.mysql.com/doc/connector-net/en/connector-net-connections-string.html">MySQL Connection Strings</a></li>
+<li><a href="https://www.npgsql.org/doc/connection-string-parameters.html">PostgreSQL Connection Strings</a></li>
+<li><a href="https://docs.microsoft.com/dotnet/standard/data/sqlite/connection-strings">SQLite Connection Strings</a></li>
+</ul>
+<h3>Driver Documentation</h3>
+<ul>
+<li><a href="https://github.com/dotnet/SqlClient">Microsoft.Data.SqlClient</a></li>
+<li><a href="https://mysqlconnector.net/">MySqlConnector</a></li>
+<li><a href="https://www.npgsql.org/">Npgsql</a></li>
+<li><a href="https://docs.microsoft.com/dotnet/standard/data/sqlite/">Microsoft.Data.Sqlite</a></li>
+<li><a href="https://www.oracle.com/database/technologies/appdev/dotnet/odp.html">Oracle.ManagedDataAccess</a></li>
+</ul>
+<h3>ORM Documentation</h3>
+<ul>
+<li><a href="https://github.com/DapperLib/Dapper">Dapper Documentation</a></li>
+<li><a href="https://docs.microsoft.com/ef/core/">Entity Framework Core Documentation</a></li>
+</ul>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -86,64 +1123,9 @@
         </div>
     </footer>
 
-    <script src="theme-toggle.js"></script>
-    <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
 
     <script>
         // Set current language

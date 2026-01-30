@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="ja" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>Raw SQL Queries via gRPC - DDAP</title>
     
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="lib/github-markdown.min.css">
-    <script src="lib/marked.min.js"></script>
-    <script src="lib/purify.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <header class="site-header">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../ja/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                     <span class="logo" aria-label="DDAP Logo">🎛️</span>
                     <span class="brand-name">DDAP</span>
                 </a>
@@ -43,7 +43,452 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Raw SQL Queries via gRPC</h1>
+<blockquote>
+<p><strong>Security First</strong>: Execute raw SQL queries with policy-based authorization, audit logging, and injection prevention.</p>
+</blockquote>
+<h2>Overview</h2>
+<p>DDAP's Raw Query feature allows developers to execute SQL queries directly via gRPC while maintaining strict security controls through policy-based authorization. This feature is designed for scenarios where the standard entity operations are insufficient and you need direct database access.</p>
+<p><strong>Philosophy</strong>: Developer in Control with Safe Defaults.</p>
+<hr>
+<h2>🔒 Security Model</h2>
+<h3>Default Policy: Read-Only</h3>
+<p>By default, DDAP only allows <code>SELECT</code> queries. All modification operations (INSERT, UPDATE, DELETE, etc.) are <strong>denied</strong>.</p>
+<pre><code class="language-csharp">// Default configuration - SELECT only
+services.AddRawQueryServices();
+</code></pre>
+<h3>Available Policies</h3>
+<h4>1. DefaultRawQueryPolicy (Default)</h4>
+<ul>
+<li>✅ SELECT queries</li>
+<li>❌ INSERT, UPDATE, DELETE, DROP, etc.</li>
+</ul>
+<h4>2. AllowAllRawQueryPolicy</h4>
+<p>⚠️ <strong>Warning</strong>: Use with extreme caution - allows all query types.</p>
+<pre><code class="language-csharp">services.AddRawQueryServices(new AllowAllRawQueryPolicy());
+</code></pre>
+<h4>3. DenyAllRawQueryPolicy</h4>
+<p>Completely disables raw query execution.</p>
+<pre><code class="language-csharp">services.AddRawQueryServices(new DenyAllRawQueryPolicy());
+</code></pre>
+<h4>4. Custom Policies</h4>
+<p>Implement <code>IRawQueryPolicy</code> for custom authorization logic:</p>
+<pre><code class="language-csharp">public class CustomRawQueryPolicy : IRawQueryPolicy
+{
+    public Task&lt;bool&gt; CanExecuteQueryAsync(RawQueryContext context)
+    {
+        // Only allow SELECT on views
+        if (context.QueryType == QueryType.Select &amp;&amp; 
+            context.TableName?.StartsWith("vw_") == true)
+        {
+            return Task.FromResult(true);
+        }
+        
+        // Allow INSERT/UPDATE/DELETE only for admin role
+        if (context.UserRoles?.Contains("admin") == true &amp;&amp;
+            context.QueryType is QueryType.Insert or QueryType.Update or QueryType.Delete)
+        {
+            return Task.FromResult(true);
+        }
+        
+        return Task.FromResult(false);
+    }
+}
+
+// Register custom policy
+services.AddRawQueryServices(new CustomRawQueryPolicy());
+</code></pre>
+<hr>
+<h2>🚀 Getting Started</h2>
+<h3>1. Server Setup (Dapper)</h3>
+<pre><code class="language-csharp">using Ddap.Grpc;
+using Ddap.Data.Dapper;
+using Ddap.Auth.Policies;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure Dapper connection
+builder.Services.AddSingleton(new DapperProviderOptions
+{
+    ConnectionFactory = () =&gt; new SqlConnection(connectionString),
+    ProviderName = "SqlServer"
+});
+
+// Add raw query executor
+builder.Services.AddSingleton&lt;IRawQueryExecutor, DapperRawQueryExecutor&gt;();
+
+// Add raw query services with custom policy
+builder.Services.AddRawQueryServices(new AllowAllRawQueryPolicy()); // Or your custom policy
+
+var app = builder.Build();
+
+// Map raw query service
+app.MapGrpcService&lt;RawQueryServiceImpl&gt;();
+
+app.Run();
+</code></pre>
+<h3>2. Server Setup (Entity Framework)</h3>
+<pre><code class="language-csharp">using Ddap.Grpc;
+using Ddap.Data.EntityFramework;
+using Ddap.Auth.Policies;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure DbContext
+builder.Services.AddDbContextFactory&lt;MyDbContext&gt;(options =&gt;
+    options.UseSqlServer(connectionString));
+
+// Add raw query executor
+builder.Services.AddSingleton&lt;IRawQueryExecutor, EntityFrameworkRawQueryExecutor&lt;MyDbContext&gt;&gt;();
+
+// Add raw query services
+builder.Services.AddRawQueryServices(new DefaultRawQueryPolicy());
+
+var app = builder.Build();
+
+// Map raw query service
+app.MapGrpcService&lt;RawQueryServiceImpl&gt;();
+
+app.Run();
+</code></pre>
+<hr>
+<h2>📊 Query Execution Types</h2>
+<h3>1. Scalar Queries</h3>
+<p>Returns a single value (COUNT, SUM, MAX, etc.).</p>
+<p><strong>gRPC Call:</strong></p>
+<pre><code class="language-protobuf">message RawQueryRequest {
+  string query = 1;
+  string parameters_json = 2;  // Optional: {"@param": "value"}
+}
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-csharp">var request = new RawQueryRequest
+{
+    Query = "SELECT COUNT(*) FROM Users WHERE Active = @Active",
+    ParametersJson = "{\"Active\": true}"
+};
+
+var response = await client.ExecuteScalarAsync(request);
+var count = BitConverter.ToInt32(response.Value.ToByteArray(), 0);
+</code></pre>
+<h3>2. Single Row Queries</h3>
+<p>Returns a single row as a dictionary.</p>
+<p><strong>gRPC Call:</strong></p>
+<pre><code class="language-protobuf">message SingleResult {
+  bytes row_data = 1;
+  repeated string column_names = 2;
+  repeated string column_types = 3;
+  bool is_empty = 4;
+}
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-csharp">var request = new RawQueryRequest
+{
+    Query = "SELECT Id, Name, Email FROM Users WHERE Id = @Id",
+    ParametersJson = "{\"Id\": 123}"
+};
+
+var response = await client.ExecuteSingleAsync(request);
+if (!response.IsEmpty)
+{
+    var row = RawQueryBinarySerializer.DeserializeSingleRow(response.RowData.ToByteArray());
+    Console.WriteLine($"User: {row["Name"]} ({row["Email"]})");
+}
+</code></pre>
+<h3>3. Multiple Row Queries</h3>
+<p>Returns multiple rows.</p>
+<p><strong>gRPC Call:</strong></p>
+<pre><code class="language-protobuf">message MultipleResult {
+  bytes rows_data = 1;
+  repeated string column_names = 2;
+  repeated string column_types = 3;
+  int32 row_count = 4;
+}
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-csharp">var request = new RawQueryRequest
+{
+    Query = "SELECT Id, Name FROM Users WHERE Active = @Active ORDER BY Name",
+    ParametersJson = "{\"Active\": true}"
+};
+
+var response = await client.ExecuteMultipleAsync(request);
+var rows = RawQueryBinarySerializer.DeserializeMultipleRows(response.RowsData.ToByteArray());
+
+foreach (var row in rows)
+{
+    Console.WriteLine($"User: {row["Name"]} (ID: {row["Id"]})");
+}
+</code></pre>
+<h3>4. Non-Query Commands (INSERT, UPDATE, DELETE)</h3>
+<p>Executes commands that don't return data.</p>
+<p><strong>gRPC Call:</strong></p>
+<pre><code class="language-protobuf">message VoidResult {
+  int32 rows_affected = 1;
+}
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-csharp">var request = new RawQueryRequest
+{
+    Query = "UPDATE Users SET LastLogin = @LoginTime WHERE Id = @UserId",
+    ParametersJson = "{\"LoginTime\": \"2024-01-30T10:00:00Z\", \"UserId\": 123}"
+};
+
+var response = await client.ExecuteNonQueryAsync(request);
+Console.WriteLine($"{response.RowsAffected} rows updated");
+</code></pre>
+<hr>
+<h2>🛡️ Security Features</h2>
+<h3>1. SQL Injection Prevention</h3>
+<p>The query analyzer automatically detects potential SQL injection patterns:</p>
+<pre><code class="language-csharp">// ❌ This will be rejected
+"SELECT * FROM Users WHERE Id = 1 OR 1=1"
+
+// ✅ This is safe (parameterized)
+"SELECT * FROM Users WHERE Id = @Id"
+</code></pre>
+<p><strong>Always use parameterized queries:</strong></p>
+<pre><code class="language-csharp">var request = new RawQueryRequest
+{
+    Query = "SELECT * FROM Users WHERE Name = @Name",
+    ParametersJson = "{\"Name\": \"John\"}"  // Safe!
+};
+</code></pre>
+<h3>2. Query Type Detection</h3>
+<p>The system automatically detects query types:</p>
+<ul>
+<li>SELECT</li>
+<li>INSERT</li>
+<li>UPDATE</li>
+<li>DELETE</li>
+<li>CREATE</li>
+<li>DROP</li>
+<li>ALTER</li>
+<li>TRUNCATE</li>
+<li>MERGE</li>
+<li>EXECUTE</li>
+</ul>
+<h3>3. Table Name Extraction</h3>
+<p>For policy evaluation, the system attempts to extract the target table name:</p>
+<pre><code class="language-csharp">// Context available to policies
+public class RawQueryContext
+{
+    public string Query { get; init; }
+    public QueryType QueryType { get; init; }
+    public string? TableName { get; init; }      // Extracted automatically
+    public string? DatabaseName { get; init; }
+    public string? UserId { get; init; }
+    public IEnumerable&lt;string&gt;? UserRoles { get; init; }
+}
+</code></pre>
+<h3>4. Audit Logging</h3>
+<p>All query executions are automatically logged:</p>
+<pre><code>INFO: Raw query scalar execution requested: SELECT COUNT(*) FROM Users
+INFO: Query authorized. User: john@example.com, QueryType: Select, Table: Users
+INFO: Raw query scalar executed successfully
+</code></pre>
+<p>Failed attempts are also logged:</p>
+<pre><code>WARNING: Query denied by policy. User: guest@example.com, QueryType: Delete, Table: Users
+WARNING: Potential SQL injection detected: SELECT * FROM Users WHERE 1=1
+</code></pre>
+<hr>
+<h2>📈 Best Practices</h2>
+<h3>✅ DO</h3>
+<ol>
+<li><p><strong>Always use parameterized queries</strong></p>
+<pre><code class="language-csharp">Query = "SELECT * FROM Users WHERE Id = @Id",
+ParametersJson = "{\"Id\": 123}"
+</code></pre>
+</li>
+<li><p><strong>Use the most restrictive policy possible</strong></p>
+<pre><code class="language-csharp">// Production: Read-only by default
+services.AddRawQueryServices(); // DefaultRawQueryPolicy
+</code></pre>
+</li>
+<li><p><strong>Implement custom policies for fine-grained control</strong></p>
+<pre><code class="language-csharp">public class ProductionRawQueryPolicy : IRawQueryPolicy
+{
+    public Task&lt;bool&gt; CanExecuteQueryAsync(RawQueryContext context)
+    {
+        // Only allow SELECT on specific tables
+        if (context.QueryType == QueryType.Select)
+        {
+            var allowedTables = new[] { "Users", "Orders", "Products" };
+            return Task.FromResult(
+                allowedTables.Contains(context.TableName)
+            );
+        }
+        return Task.FromResult(false);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Monitor and alert on raw query usage</strong></p>
+<pre><code class="language-csharp">// Add custom logging
+services.AddLogging(logging =&gt;
+{
+    logging.AddFilter("Ddap.Grpc.Services.RawQueryServiceImpl", LogLevel.Information);
+});
+</code></pre>
+</li>
+</ol>
+<h3>❌ DON'T</h3>
+<ol>
+<li><p><strong>Don't use string concatenation for queries</strong></p>
+<pre><code class="language-csharp">// ❌ NEVER DO THIS
+Query = $"SELECT * FROM Users WHERE Name = '{userName}'"
+
+// ✅ DO THIS INSTEAD
+Query = "SELECT * FROM Users WHERE Name = @Name",
+ParametersJson = System.Text.Json.JsonSerializer.Serialize(new { Name = userName })
+</code></pre>
+</li>
+<li><p><strong>Don't use AllowAllRawQueryPolicy in production</strong> without proper authorization</p>
+<pre><code class="language-csharp">// ❌ Dangerous in production
+services.AddRawQueryServices(new AllowAllRawQueryPolicy());
+
+// ✅ Safe approach
+services.AddRawQueryServices(sp =&gt;
+{
+    var env = sp.GetRequiredService&lt;IWebHostEnvironment&gt;();
+    return env.IsProduction()
+        ? new DefaultRawQueryPolicy()
+        : new AllowAllRawQueryPolicy();
+});
+</code></pre>
+</li>
+<li><p><strong>Don't expose raw query endpoints without authentication</strong></p>
+<pre><code class="language-csharp">// Require authentication
+[Authorize]
+public class SecureRawQueryService : RawQueryService.RawQueryServiceBase
+{
+    // ...
+}
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2>🔧 Advanced Configuration</h2>
+<h3>Role-Based Access Control</h3>
+<pre><code class="language-csharp">public class RoleBasedRawQueryPolicy : IRawQueryPolicy
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    
+    public RoleBasedRawQueryPolicy(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+    
+    public Task&lt;bool&gt; CanExecuteQueryAsync(RawQueryContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        
+        if (user?.IsInRole("Admin") == true)
+        {
+            // Admins can do anything
+            return Task.FromResult(true);
+        }
+        
+        if (user?.IsInRole("Analyst") == true)
+        {
+            // Analysts can only SELECT
+            return Task.FromResult(context.QueryType == QueryType.Select);
+        }
+        
+        // Everyone else: no access
+        return Task.FromResult(false);
+    }
+}
+</code></pre>
+<h3>Database-Specific Policies</h3>
+<pre><code class="language-csharp">public class DatabaseSpecificPolicy : IRawQueryPolicy
+{
+    public Task&lt;bool&gt; CanExecuteQueryAsync(RawQueryContext context)
+    {
+        // Allow SELECT on reporting database
+        if (context.DatabaseName == "ReportingDB" &amp;&amp; 
+            context.QueryType == QueryType.Select)
+        {
+            return Task.FromResult(true);
+        }
+        
+        // Deny everything else
+        return Task.FromResult(false);
+    }
+}
+</code></pre>
+<h3>Time-Based Restrictions</h3>
+<pre><code class="language-csharp">public class TimeBasedPolicy : IRawQueryPolicy
+{
+    public Task&lt;bool&gt; CanExecuteQueryAsync(RawQueryContext context)
+    {
+        var hour = DateTime.UtcNow.Hour;
+        
+        // Allow modifications only during maintenance window (2-4 AM UTC)
+        if (hour &gt;= 2 &amp;&amp; hour &lt; 4)
+        {
+            return Task.FromResult(true);
+        }
+        
+        // Allow SELECT queries anytime
+        return Task.FromResult(context.QueryType == QueryType.Select);
+    }
+}
+</code></pre>
+<hr>
+<h2>⚠️ Warnings and Limitations</h2>
+<h3>SQL Injection Detection</h3>
+<p>The built-in injection detection is <strong>basic</strong> and should not be your only line of defense. Always:</p>
+<ul>
+<li>Use parameterized queries</li>
+<li>Implement proper authentication and authorization</li>
+<li>Monitor and audit query execution</li>
+<li>Use database-level permissions</li>
+</ul>
+<h3>Query Type Detection</h3>
+<p>Table name extraction is <strong>best-effort</strong> and may not work for:</p>
+<ul>
+<li>Complex queries with subqueries</li>
+<li>Queries with multiple tables (JOINs)</li>
+<li>Stored procedure calls</li>
+<li>Dynamic SQL</li>
+</ul>
+<p>For such cases, rely on database-level permissions.</p>
+<h3>Performance</h3>
+<p>Raw queries bypass DDAP's caching and optimization layers. Use them only when necessary:</p>
+<ul>
+<li>Complex analytical queries</li>
+<li>Bulk operations</li>
+<li>Database maintenance</li>
+<li>Reporting</li>
+</ul>
+<p>For standard CRUD operations, use DDAP's entity repositories.</p>
+<hr>
+<h2>🧪 Testing</h2>
+<p>See the test files for comprehensive examples:</p>
+<ul>
+<li><code>tests/Ddap.Tests/RawQuery/RawQueryPolicyTests.cs</code> - Policy tests</li>
+<li><code>tests/Ddap.Tests/RawQuery/QueryAnalyzerTests.cs</code> - Security tests</li>
+<li><code>tests/Ddap.Tests/RawQuery/RawQueryBinarySerializerTests.cs</code> - Serialization tests</li>
+</ul>
+<hr>
+<h2>📚 Related Documentation</h2>
+<ul>
+<li><a href="./index.md">DDAP Core Documentation</a></li>
+<li><a href="./advanced.md">Authorization Policies</a></li>
+<li><a href="./api-providers.md">gRPC Services</a></li>
+<li><a href="./database-providers.md">Data Providers</a></li>
+</ul>
+<hr>
+<h2>🤝 Contributing</h2>
+<p>Found a security issue or have suggestions for improving the raw query feature? Please open an issue or submit a pull request on <a href="https://github.com/schivei/ddap">GitHub</a>.</p>
+<hr>
+<p><strong>Remember</strong>: With great power comes great responsibility. Use raw queries wisely! 🎯</p>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -86,64 +531,9 @@
         </div>
     </footer>
 
-    <script src="theme-toggle.js"></script>
-    <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
 
     <script>
         // Set current language

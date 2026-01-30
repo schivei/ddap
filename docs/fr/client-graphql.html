@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="fr" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>DDAP GraphQL Client - DDAP</title>
     
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="lib/github-markdown.min.css">
-    <script src="lib/marked.min.js"></script>
-    <script src="lib/purify.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <header class="site-header">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../fr/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                     <span class="logo" aria-label="DDAP Logo">🎛️</span>
                     <span class="brand-name">DDAP</span>
                 </a>
@@ -43,7 +43,390 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>DDAP GraphQL Client</h1>
+<p>The DDAP GraphQL Client provides a simple interface for executing GraphQL queries and mutations against DDAP APIs.</p>
+<h2>Installation</h2>
+<pre><code class="language-bash">dotnet add package Ddap.Client.GraphQL
+</code></pre>
+<h2>Configuration</h2>
+<h3>Basic Setup</h3>
+<pre><code class="language-csharp">using Ddap.Client.Core;
+using Ddap.Client.GraphQL;
+using Microsoft.Extensions.DependencyInjection;
+
+var services = new ServiceCollection();
+services.AddDdapGraphQLClient(options =&gt;
+{
+    options.BaseUrl = "https://api.example.com";
+    options.Timeout = TimeSpan.FromSeconds(30);
+    options.RetryCount = 3;
+});
+
+var serviceProvider = services.BuildServiceProvider();
+var client = serviceProvider.GetRequiredService&lt;DdapGraphQLClient&gt;();
+</code></pre>
+<h2>Executing Queries</h2>
+<h3>Simple Query</h3>
+<pre><code class="language-csharp">// Define response type
+public class UsersData
+{
+    public User[] Users { get; set; } = Array.Empty&lt;User&gt;();
+}
+
+public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+}
+
+// Execute query
+var response = await client.QueryAsync&lt;UsersData&gt;(
+    "{ users { id name email } }"
+);
+
+foreach (var user in response.Data?.Users ?? Array.Empty&lt;User&gt;())
+{
+    Console.WriteLine($"{user.Id}: {user.Name}");
+}
+</code></pre>
+<h3>Query with Variables</h3>
+<pre><code class="language-csharp">public class UserData
+{
+    public User User { get; set; } = new();
+}
+
+var query = @"
+    query GetUser($id: Int!) {
+        user(id: $id) {
+            id
+            name
+            email
+        }
+    }
+";
+
+var variables = new { id = 1 };
+
+var response = await client.QueryAsync&lt;UserData&gt;(query, variables);
+Console.WriteLine($"User: {response.Data?.User.Name}");
+</code></pre>
+<h3>Complex Query with Nested Data</h3>
+<pre><code class="language-csharp">public class UserWithOrdersData
+{
+    public UserWithOrders User { get; set; } = new();
+}
+
+public class UserWithOrders
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public Order[] Orders { get; set; } = Array.Empty&lt;Order&gt;();
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public decimal Total { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+var query = @"
+    query GetUserWithOrders($userId: Int!) {
+        user(id: $userId) {
+            id
+            name
+            orders {
+                id
+                total
+                createdAt
+            }
+        }
+    }
+";
+
+var response = await client.QueryAsync&lt;UserWithOrdersData&gt;(
+    query,
+    new { userId = 1 }
+);
+
+var user = response.Data?.User;
+Console.WriteLine($"User: {user?.Name}");
+Console.WriteLine($"Orders: {user?.Orders.Length ?? 0}");
+</code></pre>
+<h2>Executing Mutations</h2>
+<h3>Create Mutation</h3>
+<pre><code class="language-csharp">public class CreateUserData
+{
+    public User CreateUser { get; set; } = new();
+}
+
+var mutation = @"
+    mutation CreateUser($name: String!, $email: String!) {
+        createUser(name: $name, email: $email) {
+            id
+            name
+            email
+        }
+    }
+";
+
+var variables = new
+{
+    name = "John Doe",
+    email = "john@example.com"
+};
+
+var response = await client.MutationAsync&lt;CreateUserData&gt;(mutation, variables);
+Console.WriteLine($"Created user with ID: {response.Data?.CreateUser.Id}");
+</code></pre>
+<h3>Update Mutation</h3>
+<pre><code class="language-csharp">public class UpdateUserData
+{
+    public User UpdateUser { get; set; } = new();
+}
+
+var mutation = @"
+    mutation UpdateUser($id: Int!, $name: String!) {
+        updateUser(id: $id, name: $name) {
+            id
+            name
+            email
+        }
+    }
+";
+
+var response = await client.MutationAsync&lt;UpdateUserData&gt;(
+    mutation,
+    new { id = 1, name = "Jane Doe" }
+);
+</code></pre>
+<h3>Delete Mutation</h3>
+<pre><code class="language-csharp">public class DeleteUserData
+{
+    public bool DeleteUser { get; set; }
+}
+
+var mutation = @"
+    mutation DeleteUser($id: Int!) {
+        deleteUser(id: $id)
+    }
+";
+
+var response = await client.MutationAsync&lt;DeleteUserData&gt;(
+    mutation,
+    new { id = 1 }
+);
+
+if (response.Data?.DeleteUser == true)
+{
+    Console.WriteLine("User deleted successfully");
+}
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Checking for GraphQL Errors</h3>
+<pre><code class="language-csharp">var response = await client.QueryAsync&lt;UsersData&gt;(
+    "{ users { id name email } }"
+);
+
+if (response.Errors != null &amp;&amp; response.Errors.Length &gt; 0)
+{
+    foreach (var error in response.Errors)
+    {
+        Console.WriteLine($"GraphQL Error: {error.Message}");
+        
+        if (error.Locations != null)
+        {
+            foreach (var location in error.Locations)
+            {
+                Console.WriteLine($"  at line {location.Line}, column {location.Column}");
+            }
+        }
+    }
+}
+else if (response.Data != null)
+{
+    // Process data
+    foreach (var user in response.Data.Users)
+    {
+        Console.WriteLine($"{user.Id}: {user.Name}");
+    }
+}
+</code></pre>
+<h3>Handling HTTP Errors</h3>
+<pre><code class="language-csharp">try
+{
+    var response = await client.QueryAsync&lt;UsersData&gt;(
+        "{ users { id name email } }"
+    );
+}
+catch (DdapApiException ex)
+{
+    Console.WriteLine($"API Error: {ex.Message} (Status: {ex.StatusCode})");
+}
+catch (DdapConnectionException ex)
+{
+    Console.WriteLine($"Connection Error: {ex.Message}");
+}
+</code></pre>
+<h2>Query Builder Helpers</h2>
+<h3>Building Queries Programmatically</h3>
+<pre><code class="language-csharp">// Simple helper for building queries
+public static class GraphQLQueryBuilder
+{
+    public static string BuildQuery(string entityName, params string[] fields)
+    {
+        var fieldsList = string.Join(" ", fields);
+        return $"{{ {entityName} {{ {fieldsList} }} }}";
+    }
+    
+    public static string BuildQueryWithArgs(
+        string entityName,
+        string args,
+        params string[] fields)
+    {
+        var fieldsList = string.Join(" ", fields);
+        return $"{{ {entityName}({args}) {{ {fieldsList} }} }}";
+    }
+}
+
+// Usage
+var query = GraphQLQueryBuilder.BuildQuery("users", "id", "name", "email");
+var response = await client.QueryAsync&lt;UsersData&gt;(query);
+
+var queryWithArgs = GraphQLQueryBuilder.BuildQueryWithArgs(
+    "user",
+    "id: 1",
+    "id", "name", "email"
+);
+var userResponse = await client.QueryAsync&lt;UserData&gt;(queryWithArgs);
+</code></pre>
+<h2>Fragments</h2>
+<h3>Using Fragments</h3>
+<pre><code class="language-csharp">var query = @"
+    fragment UserFields on User {
+        id
+        name
+        email
+    }
+    
+    query GetUsers {
+        users {
+            ...UserFields
+        }
+    }
+";
+
+var response = await client.QueryAsync&lt;UsersData&gt;(query);
+</code></pre>
+<h2>Pagination</h2>
+<h3>Cursor-based Pagination</h3>
+<pre><code class="language-csharp">public class PagedUsersData
+{
+    public UserConnection Users { get; set; } = new();
+}
+
+public class UserConnection
+{
+    public User[] Edges { get; set; } = Array.Empty&lt;User&gt;();
+    public PageInfo PageInfo { get; set; } = new();
+}
+
+public class PageInfo
+{
+    public bool HasNextPage { get; set; }
+    public string? EndCursor { get; set; }
+}
+
+var query = @"
+    query GetUsers($after: String, $first: Int!) {
+        users(after: $after, first: $first) {
+            edges {
+                id
+                name
+                email
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+        }
+    }
+";
+
+string? cursor = null;
+var allUsers = new List&lt;User&gt;();
+
+do
+{
+    var response = await client.QueryAsync&lt;PagedUsersData&gt;(
+        query,
+        new { after = cursor, first = 10 }
+    );
+    
+    if (response.Data?.Users.Edges != null)
+    {
+        allUsers.AddRange(response.Data.Users.Edges);
+    }
+    
+    var pageInfo = response.Data?.Users.PageInfo;
+    if (pageInfo?.HasNextPage == true)
+    {
+        cursor = pageInfo.EndCursor;
+    }
+    else
+    {
+        break;
+    }
+} while (true);
+
+Console.WriteLine($"Loaded {allUsers.Count} users");
+</code></pre>
+<h2>Cancellation Support</h2>
+<pre><code class="language-csharp">using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+try
+{
+    var response = await client.QueryAsync&lt;UsersData&gt;(
+        "{ users { id name email } }",
+        cancellationToken: cts.Token
+    );
+}
+catch (OperationCanceledException)
+{
+    Console.WriteLine("Query cancelled");
+}
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Define Response Types</strong>: Always create strongly-typed response models</li>
+<li><strong>Use Variables</strong>: Parameterize queries with variables instead of string interpolation</li>
+<li><strong>Handle Errors</strong>: Check both GraphQL errors and HTTP exceptions</li>
+<li><strong>Request Only Needed Fields</strong>: Minimize data transfer by requesting only required fields</li>
+<li><strong>Use Fragments</strong>: Share field definitions across queries with fragments</li>
+<li><strong>Implement Pagination</strong>: Use cursor-based pagination for large datasets</li>
+</ol>
+<h2>Future: LINQ Support</h2>
+<p>The GraphQL client is designed to integrate with Linq2GraphQL.Client for LINQ-based query building:</p>
+<pre><code class="language-csharp">// Future LINQ support (via Linq2GraphQL.Client)
+var users = await client
+    .Query&lt;User&gt;()
+    .Where(u =&gt; u.Name.Contains("John"))
+    .Select(u =&gt; new { u.Id, u.Name })
+    .ToListAsync();
+</code></pre>
+<p>This functionality will be available when Linq2GraphQL.Client integration is complete.</p>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="client-rest.md">REST Client Documentation</a></li>
+<li><a href="client-grpc.md">gRPC Client Documentation</a></li>
+<li><a href="client-getting-started.md">Getting Started Guide</a></li>
+</ul>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -86,64 +469,9 @@
         </div>
     </footer>
 
-    <script src="theme-toggle.js"></script>
-    <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
 
     <script>
         // Set current language

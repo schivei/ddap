@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="de" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>Advanced DDAP Usage - DDAP</title>
     
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="lib/github-markdown.min.css">
-    <script src="lib/marked.min.js"></script>
-    <script src="lib/purify.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <header class="site-header">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../de/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                     <span class="logo" aria-label="DDAP Logo">🎛️</span>
                     <span class="brand-name">DDAP</span>
                 </a>
@@ -43,7 +43,1056 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Advanced DDAP Usage</h1>
+<p>This guide covers advanced patterns, extensibility, and best practices for using DDAP in production applications.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#extensibility">Extensibility</a></li>
+<li><a href="#custom-endpoints">Custom Endpoints</a></li>
+<li><a href="#custom-queries-and-mutations">Custom Queries and Mutations</a></li>
+<li><a href="#advanced-configuration">Advanced Configuration</a></li>
+<li><a href="#auto-reload-patterns">Auto-Reload Patterns</a></li>
+<li><a href="#template-customization">Template Customization</a></li>
+<li><a href="#lifecycle-hooks">Lifecycle Hooks</a></li>
+<li><a href="#performance-optimization">Performance Optimization</a></li>
+<li><a href="#production-best-practices">Production Best Practices</a></li>
+<li><a href="#integration-patterns">Integration Patterns</a></li>
+</ul>
+<h2>Extensibility</h2>
+<p>DDAP is designed to be extensible. All generated controllers, services, queries, and mutations are partial classes, allowing you to add custom logic without modifying generated code.</p>
+<h3>Extending REST Controllers</h3>
+<p>Add custom endpoints to the generated <code>EntityController</code>:</p>
+<pre><code class="language-csharp">using Microsoft.AspNetCore.Mvc;
+using Ddap.Core;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [HttpGet("search")]
+    public async Task&lt;IActionResult&gt; SearchEntities([FromQuery] string query)
+    {
+        // Custom search logic
+        var results = await _repository.SearchAsync(query);
+        return Ok(results);
+    }
+
+    [HttpPost("{entityName}/bulk")]
+    public async Task&lt;IActionResult&gt; BulkCreate(string entityName, [FromBody] List&lt;object&gt; items)
+    {
+        // Custom bulk creation logic
+        foreach (var item in items)
+        {
+            // Process each item
+        }
+        return Ok();
+    }
+
+    [HttpGet("{entityName}/export")]
+    public async Task&lt;IActionResult&gt; Export(string entityName, [FromQuery] string format)
+    {
+        var entity = _repository.GetEntity(entityName);
+        if (entity == null)
+            return NotFound();
+
+        // Export logic based on format (CSV, Excel, etc.)
+        var data = await ExportData(entity, format);
+        return File(data, $"application/{format}");
+    }
+}
+</code></pre>
+<h3>Extending GraphQL Queries</h3>
+<p>Add custom GraphQL queries:</p>
+<pre><code class="language-csharp">using HotChocolate;
+using Ddap.Core;
+
+namespace Ddap.GraphQL;
+
+public partial class Query
+{
+    public async Task&lt;List&lt;EntityStatistics&gt;&gt; GetEntityStatistics(
+        [Service] IEntityRepository repository)
+    {
+        var stats = new List&lt;EntityStatistics&gt;();
+        
+        foreach (var entity in repository.Entities)
+        {
+            stats.Add(new EntityStatistics
+            {
+                EntityName = entity.Name,
+                PropertyCount = entity.Properties.Count,
+                IndexCount = entity.Indexes.Count,
+                RelationshipCount = entity.Relationships.Count
+            });
+        }
+        
+        return stats;
+    }
+
+    public string CustomQuery([Service] IEntityRepository repository) 
+    {
+        return $"Total entities: {repository.Entities.Count}";
+    }
+}
+
+public class EntityStatistics
+{
+    public string EntityName { get; set; }
+    public int PropertyCount { get; set; }
+    public int IndexCount { get; set; }
+    public int RelationshipCount { get; set; }
+}
+</code></pre>
+<h3>Extending GraphQL Mutations</h3>
+<p>Add custom mutations:</p>
+<pre><code class="language-csharp">namespace Ddap.GraphQL;
+
+public partial class Mutation
+{
+    public async Task&lt;bool&gt; BulkImport(
+        string entityName, 
+        List&lt;Dictionary&lt;string, object&gt;&gt; data,
+        [Service] IEntityRepository repository)
+    {
+        var entity = repository.GetEntity(entityName);
+        if (entity == null)
+            return false;
+
+        // Custom bulk import logic
+        foreach (var item in data)
+        {
+            // Process each item
+        }
+
+        return true;
+    }
+}
+</code></pre>
+<h2>Custom Endpoints</h2>
+<h3>Adding Authentication</h3>
+<p>Protect endpoints with authentication:</p>
+<pre><code class="language-csharp">using Microsoft.AspNetCore.Authorization;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [Authorize]
+    [HttpGet("{entityName}/secure")]
+    public IActionResult SecureEndpoint(string entityName)
+    {
+        // Only authenticated users can access
+        var entity = _repository.GetEntity(entityName);
+        return Ok(entity);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{entityName}/all")]
+    public async Task&lt;IActionResult&gt; DeleteAll(string entityName)
+    {
+        // Only admins can delete all records
+        return Ok();
+    }
+}
+</code></pre>
+<h3>Adding Validation</h3>
+<p>Add custom validation logic:</p>
+<pre><code class="language-csharp">namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [HttpPost("{entityName}")]
+    public async Task&lt;IActionResult&gt; CreateWithValidation(
+        string entityName, 
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        var entity = _repository.GetEntity(entityName);
+        if (entity == null)
+            return NotFound();
+
+        // Custom validation
+        var validationResult = ValidateData(entity, data);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        // Proceed with creation
+        return Created($"/api/entity/{entityName}", data);
+    }
+
+    private ValidationResult ValidateData(
+        IEntityConfiguration entity, 
+        Dictionary&lt;string, object&gt; data)
+    {
+        var result = new ValidationResult();
+
+        // Check required fields
+        foreach (var property in entity.Properties)
+        {
+            if (property.IsRequired &amp;&amp; !data.ContainsKey(property.Name))
+            {
+                result.AddError($"{property.Name} is required");
+            }
+        }
+
+        // Custom business rules
+        if (entity.Name == "Users" &amp;&amp; data.ContainsKey("Email"))
+        {
+            var email = data["Email"].ToString();
+            if (!IsValidEmail(email))
+            {
+                result.AddError("Invalid email format");
+            }
+        }
+
+        return result;
+    }
+}
+</code></pre>
+<h2>Custom Queries and Mutations</h2>
+<h3>Complex GraphQL Queries</h3>
+<p>Implement complex queries with relationships:</p>
+<pre><code class="language-csharp">namespace Ddap.GraphQL;
+
+public partial class Query
+{
+    public async Task&lt;EntityDetails&gt; GetEntityDetails(
+        string entityName,
+        [Service] IEntityRepository repository)
+    {
+        var entity = repository.GetEntity(entityName);
+        if (entity == null)
+            throw new GraphQLException($"Entity {entityName} not found");
+
+        return new EntityDetails
+        {
+            Name = entity.Name,
+            Schema = entity.Schema,
+            Properties = entity.Properties.Select(p =&gt; new PropertyDetails
+            {
+                Name = p.Name,
+                Type = p.DataType,
+                IsRequired = p.IsRequired,
+                IsPrimaryKey = p.IsPrimaryKey
+            }).ToList(),
+            Relationships = entity.Relationships.Select(r =&gt; new RelationshipDetails
+            {
+                Name = r.Name,
+                TargetEntity = r.TargetEntityName,
+                Type = r.RelationshipType.ToString()
+            }).ToList()
+        };
+    }
+}
+</code></pre>
+<h3>Batch Operations</h3>
+<p>Implement efficient batch operations:</p>
+<pre><code class="language-csharp">namespace Ddap.GraphQL;
+
+public partial class Mutation
+{
+    public async Task&lt;BatchResult&gt; BatchOperation(
+        List&lt;BatchItem&gt; items,
+        [Service] IEntityRepository repository)
+    {
+        var result = new BatchResult();
+
+        foreach (var item in items)
+        {
+            try
+            {
+                switch (item.Operation)
+                {
+                    case "CREATE":
+                        // Create logic
+                        result.SuccessCount++;
+                        break;
+                    case "UPDATE":
+                        // Update logic
+                        result.SuccessCount++;
+                        break;
+                    case "DELETE":
+                        // Delete logic
+                        result.SuccessCount++;
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Errors.Add($"{item.Operation} failed: {ex.Message}");
+            }
+        }
+
+        return result;
+    }
+}
+
+public class BatchItem
+{
+    public string Operation { get; set; }
+    public string EntityName { get; set; }
+    public Dictionary&lt;string, object&gt; Data { get; set; }
+}
+
+public class BatchResult
+{
+    public int SuccessCount { get; set; }
+    public List&lt;string&gt; Errors { get; set; } = new();
+}
+</code></pre>
+<h2>Advanced Configuration</h2>
+<h3>Custom JSON Serialization</h3>
+<p>Configure Newtonsoft.Json settings:</p>
+<pre><code class="language-csharp">using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =&gt;
+    {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ssZ";
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    });
+</code></pre>
+<h3>Multiple Database Connections</h3>
+<p>Support multiple databases in one application:</p>
+<pre><code class="language-csharp">builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString("PrimaryDb");
+    })
+    .AddDapper(() =&gt; new SqlConnection(connectionString))
+    .AddRest()
+    .AddGraphQL();
+
+// Second database
+var secondaryConnectionString = builder.Configuration.GetConnectionString("SecondaryDb");
+builder.Services
+    .AddDdap("SecondaryDb", options =&gt;
+    {
+        options.ConnectionString = secondaryConnectionString;
+    })
+    .AddDapper(() =&gt; new MySqlConnection(secondaryConnectionString))
+    .AddRest();
+</code></pre>
+<h3>Environment-Specific Configuration</h3>
+<p>Different configurations per environment:</p>
+<pre><code class="language-csharp">var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    var devConnectionString = builder.Configuration.GetConnectionString("Development");
+    builder.Services
+        .AddDdap(options =&gt;
+        {
+            options.ConnectionString = devConnectionString;
+            options.EnableDetailedErrors = true;
+            options.AutoReload = new AutoReloadOptions
+            {
+                Enabled = true,
+                IdleTimeout = TimeSpan.FromSeconds(30),
+                Strategy = ReloadStrategy.HotReload  // Fast for dev
+            };
+        })
+        .AddDapper(() =&gt; new SqlConnection(devConnectionString))
+        .AddRest()
+        .AddGraphQL()
+        .AddGrpc();
+}
+else if (builder.Environment.IsProduction())
+{
+    var prodConnectionString = builder.Configuration.GetConnectionString("Production");
+    builder.Services
+        .AddDdap(options =&gt;
+        {
+            options.ConnectionString = prodConnectionString;
+            options.EnableDetailedErrors = false;
+            options.AutoReload = new AutoReloadOptions
+            {
+                Enabled = true,
+                IdleTimeout = TimeSpan.FromMinutes(10),
+                Strategy = ReloadStrategy.InvalidateAndRebuild,  // Thorough for prod
+                Behavior = ReloadBehavior.ServeOldSchema  // Zero downtime
+            };
+        })
+        .AddDapper(() =&gt; new SqlConnection(prodConnectionString))
+        .AddRest()
+        .AddGraphQL();
+}
+</code></pre>
+<h2>Auto-Reload Patterns</h2>
+<p>The Auto-Reload System enables zero-downtime schema updates. Here are advanced patterns for production use.</p>
+<h3>Pattern 1: Conditional Reload</h3>
+<p>Control when reloads happen based on business logic:</p>
+<pre><code class="language-csharp">builder.Services.AddDdap(options =&gt;
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        Enabled = true,
+        IdleTimeout = TimeSpan.FromMinutes(5),
+        
+        OnBeforeReloadAsync = async (sp) =&gt;
+        {
+            var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+            var config = sp.GetRequiredService&lt;IConfiguration&gt;();
+            
+            // Check maintenance window
+            var now = DateTime.UtcNow;
+            if (now.Hour &gt;= 2 &amp;&amp; now.Hour &lt;= 4)
+            {
+                logger.LogInformation("Allowing reload during maintenance window");
+                return true;
+            }
+            
+            // Check if manually blocked
+            if (config.GetValue&lt;bool&gt;("BlockAutoReload"))
+            {
+                logger.LogWarning("Auto-reload blocked by configuration");
+                return false;
+            }
+            
+            return true;
+        }
+    };
+});
+</code></pre>
+<h3>Pattern 2: Coordinated Multi-Instance Reload</h3>
+<p>In a load-balanced environment, stagger reloads across instances:</p>
+<pre><code class="language-csharp">OnBeforeReloadAsync = async (sp) =&gt;
+{
+    var cache = sp.GetRequiredService&lt;IDistributedCache&gt;();
+    var instanceId = Environment.GetEnvironmentVariable("INSTANCE_ID") ?? "default";
+    
+    // Check if another instance is reloading
+    var lockKey = "ddap:reload:lock";
+    var existingLock = await cache.GetStringAsync(lockKey);
+    
+    if (existingLock != null &amp;&amp; existingLock != instanceId)
+    {
+        // Another instance is reloading, wait
+        return false;
+    }
+    
+    // Acquire lock for this instance
+    await cache.SetStringAsync(lockKey, instanceId, new DistributedCacheEntryOptions
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+    });
+    
+    return true;
+}
+</code></pre>
+<h3>Pattern 3: Health Check Integration</h3>
+<p>Integrate reload status with health checks:</p>
+<pre><code class="language-csharp">public class SchemaReloadHealthCheck : IHealthCheck
+{
+    private readonly IEntityRepository _repository;
+    private static DateTime? _lastReload;
+    private static bool _isReloading;
+    
+    public async Task&lt;HealthCheckResult&gt; CheckHealthAsync(
+        HealthCheckContext context,
+        CancellationToken cancellationToken = default)
+    {
+        if (_isReloading)
+        {
+            return HealthCheckResult.Degraded("Schema reload in progress");
+        }
+        
+        var data = new Dictionary&lt;string, object&gt;
+        {
+            { "entityCount", _repository.Entities.Count },
+            { "lastReload", _lastReload ?? DateTime.UtcNow }
+        };
+        
+        return HealthCheckResult.Healthy("Schema is current", data);
+    }
+    
+    public static void MarkReloadStart() =&gt; _isReloading = true;
+    public static void MarkReloadComplete()
+    {
+        _isReloading = false;
+        _lastReload = DateTime.UtcNow;
+    }
+}
+
+// Configure in Program.cs
+builder.Services.AddDdap(options =&gt;
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        OnBeforeReloadAsync = async (sp) =&gt;
+        {
+            SchemaReloadHealthCheck.MarkReloadStart();
+            return true;
+        },
+        OnAfterReloadAsync = async (sp) =&gt;
+        {
+            SchemaReloadHealthCheck.MarkReloadComplete();
+        }
+    };
+});
+</code></pre>
+<h3>Pattern 4: Monitoring and Alerting</h3>
+<p>Track reload metrics and send alerts:</p>
+<pre><code class="language-csharp">public class ReloadMetrics
+{
+    public int TotalReloads { get; set; }
+    public int FailedReloads { get; set; }
+    public List&lt;TimeSpan&gt; ReloadDurations { get; set; } = new();
+}
+
+builder.Services.AddSingleton&lt;ReloadMetrics&gt;();
+builder.Services.AddDdap(options =&gt;
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        OnBeforeReloadAsync = async (sp) =&gt;
+        {
+            var metrics = sp.GetRequiredService&lt;ReloadMetrics&gt;();
+            var startTime = DateTime.UtcNow;
+            
+            // Store start time for duration calculation
+            sp.GetRequiredService&lt;IMemoryCache&gt;()
+                .Set("reload:start", startTime);
+            
+            return true;
+        },
+        
+        OnAfterReloadAsync = async (sp) =&gt;
+        {
+            var metrics = sp.GetRequiredService&lt;ReloadMetrics&gt;();
+            var cache = sp.GetRequiredService&lt;IMemoryCache&gt;();
+            
+            if (cache.TryGetValue("reload:start", out DateTime startTime))
+            {
+                var duration = DateTime.UtcNow - startTime;
+                metrics.ReloadDurations.Add(duration);
+                metrics.TotalReloads++;
+                
+                // Alert if reload took too long
+                if (duration &gt; TimeSpan.FromSeconds(10))
+                {
+                    var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+                    logger.LogWarning("Slow schema reload: {Duration}ms", duration.TotalMilliseconds);
+                }
+            }
+        },
+        
+        OnReloadErrorAsync = async (sp, exception) =&gt;
+        {
+            var metrics = sp.GetRequiredService&lt;ReloadMetrics&gt;();
+            metrics.FailedReloads++;
+            
+            var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+            logger.LogError(exception, "Schema reload failed");
+            
+            // Send alert for production failures
+            if (builder.Environment.IsProduction())
+            {
+                var alerting = sp.GetService&lt;IAlertingService&gt;();
+                await alerting?.SendAlertAsync(
+                    "DDAP Schema Reload Failure",
+                    $"Reload failed: {exception.Message}\nTotal failures: {metrics.FailedReloads}"
+                );
+            }
+        }
+    };
+});
+</code></pre>
+<h2>Template Customization</h2>
+<p>DDAP templates generate starting projects that you can fully customize. Here are common customization patterns.</p>
+<h3>Custom Template Options</h3>
+<p>Create your own template variants by modifying generated projects:</p>
+<pre><code class="language-bash"># Generate a base project
+dotnet new ddap-api --name MyTemplate
+
+# Customize it:
+# - Add your authentication strategy
+# - Configure logging providers
+# - Set up middleware pipeline
+# - Add domain services
+
+# Package as a template
+dotnet pack -c Release
+dotnet new install ./bin/Release/MyTemplate.Templates.1.0.0.nupkg
+</code></pre>
+<h3>Post-Generation Scripts</h3>
+<p>Add scripts to <code>scripts/</code> folder in generated projects:</p>
+<pre><code class="language-bash"># scripts/setup.sh
+#!/bin/bash
+echo "Setting up development environment..."
+
+# Initialize user secrets
+dotnet user-secrets init
+
+# Set default connection string
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=Dev;Integrated Security=true;"
+
+# Restore packages
+dotnet restore
+
+# Run migrations (if using EF)
+dotnet ef database update
+
+echo "Setup complete!"
+</code></pre>
+<h3>Extending Generated Code</h3>
+<p>All generated code uses partial classes for extension:</p>
+<pre><code class="language-csharp">// Generated/EntityController.g.cs (generated - don't modify)
+public abstract partial class EntityController : ControllerBase
+{
+    // Generated methods...
+}
+
+// Controllers/EntityController.cs (your customizations)
+public partial class EntityController
+{
+    private readonly ILogger&lt;EntityController&gt; _logger;
+    private readonly IMemoryCache _cache;
+    
+    public EntityController(
+        IEntityRepository repository,
+        ILogger&lt;EntityController&gt; logger,
+        IMemoryCache cache)
+    {
+        _repository = repository;
+        _logger = logger;
+        _cache = cache;
+    }
+    
+    [HttpGet("custom/health")]
+    public IActionResult Health()
+    {
+        return Ok(new { Status = "Healthy", Entities = _repository.Entities.Count });
+    }
+}
+</code></pre>
+<h2>Lifecycle Hooks</h2>
+<p>DDAP provides lifecycle hooks at various points for custom logic.</p>
+<h3>Application Lifecycle</h3>
+<pre><code class="language-csharp">public class DdapApplicationLifecycle : IHostedService
+{
+    private readonly IEntityRepository _repository;
+    private readonly ILogger&lt;DdapApplicationLifecycle&gt; _logger;
+    
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("DDAP starting - {EntityCount} entities loaded", 
+            _repository.Entities.Count);
+        
+        // Pre-warm caches
+        foreach (var entity in _repository.Entities)
+        {
+            // Load metadata into cache
+            await PreloadEntityMetadata(entity);
+        }
+    }
+    
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("DDAP shutting down gracefully");
+        
+        // Flush any pending operations
+        await FlushPendingOperations();
+    }
+}
+
+// Register in Program.cs
+builder.Services.AddHostedService&lt;DdapApplicationLifecycle&gt;();
+</code></pre>
+<h3>Request Lifecycle</h3>
+<p>Hook into request processing:</p>
+<pre><code class="language-csharp">public class RequestLoggingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger&lt;RequestLoggingMiddleware&gt; _logger;
+    
+    public RequestLoggingMiddleware(RequestDelegate next, ILogger&lt;RequestLoggingMiddleware&gt; logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+    
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var startTime = DateTime.UtcNow;
+        
+        try
+        {
+            await _next(context);
+        }
+        finally
+        {
+            var duration = DateTime.UtcNow - startTime;
+            _logger.LogInformation(
+                "Request: {Method} {Path} - {StatusCode} - {Duration}ms",
+                context.Request.Method,
+                context.Request.Path,
+                context.Response.StatusCode,
+                duration.TotalMilliseconds);
+        }
+    }
+}
+
+// Register in Program.cs
+app.UseMiddleware&lt;RequestLoggingMiddleware&gt;();
+</code></pre>
+<h3>Entity Repository Events</h3>
+<p>Subscribe to repository events:</p>
+<pre><code class="language-csharp">public interface IEntityRepositoryEventHandler
+{
+    Task OnEntityAddedAsync(IEntityConfiguration entity);
+    Task OnEntityRemovedAsync(string entityName);
+    Task OnRepositoryReloadedAsync();
+}
+
+public class EntityChangeLogger : IEntityRepositoryEventHandler
+{
+    private readonly ILogger&lt;EntityChangeLogger&gt; _logger;
+    
+    public async Task OnEntityAddedAsync(IEntityConfiguration entity)
+    {
+        _logger.LogInformation("Entity added: {EntityName} with {PropertyCount} properties",
+            entity.Name, entity.Properties.Count);
+    }
+    
+    public async Task OnEntityRemovedAsync(string entityName)
+    {
+        _logger.LogWarning("Entity removed: {EntityName}", entityName);
+    }
+    
+    public async Task OnRepositoryReloadedAsync()
+    {
+        _logger.LogInformation("Entity repository reloaded");
+    }
+}
+
+// Register in Program.cs
+builder.Services.AddSingleton&lt;IEntityRepositoryEventHandler, EntityChangeLogger&gt;();
+</code></pre>
+<h2>Performance Optimization</h2>
+<h3>Caching Strategies</h3>
+<p>Implement caching for frequently accessed data:</p>
+<pre><code class="language-csharp">using Microsoft.Extensions.Caching.Memory;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IMemoryCache _cache;
+
+    public EntityController(IEntityRepository repository, IMemoryCache cache)
+    {
+        _repository = repository;
+        _cache = cache;
+    }
+
+    [HttpGet("{entityName}/cached")]
+    public async Task&lt;IActionResult&gt; GetCached(string entityName)
+    {
+        var cacheKey = $"entity_{entityName}";
+        
+        if (!_cache.TryGetValue(cacheKey, out IEntityConfiguration entity))
+        {
+            entity = _repository.GetEntity(entityName);
+            
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+            
+            _cache.Set(cacheKey, entity, cacheOptions);
+        }
+
+        return Ok(entity);
+    }
+}
+</code></pre>
+<h3>Connection Pooling</h3>
+<p>Optimize database connections:</p>
+<pre><code class="language-csharp">var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services
+    .AddDdap(options =&gt;
+    {
+        options.ConnectionString = connectionString;
+        options.MaxPoolSize = 100;
+        options.MinPoolSize = 10;
+        options.ConnectionTimeout = 30;
+    })
+    .AddDapper(() =&gt; new SqlConnection(connectionString));
+</code></pre>
+<h3>Lazy Loading</h3>
+<p>Implement lazy loading for relationships:</p>
+<pre><code class="language-csharp">public class EntityData
+{
+    public string Name { get; set; }
+    
+    private List&lt;RelatedEntity&gt; _relatedEntities;
+    public List&lt;RelatedEntity&gt; RelatedEntities
+    {
+        get
+        {
+            if (_relatedEntities == null)
+            {
+                // Load only when accessed
+                _relatedEntities = LoadRelatedEntities();
+            }
+            return _relatedEntities;
+        }
+    }
+}
+</code></pre>
+<h2>Production Best Practices</h2>
+<h3>Health Checks</h3>
+<p>Add health checks for monitoring:</p>
+<pre><code class="language-csharp">builder.Services.AddHealthChecks()
+    .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+var app = builder.Build();
+
+app.MapHealthChecks("/health");
+</code></pre>
+<h3>Logging</h3>
+<p>Configure structured logging:</p>
+<pre><code class="language-csharp">using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/ddap-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+</code></pre>
+<h3>Error Handling</h3>
+<p>Implement global error handling:</p>
+<pre><code class="language-csharp">public class GlobalExceptionHandler : IExceptionHandler
+{
+    private readonly ILogger&lt;GlobalExceptionHandler&gt; _logger;
+
+    public GlobalExceptionHandler(ILogger&lt;GlobalExceptionHandler&gt; logger)
+    {
+        _logger = logger;
+    }
+
+    public async ValueTask&lt;bool&gt; TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogError(exception, "An error occurred");
+
+        var response = new
+        {
+            Message = "An error occurred while processing your request",
+            Details = exception.Message
+        };
+
+        httpContext.Response.StatusCode = 500;
+        await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+
+        return true;
+    }
+}
+
+builder.Services.AddExceptionHandler&lt;GlobalExceptionHandler&gt;();
+</code></pre>
+<h3>Rate Limiting</h3>
+<p>Implement rate limiting:</p>
+<pre><code class="language-csharp">using AspNetCoreRateLimit;
+
+builder.Services.AddMemoryCache();
+builder.Services.Configure&lt;IpRateLimitOptions&gt;(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton&lt;IRateLimitConfiguration, RateLimitConfiguration&gt;();
+
+var app = builder.Build();
+app.UseIpRateLimiting();
+</code></pre>
+<h3>CORS Configuration</h3>
+<p>Configure CORS for cross-origin requests:</p>
+<pre><code class="language-csharp">builder.Services.AddCors(options =&gt;
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        policy =&gt;
+        {
+            policy.WithOrigins("https://example.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+var app = builder.Build();
+app.UseCors("AllowSpecificOrigin");
+</code></pre>
+<h2>Integration Patterns</h2>
+<h3>Message Queue Integration</h3>
+<p>Integrate with message queues for async processing:</p>
+<pre><code class="language-csharp">using RabbitMQ.Client;
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IConnection _connection;
+
+    [HttpPost("{entityName}/async")]
+    public async Task&lt;IActionResult&gt; CreateAsync(
+        string entityName, 
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        // Queue the operation
+        using var channel = _connection.CreateModel();
+        channel.QueueDeclare(queue: "entity-operations", durable: true);
+        
+        var message = JsonConvert.SerializeObject(new
+        {
+            EntityName = entityName,
+            Operation = "CREATE",
+            Data = data
+        });
+        
+        var body = Encoding.UTF8.GetBytes(message);
+        channel.BasicPublish(exchange: "", routingKey: "entity-operations", body: body);
+        
+        return Accepted();
+    }
+}
+</code></pre>
+<h3>Event Sourcing</h3>
+<p>Implement event sourcing pattern:</p>
+<pre><code class="language-csharp">public interface IEventStore
+{
+    Task AppendAsync(string entityName, object @event);
+    Task&lt;List&lt;object&gt;&gt; GetEventsAsync(string entityName);
+}
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IEventStore _eventStore;
+
+    [HttpPost("{entityName}/with-events")]
+    public async Task&lt;IActionResult&gt; CreateWithEvents(
+        string entityName,
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        // Store event
+        await _eventStore.AppendAsync(entityName, new EntityCreatedEvent
+        {
+            EntityName = entityName,
+            Data = data,
+            Timestamp = DateTime.UtcNow
+        });
+
+        // Create entity
+        // ...
+
+        return Created($"/api/entity/{entityName}", data);
+    }
+}
+</code></pre>
+<h3>Webhook Notifications</h3>
+<p>Send webhook notifications on entity changes:</p>
+<pre><code class="language-csharp">public interface IWebhookService
+{
+    Task NotifyAsync(string eventType, object data);
+}
+
+namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    private readonly IWebhookService _webhookService;
+
+    [HttpPost("{entityName}")]
+    public async Task&lt;IActionResult&gt; CreateWithWebhook(
+        string entityName,
+        [FromBody] Dictionary&lt;string, object&gt; data)
+    {
+        // Create entity
+        // ...
+
+        // Send webhook notification
+        await _webhookService.NotifyAsync("entity.created", new
+        {
+            EntityName = entityName,
+            Data = data
+        });
+
+        return Created($"/api/entity/{entityName}", data);
+    }
+}
+</code></pre>
+<h2>Testing Custom Extensions</h2>
+<h3>Unit Testing Custom Endpoints</h3>
+<pre><code class="language-csharp">using Xunit;
+using Moq;
+
+public class EntityControllerTests
+{
+    [Fact]
+    public async Task CustomEndpoint_ReturnsOk()
+    {
+        // Arrange
+        var mockRepository = new Mock&lt;IEntityRepository&gt;();
+        var controller = new EntityController(mockRepository.Object);
+
+        // Act
+        var result = await controller.CustomEndpoint("test");
+
+        // Assert
+        Assert.IsType&lt;OkObjectResult&gt;(result);
+    }
+}
+</code></pre>
+<h3>Integration Testing</h3>
+<pre><code class="language-csharp">using Microsoft.AspNetCore.Mvc.Testing;
+
+public class ApiIntegrationTests : IClassFixture&lt;WebApplicationFactory&lt;Program&gt;&gt;
+{
+    private readonly WebApplicationFactory&lt;Program&gt; _factory;
+
+    public ApiIntegrationTests(WebApplicationFactory&lt;Program&gt; factory)
+    {
+        _factory = factory;
+    }
+
+    [Fact]
+    public async Task CustomEndpoint_ReturnsSuccess()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.GetAsync("/api/entity/custom/test");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+    }
+}
+</code></pre>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="./philosophy.md">Philosophy</a> - Developer in Control philosophy</li>
+<li><a href="./templates.md">Templates</a> - Project templates and quick start</li>
+<li><a href="./auto-reload.md">Auto-Reload</a> - Auto-reload configuration and patterns</li>
+<li><a href="./troubleshooting.md">Troubleshooting</a> - Common issues and solutions</li>
+<li><a href="./database-providers.md">Database Providers</a> - Database-specific features</li>
+<li><a href="./api-providers.md">API Providers</a> - API-specific features</li>
+</ul>
+<h2>Additional Resources</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/aspnet/core/">ASP.NET Core Best Practices</a></li>
+<li><a href="https://graphql.org/learn/best-practices/">GraphQL Best Practices</a></li>
+<li><a href="https://grpc.io/docs/guides/">gRPC Best Practices</a></li>
+</ul>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -86,64 +1135,9 @@
         </div>
     </footer>
 
-    <script src="theme-toggle.js"></script>
-    <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
 
     <script>
         // Set current language

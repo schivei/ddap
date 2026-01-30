@@ -93,10 +93,21 @@ function generatePage(pageName, locale) {
     // Update title
     const titleMatch = markdown.match(/^#\s+(.+)$/m);
     const pageTitle = titleMatch ? titleMatch[1] : pageName;
-    html = html.replace('<title>DDAP Documentation</title>', `<title>${pageTitle} - DDAP</title>`);
+    html = html.replace(/<title>.*?<\/title>/, `<title>${pageTitle} - DDAP</title>`);
     
     // Update language in HTML tag and set current language
-    html = html.replace('<html lang="en">', `<html lang="${locale}">`);
+    html = html.replace('<html lang="en"', `<html lang="${locale}"`);
+    
+    // Fix relative paths for pages in subfolders
+    if (locale !== 'en') {
+        // Add ../ prefix to all relative resource paths
+        html = html.replace(/href="(styles\.css|lib\/[^"]+)"/g, 'href="../$1"');
+        html = html.replace(/src="(lib\/[^"]+|language-switcher\.js|theme-toggle\.js)"/g, 'src="../$1"');
+        
+        // Fix navigation links to point back to root for English or to locale folders
+        html = html.replace(/href="index\.html"/g, `href="../${locale}/index.html"`);
+        html = html.replace(/href="([a-z-]+)\.html"/g, `href="$1.html"`); // Keep same folder links as-is
+    }
     
     // Inject script to set current language in localStorage
     const langScript = `
@@ -113,8 +124,11 @@ function generatePage(pageName, locale) {
     `;
     html = html.replace('</body>', `${langScript}</body>`);
     
-    // Remove dynamic loading script section (it's in the template)
-    html = html.replace(/<script>[\s\S]*?\/\/ Fetch and render markdown[\s\S]*?<\/script>/g, '');
+    // Remove dynamic loading script section completely
+    // Find and remove the entire script block that does markdown loading
+    html = html.replace(/<script>\s*\/\/ Markdown loading[\s\S]*?<\/script>/g, '');
+    html = html.replace(/<script>[\s\S]*?fetchMarkdownContent[\s\S]*?<\/script>/g, '');
+    html = html.replace(/<script>[\s\S]*?Error Loading Document[\s\S]*?<\/script>/g, '');
     
     return html;
 }

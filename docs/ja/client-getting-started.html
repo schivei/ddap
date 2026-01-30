@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="ja" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>DDAP Client Libraries - Getting Started - DDAP</title>
     
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="lib/github-markdown.min.css">
-    <script src="lib/marked.min.js"></script>
-    <script src="lib/purify.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <header class="site-header">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../ja/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                     <span class="logo" aria-label="DDAP Logo">🎛️</span>
                     <span class="brand-name">DDAP</span>
                 </a>
@@ -43,7 +43,148 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>DDAP Client Libraries - Getting Started</h1>
+<p>This guide will help you get started with DDAP client libraries for consuming DDAP APIs.</p>
+<h2>Overview</h2>
+<p>DDAP provides client libraries for three different API types:</p>
+<ul>
+<li><strong>REST Client</strong>: HTTP-based REST API consumer</li>
+<li><strong>gRPC Client</strong>: High-performance gRPC client</li>
+<li><strong>GraphQL Client</strong>: GraphQL query and mutation support</li>
+</ul>
+<p>All clients share a common core that provides:</p>
+<ul>
+<li>HTTP client factory support</li>
+<li>Retry and resilience policies</li>
+<li>Consistent configuration</li>
+<li>Exception handling</li>
+</ul>
+<h2>Installation</h2>
+<p>Install the client libraries you need:</p>
+<pre><code class="language-bash"># Core library (required)
+dotnet add package Ddap.Client.Core
+
+# REST client
+dotnet add package Ddap.Client.Rest
+
+# gRPC client
+dotnet add package Ddap.Client.Grpc
+
+# GraphQL client
+dotnet add package Ddap.Client.GraphQL
+</code></pre>
+<h2>Quick Start</h2>
+<h3>REST Client</h3>
+<pre><code class="language-csharp">using Ddap.Client.Core;
+using Ddap.Client.Rest;
+using Microsoft.Extensions.DependencyInjection;
+
+// Configure services
+var services = new ServiceCollection();
+services.AddDdapRestClient(options =&gt;
+{
+    options.BaseUrl = "https://api.example.com";
+    options.Timeout = TimeSpan.FromSeconds(30);
+    options.RetryCount = 3;
+});
+
+var serviceProvider = services.BuildServiceProvider();
+var client = serviceProvider.GetRequiredService&lt;DdapRestClient&gt;();
+
+// Use the client
+var users = await client.GetAsync&lt;User&gt;("/api/users");
+var user = await client.GetByIdAsync&lt;User&gt;("/api/users", 1);
+var newUser = await client.CreateAsync("/api/users", new User { Name = "John" });
+var updated = await client.UpdateAsync("/api/users", 1, user);
+var deleted = await client.DeleteAsync("/api/users", 1);
+</code></pre>
+<h3>gRPC Client</h3>
+<pre><code class="language-csharp">using Ddap.Client.Core;
+using Ddap.Client.Grpc;
+
+// Configure services
+services.AddDdapGrpcClient(options =&gt;
+{
+    options.BaseUrl = "https://api.example.com";
+});
+
+var client = serviceProvider.GetRequiredService&lt;DdapGrpcClient&gt;();
+
+// Create a gRPC service client
+var userService = client.CreateClient&lt;UserServiceClient&gt;();
+</code></pre>
+<h3>GraphQL Client</h3>
+<pre><code class="language-csharp">using Ddap.Client.Core;
+using Ddap.Client.GraphQL;
+
+// Configure services
+services.AddDdapGraphQLClient(options =&gt;
+{
+    options.BaseUrl = "https://api.example.com";
+});
+
+var client = serviceProvider.GetRequiredService&lt;DdapGraphQLClient&gt;();
+
+// Execute queries
+var response = await client.QueryAsync&lt;UsersData&gt;(
+    "{ users { id name email } }"
+);
+
+// Execute mutations
+var mutationResponse = await client.MutationAsync&lt;CreateUserData&gt;(
+    "mutation($name: String!) { createUser(name: $name) { id name } }",
+    new { name = "John" }
+);
+</code></pre>
+<h2>Configuration Options</h2>
+<p>All clients support the following configuration options:</p>
+<ul>
+<li><code>BaseUrl</code>: The base URL of the API</li>
+<li><code>Timeout</code>: Request timeout (default: 30 seconds)</li>
+<li><code>RetryCount</code>: Number of retry attempts (default: 3)</li>
+<li><code>RetryDelay</code>: Delay between retries (default: 1 second)</li>
+<li><code>UseExponentialBackoff</code>: Use exponential backoff for retries (default: true)</li>
+</ul>
+<h2>Exception Handling</h2>
+<p>All clients throw consistent exceptions:</p>
+<ul>
+<li><code>DdapClientException</code>: Base exception for all client errors</li>
+<li><code>DdapConnectionException</code>: Connection failures</li>
+<li><code>DdapApiException</code>: API request failures (includes status code)</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-csharp">try
+{
+    var user = await client.GetByIdAsync&lt;User&gt;("/api/users", 1);
+}
+catch (DdapApiException ex)
+{
+    Console.WriteLine($"API error: {ex.Message}, Status: {ex.StatusCode}");
+}
+catch (DdapConnectionException ex)
+{
+    Console.WriteLine($"Connection error: {ex.Message}");
+}
+</code></pre>
+<h2>Testing Connection</h2>
+<p>All clients implement the <code>IDdapClient</code> interface with a <code>TestConnectionAsync</code> method:</p>
+<pre><code class="language-csharp">var isConnected = await client.TestConnectionAsync();
+if (isConnected)
+{
+    Console.WriteLine("Successfully connected to API");
+}
+</code></pre>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="client-rest.md">REST Client Documentation</a></li>
+<li><a href="client-grpc.md">gRPC Client Documentation</a></li>
+<li><a href="client-graphql.md">GraphQL Client Documentation</a></li>
+</ul>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -86,64 +227,9 @@
         </div>
     </footer>
 
-    <script src="theme-toggle.js"></script>
-    <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
 
     <script>
         // Set current language

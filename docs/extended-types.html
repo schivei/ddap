@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>Extended Types Support - DDAP</title>
     
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="lib/github-markdown.min.css">
@@ -43,7 +43,126 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Extended Types Support</h1>
+<p>DDAP now supports additional .NET types in both data providers and GraphQL:</p>
+<h2>Supported Extended Types</h2>
+<h3>Unsigned Integer Types</h3>
+<ul>
+<li><code>uint</code> (32-bit unsigned integer)</li>
+<li><code>ulong</code> (64-bit unsigned integer)</li>
+<li><code>ushort</code> (16-bit unsigned integer)</li>
+<li><code>sbyte</code> (8-bit signed integer)</li>
+</ul>
+<h3>Modern Date/Time Types</h3>
+<ul>
+<li><code>DateOnly</code> - Date without time component</li>
+<li><code>TimeOnly</code> - Time without date component</li>
+<li><code>TimeSpan</code> - Duration/interval</li>
+<li><code>DateTimeOffset</code> - Date and time with timezone offset</li>
+</ul>
+<h2>Usage</h2>
+<h3>In Dapper Provider</h3>
+<p>The Dapper provider automatically maps SQL types to these CLR types:</p>
+<p><strong>MySQL Unsigned Types:</strong></p>
+<pre><code class="language-sql">CREATE TABLE Users (
+    Id INT UNSIGNED PRIMARY KEY,
+    Credits BIGINT UNSIGNED,
+    Age SMALLINT UNSIGNED,
+    Status TINYINT UNSIGNED
+);
+</code></pre>
+<p>Maps to:</p>
+<pre><code class="language-csharp">public class User {
+    public uint Id { get; set; }
+    public ulong Credits { get; set; }
+    public ushort Age { get; set; }
+    public byte Status { get; set; }
+}
+</code></pre>
+<p><strong>Date/Time Types:</strong></p>
+<pre><code class="language-sql">CREATE TABLE Events (
+    EventDate DATE,              -- Maps to DateOnly
+    EventTime TIME,              -- Maps to TimeOnly
+    Duration INTERVAL,           -- Maps to TimeSpan (PostgreSQL)
+    CreatedAt DATETIMEOFFSET     -- Maps to DateTimeOffset
+);
+</code></pre>
+<h3>In GraphQL</h3>
+<p>Enable extended types support in your GraphQL configuration:</p>
+<pre><code class="language-csharp">services.AddDdap(options =&gt; 
+{
+    options.ConnectionString = "...";
+})
+.AddGraphQL(graphql =&gt; 
+{
+    graphql.AddExtendedTypes(); // Enable support for extended types
+});
+</code></pre>
+<p>This adds:</p>
+<ul>
+<li>Type converters for unsigned integers (maps to signed equivalents)</li>
+<li>Custom scalar types for <code>DateOnly</code> and <code>TimeOnly</code></li>
+<li>Support for <code>TimeSpan</code> and <code>DateTimeOffset</code></li>
+</ul>
+<h2>GraphQL Schema</h2>
+<p>The extended types appear in your GraphQL schema as:</p>
+<pre><code class="language-graphql">scalar DateOnly  # ISO 8601 date: "2024-01-29"
+scalar TimeOnly  # ISO 8601 time: "14:30:00"
+
+type User {
+    id: Int!           # uint mapped to Int
+    credits: Long!     # ulong mapped to Long
+    age: Short!        # ushort mapped to Short
+    birthDate: DateOnly
+    workStartTime: TimeOnly
+}
+</code></pre>
+<h2>Breaking Changes</h2>
+<p>⚠️ <strong>Important:</strong> Starting with this version:</p>
+<ul>
+<li>SQL <code>date</code> type now maps to <code>DateOnly</code> (was <code>DateTime</code>)</li>
+<li>SQL <code>time</code> type now maps to <code>TimeOnly</code> (was <code>TimeSpan</code>)</li>
+</ul>
+<p>If you need <code>TimeSpan</code>, use:</p>
+<ul>
+<li>PostgreSQL: <code>INTERVAL</code> type</li>
+<li>Other databases: Store as numeric (milliseconds/ticks)</li>
+</ul>
+<h2>Example Query</h2>
+<pre><code class="language-graphql">query {
+    users {
+        id
+        credits
+        birthDate
+        workStartTime
+    }
+}
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+    "data": {
+        "users": [
+            {
+                "id": 1,
+                "credits": 9223372036854775807,
+                "birthDate": "1990-05-15",
+                "workStartTime": "09:00:00"
+            }
+        ]
+    }
+}
+</code></pre>
+<h2>Notes</h2>
+<ul>
+<li>Unsigned types are converted to their signed equivalents in GraphQL (which doesn't have unsigned types)</li>
+<li>Values exceeding signed type ranges will wrap around (unchecked conversion)</li>
+<li>Custom scalar types serialize to ISO 8601 strings for broad compatibility</li>
+</ul>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -88,62 +207,7 @@
 
     <script src="theme-toggle.js"></script>
     <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    
 
     <script>
         // Set current language

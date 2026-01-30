@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="ja" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>{{TITLE}} | DDAP Documentation</title>
+    <title>DDAP Architecture - DDAP</title>
     
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="lib/github-markdown.min.css">
-    <script src="lib/marked.min.js"></script>
-    <script src="lib/purify.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <header class="site-header">
         <nav class="nav-container" role="navigation" aria-label="Main navigation">
             <div class="nav-brand">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../ja/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                     <span class="logo" aria-label="DDAP Logo">🎛️</span>
                     <span class="brand-name">DDAP</span>
                 </a>
@@ -43,7 +43,521 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                Loading...
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>DDAP Architecture</h1>
+<p>This document provides an overview of DDAP's architecture, design principles, and how the different components work together.</p>
+<h2>Architecture Overview</h2>
+<p>DDAP follows a modular, layered architecture with clear separation of concerns:</p>
+<pre><code class="language-mermaid">graph TB
+    subgraph API["API Layer"]
+        REST[REST API]
+        GraphQL[GraphQL API]
+        gRPC[gRPC API]
+    end
+    
+    subgraph Core["Core Layer"]
+        Repository[Entity Repository &amp; Configuration]
+        EntityConfig[Entity Configuration]
+        PropertyConfig[Property Configuration]
+        AutoReload[Auto-Reload System]
+    end
+    
+    subgraph DataProvider["Data Provider Layer"]
+        Dapper[Dapper&lt;br/&gt;Generic]
+        EF[Entity&lt;br/&gt;Framework]
+    end
+    
+    subgraph Database["Database"]
+        MSSQL[(SQL Server)]
+        MySQL[(MySQL)]
+        PostgreSQL[(PostgreSQL)]
+        SQLite[(SQLite)]
+    end
+    
+    REST --&gt; Repository
+    GraphQL --&gt; Repository
+    gRPC --&gt; Repository
+    
+    Repository --&gt; EntityConfig
+    Repository --&gt; PropertyConfig
+    AutoReload --&gt; Repository
+    
+    Repository --&gt; Dapper
+    Repository --&gt; EF
+    
+    Dapper --&gt; MSSQL
+    Dapper --&gt; MySQL
+    Dapper --&gt; PostgreSQL
+    Dapper --&gt; SQLite
+    EF --&gt; MSSQL
+    EF --&gt; MySQL
+    EF --&gt; PostgreSQL
+    
+    style API fill:#667eea,stroke:#333,stroke-width:2px,color:#fff
+    style Core fill:#764ba2,stroke:#333,stroke-width:2px,color:#fff
+    style DataProvider fill:#f093fb,stroke:#333,stroke-width:2px,color:#fff
+    style Database fill:#4facfe,stroke:#333,stroke-width:2px,color:#fff
+</code></pre>
+<h2>Core Concepts</h2>
+<h3>1. Entity Configuration</h3>
+<p>The heart of DDAP is the <code>IEntityConfiguration</code> interface, which represents metadata about database tables:</p>
+<pre><code class="language-csharp">public interface IEntityConfiguration
+{
+    string Name { get; }
+    string Schema { get; }
+    IReadOnlyList&lt;IPropertyConfiguration&gt; Properties { get; }
+    IReadOnlyList&lt;IIndexConfiguration&gt; Indexes { get; }
+    IReadOnlyList&lt;IRelationshipConfiguration&gt; Relationships { get; }
+}
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Represents database tables/entities</li>
+<li>Contains property (column) metadata</li>
+<li>Includes index and relationship information</li>
+<li>Supports composite keys and complex relationships</li>
+</ul>
+<h3>2. Entity Repository</h3>
+<p>The <code>IEntityRepository</code> is the central registry for all entity configurations:</p>
+<pre><code class="language-csharp">public interface IEntityRepository
+{
+    IReadOnlyList&lt;IEntityConfiguration&gt; Entities { get; }
+    IEntityConfiguration? GetEntity(string name);
+    void AddEntity(IEntityConfiguration entity);
+}
+</code></pre>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Store and manage entity configurations</li>
+<li>Provide entity lookup by name</li>
+<li>Thread-safe access to entity metadata</li>
+</ul>
+<h3>3. Data Provider Abstraction</h3>
+<p>The <code>IDataProvider</code> interface abstracts database-specific logic:</p>
+<pre><code class="language-csharp">public interface IDataProvider
+{
+    Task LoadEntitiesAsync(IEntityRepository repository);
+    // Additional database operations...
+}
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Database-agnostic core</li>
+<li>Pluggable database support</li>
+<li>Consistent API across providers</li>
+</ul>
+<h3>4. Auto-Reload System</h3>
+<p>The Auto-Reload System automatically detects and applies database schema changes:</p>
+<pre><code class="language-csharp">public class AutoReloadOptions
+{
+    public bool Enabled { get; set; }
+    public TimeSpan IdleTimeout { get; set; }
+    public ReloadStrategy Strategy { get; set; }
+    public ReloadBehavior Behavior { get; set; }
+    public ChangeDetection Detection { get; set; }
+}
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Zero-downtime schema updates</li>
+<li>Multiple reload strategies (HotReload, RestartExecutor, InvalidateAndRebuild)</li>
+<li>Change detection methods (AlwaysReload, CheckHash, CheckTimestamps)</li>
+<li>Lifecycle hooks for custom logic</li>
+<li>Configurable behaviors (ServeOldSchema, BlockRequests, QueueRequests)</li>
+</ul>
+<blockquote>
+<p><strong>Learn more:</strong> See <a href="./auto-reload.md">Auto-Reload Guide</a> for detailed configuration and usage.</p>
+</blockquote>
+<h2>Component Details</h2>
+<h3>Core Package (Ddap.Core)</h3>
+<p><strong>Purpose:</strong> Provides abstractions and core functionality</p>
+<p><strong>Key Components:</strong></p>
+<ul>
+<li><code>IEntityConfiguration</code> - Entity metadata interface</li>
+<li><code>IPropertyConfiguration</code> - Property/column metadata</li>
+<li><code>IIndexConfiguration</code> - Index metadata</li>
+<li><code>IRelationshipConfiguration</code> - Foreign key relationships</li>
+<li><code>IEntityRepository</code> - Entity registry</li>
+<li><code>IDataProvider</code> - Database provider abstraction</li>
+<li><code>IDdapBuilder</code> - Fluent configuration API</li>
+</ul>
+<p><strong>Design Principles:</strong></p>
+<ul>
+<li>Interface-based design for extensibility</li>
+<li>No database-specific code</li>
+<li>Minimal dependencies</li>
+<li>Internal implementation classes in <code>Internals/</code> folder</li>
+</ul>
+<h3>Data Provider Packages</h3>
+<p>Each database provider implements <code>IDataProvider</code> and loads database metadata:</p>
+<h4>Ddap.Data.Dapper</h4>
+<ul>
+<li><strong>Single generic package</strong> for any database with <code>IDbConnection</code></li>
+<li>Supports SQL Server, MySQL, PostgreSQL, SQLite, Oracle, and more</li>
+<li>Database-specific metadata queries for indexes and relationships</li>
+<li>Full support for composite keys and complex relationships</li>
+<li><strong>You bring your own database driver</strong> (Microsoft.Data.SqlClient, Npgsql, MySqlConnector, etc.)</li>
+</ul>
+<blockquote>
+<p><strong>Architecture Note:</strong> Previous architecture had separate packages (e.g., <code>Ddap.Data.Dapper.SqlServer</code>). The new architecture uses a single <code>Ddap.Data.Dapper</code> package that works with any database driver you choose.</p>
+</blockquote>
+<h4>Ddap.Data.EntityFramework</h4>
+<ul>
+<li>Database-agnostic using EF Core</li>
+<li>Uses EF's model metadata</li>
+<li>Works with any EF-supported database</li>
+</ul>
+<h3>API Provider Packages</h3>
+<h4>Ddap.Rest</h4>
+<ul>
+<li>Generates REST controllers via partial classes</li>
+<li>Content negotiation (JSON/XML)</li>
+<li>Uses Newtonsoft.Json for JSON serialization</li>
+<li>Entity metadata endpoints</li>
+</ul>
+<p><strong>Endpoints Generated:</strong></p>
+<pre><code>GET    /api/entity              - List all entities
+GET    /api/entity/{name}       - Get entity data
+GET    /api/entity/{name}/metadata - Get entity metadata
+POST   /api/entity/{name}       - Create entity
+PUT    /api/entity/{name}/{id}  - Update entity
+DELETE /api/entity/{name}/{id}  - Delete entity
+</code></pre>
+<h4>Ddap.GraphQL</h4>
+<ul>
+<li>Generates GraphQL schema dynamically</li>
+<li>Query and Mutation types</li>
+<li>Entity metadata queries</li>
+<li>Hot Chocolate integration</li>
+</ul>
+<p><strong>Schema Example:</strong></p>
+<pre><code class="language-graphql">type Query {
+  entities: [EntityMetadata!]!
+  entity(entityName: String!): EntityMetadata
+}
+
+type EntityMetadata {
+  name: String!
+  schema: String!
+  propertyCount: Int!
+}
+</code></pre>
+<h4>Ddap.Grpc</h4>
+<ul>
+<li>Generates gRPC services</li>
+<li>Protocol buffer definitions</li>
+<li>Entity CRUD operations</li>
+<li>.proto file generation</li>
+</ul>
+<h3>Additional Packages</h3>
+<h4>Ddap.CodeGen</h4>
+<ul>
+<li>Source generators for compile-time code generation</li>
+<li>Reduces runtime overhead</li>
+<li>Generates strongly-typed entity classes</li>
+</ul>
+<h4>Ddap.Aspire</h4>
+<ul>
+<li>.NET Aspire integration</li>
+<li>Automatic service discovery</li>
+<li>Connection string management</li>
+<li>Auto-reload support for schema changes</li>
+</ul>
+<h4>Ddap.Auth</h4>
+<ul>
+<li>Authentication and authorization support</li>
+<li>Entity-level security</li>
+<li>Integration with ASP.NET Core Identity</li>
+</ul>
+<h4>Ddap.Subscriptions</h4>
+<ul>
+<li>Real-time data updates</li>
+<li>WebSocket support</li>
+<li>SignalR integration</li>
+<li>GraphQL subscriptions</li>
+</ul>
+<h4>Ddap.Templates</h4>
+<ul>
+<li><code>dotnet new</code> templates for rapid project setup</li>
+<li>Pre-configured projects with best practices</li>
+<li>Support for multiple databases and API providers</li>
+</ul>
+<h2>Design Patterns</h2>
+<h3>Builder Pattern</h3>
+<p>DDAP uses the builder pattern for fluent configuration:</p>
+<pre><code class="language-csharp">var connectionString = "...";
+builder.Services
+    .AddDdap(options =&gt; { /* configure */ })
+    .AddDapper(() =&gt; new SqlConnection(connectionString))
+    .AddRest()
+    .AddGraphQL();
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Clear, readable configuration</li>
+<li>Chainable method calls</li>
+<li>Type-safe configuration</li>
+</ul>
+<h3>Partial Classes</h3>
+<p>All generated controllers, services, and types are partial classes:</p>
+<pre><code class="language-csharp">public partial class EntityController : ControllerBase
+{
+    // Generated code...
+}
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Easy extensibility</li>
+<li>Custom logic without modifying generated code</li>
+<li>Separation of concerns</li>
+</ul>
+<h3>Dependency Injection</h3>
+<p>All components use constructor injection:</p>
+<pre><code class="language-csharp">public class EntityController
+{
+    private readonly IEntityRepository _repository;
+    
+    public EntityController(IEntityRepository repository)
+    {
+        _repository = repository;
+    }
+}
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Testability</li>
+<li>Loose coupling</li>
+<li>ASP.NET Core integration</li>
+</ul>
+<h2>Data Flow</h2>
+<h3>Startup Flow</h3>
+<ol>
+<li><p><strong>Configuration Phase</strong></p>
+<pre><code>AddDdap() → Register core services
+AddDapper() → Register data provider
+AddRest() → Register REST controllers
+AddGraphQL() → Register GraphQL schema (optional)
+</code></pre>
+</li>
+<li><p><strong>Initialization Phase</strong></p>
+<pre><code>Application starts → Data provider loads metadata
+→ Populates EntityRepository → APIs ready
+→ Auto-Reload monitors for changes (if enabled)
+</code></pre>
+</li>
+<li><p><strong>Request Handling</strong></p>
+<pre><code>HTTP Request → Controller/GraphQL → EntityRepository
+→ Returns metadata or data → Response
+</code></pre>
+</li>
+<li><p><strong>Auto-Reload Flow</strong> (if enabled)</p>
+<pre><code>Idle timeout expires → Check for schema changes
+→ If changes detected → Reload entities
+→ Apply reload strategy → Resume serving requests
+</code></pre>
+</li>
+</ol>
+<h3>Entity Loading Flow</h3>
+<pre><code>IDataProvider.LoadEntitiesAsync()
+  ↓
+Query database metadata (tables, columns, indexes, relationships)
+  ↓
+Create IEntityConfiguration instances
+  ↓
+Add to IEntityRepository
+  ↓
+APIs can now use entity metadata
+</code></pre>
+<h2>Extensibility Points</h2>
+<h3>1. Custom Controllers</h3>
+<p>Add custom endpoints to generated controllers:</p>
+<pre><code class="language-csharp">namespace Ddap.Rest;
+
+public partial class EntityController
+{
+    [HttpGet("custom/{name}")]
+    public IActionResult CustomEndpoint(string name)
+    {
+        // Custom logic
+    }
+}
+</code></pre>
+<h3>2. Custom Data Providers</h3>
+<p>Implement <code>IDataProvider</code> for new databases:</p>
+<pre><code class="language-csharp">public class MyDatabaseProvider : IDataProvider
+{
+    public async Task LoadEntitiesAsync(IEntityRepository repository)
+    {
+        // Load metadata from your database
+    }
+}
+</code></pre>
+<h3>3. Custom API Providers</h3>
+<p>Create new API providers:</p>
+<pre><code class="language-csharp">public static class MyApiProviderExtensions
+{
+    public static IDdapBuilder AddMyApi(this IDdapBuilder builder)
+    {
+        // Register your services
+        return builder;
+    }
+}
+</code></pre>
+<h3>4. Source Generators</h3>
+<p>Use Ddap.CodeGen for compile-time code generation:</p>
+<pre><code class="language-csharp">[DdapEntity]
+public partial class MyEntity
+{
+    // Properties generated at compile-time
+}
+</code></pre>
+<h2>Performance Considerations</h2>
+<h3>Metadata Caching</h3>
+<ul>
+<li>Entity metadata is loaded once at startup</li>
+<li>Cached in <code>IEntityRepository</code></li>
+<li>No per-request metadata queries</li>
+</ul>
+<h3>Code Generation</h3>
+<ul>
+<li>Source generators create code at compile-time</li>
+<li>Reduces runtime reflection</li>
+<li>Improves startup performance</li>
+</ul>
+<h3>Dapper vs Entity Framework</h3>
+<ul>
+<li><strong>Dapper providers</strong>: Lower memory, faster queries</li>
+<li><strong>EF provider</strong>: More features, slower but flexible</li>
+</ul>
+<h3>Content Negotiation</h3>
+<ul>
+<li>Format selection happens early in pipeline</li>
+<li>Newtonsoft.Json for JSON (configurable)</li>
+<li>XML formatters cached</li>
+</ul>
+<h2>Security</h2>
+<h3>SQL Injection Protection</h3>
+<ul>
+<li>All data providers use parameterized queries</li>
+<li>No string concatenation for SQL</li>
+<li>Safe from SQL injection attacks</li>
+</ul>
+<h3>Code Coverage Exclusion</h3>
+<p>Generated code is automatically excluded from code coverage:</p>
+<pre><code class="language-xml">&lt;ExcludeFromCodeCoverage&gt;true&lt;/ExcludeFromCodeCoverage&gt;
+</code></pre>
+<h2>Testing Strategy</h2>
+<h3>Unit Testing</h3>
+<p>Test core abstractions and interfaces:</p>
+<pre><code class="language-csharp">[Fact]
+public void EntityRepository_AddEntity_StoresEntity()
+{
+    var repository = new EntityRepository();
+    var entity = CreateTestEntity();
+    
+    repository.AddEntity(entity);
+    
+    Assert.Contains(entity, repository.Entities);
+}
+</code></pre>
+<h3>Integration Testing</h3>
+<p>Test with real databases using containers:</p>
+<pre><code class="language-csharp">[Fact]
+public async Task SqlServerProvider_LoadsEntities()
+{
+    using var container = new SqlServerContainer();
+    await container.StartAsync();
+    
+    var provider = new SqlServerDapperProvider(connectionString);
+    var repository = new EntityRepository();
+    
+    await provider.LoadEntitiesAsync(repository);
+    
+    Assert.NotEmpty(repository.Entities);
+}
+</code></pre>
+<h2>Deployment</h2>
+<h3>NuGet Packages</h3>
+<p>Each component is a separate NuGet package:</p>
+<ul>
+<li>Install only what you need</li>
+<li>Reduces deployment size</li>
+<li>Clear dependency graph</li>
+</ul>
+<h3>Docker Support</h3>
+<p>Works in containers:</p>
+<pre><code class="language-dockerfile">FROM mcr.microsoft.com/dotnet/aspnet:10.0
+COPY bin/Release/net10.0/publish/ /app
+WORKDIR /app
+ENTRYPOINT ["dotnet", "MyDdapApi.dll"]
+</code></pre>
+<h3>.NET Aspire</h3>
+<p>Optimized for .NET Aspire:</p>
+<pre><code class="language-csharp">builder.AddDdapApi("api")
+       .WithReference(db)
+       .WithRestApi()
+       .WithAutoRefresh(30);
+</code></pre>
+<h2>Future Architecture Considerations</h2>
+<h3>Planned Enhancements</h3>
+<ol>
+<li><p><strong>Enhanced Source Generators</strong></p>
+<ul>
+<li>More compile-time code generation</li>
+<li>Reduced runtime overhead</li>
+</ul>
+</li>
+<li><p><strong>Dynamic Proto File Endpoints</strong></p>
+<ul>
+<li>gRPC clients can download .proto files</li>
+<li>Automatic client generation</li>
+</ul>
+</li>
+<li><p><strong>REST from gRPC</strong></p>
+<ul>
+<li>Generate REST endpoints from gRPC services</li>
+<li>Unified service definitions</li>
+</ul>
+</li>
+<li><p><strong>Advanced Query Engine</strong></p>
+<ul>
+<li>OData-like filtering</li>
+<li>Complex sorting and pagination</li>
+</ul>
+</li>
+<li><p><strong>Real-time Subscriptions</strong></p>
+<ul>
+<li>GraphQL subscriptions</li>
+<li>SignalR integration</li>
+<li>WebSocket support</li>
+</ul>
+</li>
+</ol>
+<h2>Conclusion</h2>
+<p>DDAP's architecture prioritizes:</p>
+<ul>
+<li><strong>Developer Control</strong>: You make all technology choices</li>
+<li><strong>Modularity</strong>: Use only what you need</li>
+<li><strong>Extensibility</strong>: Easy to customize and extend</li>
+<li><strong>Performance</strong>: Efficient metadata loading and caching</li>
+<li><strong>Zero Downtime</strong>: Auto-reload keeps APIs running during schema changes</li>
+<li><strong>Maintainability</strong>: Clear separation of concerns</li>
+<li><strong>Testability</strong>: Interface-based design</li>
+</ul>
+<p>For more details, see:</p>
+<ul>
+<li><a href="./philosophy.md">Philosophy</a> - Developer in Control approach</li>
+<li><a href="./get-started.md">Get Started</a> - Quick start guide</li>
+<li><a href="./templates.md">Templates</a> - Project templates</li>
+<li><a href="./auto-reload.md">Auto-Reload</a> - Schema reloading system</li>
+<li><a href="./advanced.md">Advanced Usage</a> - Extensibility patterns</li>
+<li><a href="./api-providers.md">API Providers</a> - REST, GraphQL, gRPC</li>
+<li><a href="./database-providers.md">Database Providers</a> - Dapper and EF</li>
+</ul>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -86,64 +600,9 @@
         </div>
     </footer>
 
-    <script src="theme-toggle.js"></script>
-    <script src="language-switcher.js"></script>
-    <script>
-        // Load and render markdown content with language support
-        const baseMdFile = '{{MD_FILE}}';
-        
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
-        });
-    </script>
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
 
     <script>
         // Set current language
