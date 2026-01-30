@@ -327,9 +327,9 @@ public class RawQueryServiceImpl : RawQueryService.RawQueryServiceBase
                         value = null;
                         break;
                     default:
-                        // For complex types (objects/arrays), keep the JsonElement
-                        // so that downstream code can handle them explicitly if needed.
-                        value = element;
+                        // For complex types (objects/arrays), convert to JSON text so that
+                        // database executors receive a supported scalar type (string).
+                        value = element.GetRawText();
                         break;
                 }
 
