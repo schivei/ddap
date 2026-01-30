@@ -77,23 +77,9 @@
             [Ddap.Core]Ddap.Core.AutoReloadOptions
           </Exclude>
           
-          <!-- Include main application code (unit-testable business logic) -->
-          <Include>
-            [Ddap.Core]*
-            [Ddap.Rest]*
-            [Ddap.GraphQL]*
-            <!-- [Ddap.Grpc]* REMOVED: Was re-including excluded protobuf files -->
-            [Ddap.Aspire]*
-            [Ddap.Client.Core]*
-            [Ddap.Client.Rest]*
-            [Ddap.Client.GraphQL]*
-            [Ddap.Client.Grpc]*
-            [Ddap.Data.EntityFramework]*
-            [Ddap.Data.Dapper]*
-            [Ddap.Auth]*
-            [Ddap.CodeGen]*
-            [Ddap.Subscriptions]*
-          </Include>
+          <!-- Include section REMOVED to prevent re-including excluded files -->
+          <!-- Coverlet includes all assemblies by default, so we only need Exclude -->
+          <!-- This fixes the issue where Include was overriding Exclude filters -->
           
           <!-- Include private and internal members in coverage -->
           <IncludeTestAssembly>false</IncludeTestAssembly>
