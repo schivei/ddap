@@ -26,24 +26,6 @@ message RawQueryRequest {
   
   // Optional query parameters in JSON format
   string parameters_json = 2;
-  
-  // Result type expected
-  ResultType result_type = 3;
-}
-
-// Result type enumeration
-enum ResultType {
-  // Single scalar value
-  SCALAR = 0;
-  
-  // Single row
-  SINGLE = 1;
-  
-  // Multiple rows
-  MULTIPLE = 2;
-  
-  // No result (non-query)
-  VOID = 3;
 }
 
 // Result for scalar queries (single value)

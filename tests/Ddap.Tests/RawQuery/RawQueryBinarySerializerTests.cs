@@ -254,7 +254,7 @@ public class RawQueryBinarySerializerTests
             );
 
             // Assert
-            deserialized.Should().NotBeNull($"Failed for type {typeName}");
+            deserialized.Should().Be(original, $"Failed for type {typeName}");
         }
     }
 }

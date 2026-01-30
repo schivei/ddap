@@ -35,7 +35,12 @@ public class DapperRawQueryExecutor : IRawQueryExecutor
     {
         using var connection = _options.ConnectionFactory();
         await OpenConnectionAsync(connection, cancellationToken);
-        return await connection.ExecuteScalarAsync<T>(query, parameters);
+        var commandDefinition = new CommandDefinition(
+            query,
+            parameters,
+            cancellationToken: cancellationToken
+        );
+        return await connection.ExecuteScalarAsync<T>(commandDefinition);
     }
 
     /// <inheritdoc />
@@ -47,7 +52,12 @@ public class DapperRawQueryExecutor : IRawQueryExecutor
     {
         using var connection = _options.ConnectionFactory();
         await OpenConnectionAsync(connection, cancellationToken);
-        return await connection.QueryFirstOrDefaultAsync(query, parameters);
+        var commandDefinition = new CommandDefinition(
+            query,
+            parameters,
+            cancellationToken: cancellationToken
+        );
+        return await connection.QueryFirstOrDefaultAsync(commandDefinition);
     }
 
     /// <inheritdoc />
@@ -59,7 +69,12 @@ public class DapperRawQueryExecutor : IRawQueryExecutor
     {
         using var connection = _options.ConnectionFactory();
         await OpenConnectionAsync(connection, cancellationToken);
-        return await connection.QueryAsync(query, parameters);
+        var commandDefinition = new CommandDefinition(
+            query,
+            parameters,
+            cancellationToken: cancellationToken
+        );
+        return await connection.QueryAsync(commandDefinition);
     }
 
     /// <inheritdoc />
@@ -71,7 +86,12 @@ public class DapperRawQueryExecutor : IRawQueryExecutor
     {
         using var connection = _options.ConnectionFactory();
         await OpenConnectionAsync(connection, cancellationToken);
-        return await connection.ExecuteAsync(query, parameters);
+        var commandDefinition = new CommandDefinition(
+            query,
+            parameters,
+            cancellationToken: cancellationToken
+        );
+        return await connection.ExecuteAsync(commandDefinition);
     }
 
     private static async Task OpenConnectionAsync(

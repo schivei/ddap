@@ -291,7 +291,52 @@ public class RawQueryServiceImpl : RawQueryService.RawQueryServiceBase
 
         try
         {
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(parametersJson);
+            var rawParameters = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
+                parametersJson
+            );
+            if (rawParameters == null)
+                return null;
+
+            var converted = new Dictionary<string, object?>(rawParameters.Count);
+
+            foreach (var kvp in rawParameters)
+            {
+                var element = kvp.Value;
+                object? value;
+
+                switch (element.ValueKind)
+                {
+                    case JsonValueKind.Number:
+                        if (element.TryGetInt64(out var longValue))
+                        {
+                            value = longValue;
+                        }
+                        else
+                        {
+                            value = element.GetDouble();
+                        }
+                        break;
+                    case JsonValueKind.String:
+                        value = element.GetString();
+                        break;
+                    case JsonValueKind.True:
+                    case JsonValueKind.False:
+                        value = element.GetBoolean();
+                        break;
+                    case JsonValueKind.Null:
+                        value = null;
+                        break;
+                    default:
+                        // For complex types (objects/arrays), keep the JsonElement
+                        // so that downstream code can handle them explicitly if needed.
+                        value = element;
+                        break;
+                }
+
+                converted[kvp.Key] = value;
+            }
+
+            return converted;
         }
         catch (JsonException ex)
         {

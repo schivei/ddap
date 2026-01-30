@@ -97,9 +97,6 @@ builder.Services.AddSingleton<IRawQueryExecutor, DapperRawQueryExecutor>();
 // Add raw query services with custom policy
 builder.Services.AddRawQueryServices(new AllowAllRawQueryPolicy()); // Or your custom policy
 
-// Add gRPC
-builder.Services.AddGrpc();
-
 var app = builder.Build();
 
 // Map raw query service
@@ -151,7 +148,6 @@ Returns a single value (COUNT, SUM, MAX, etc.).
 message RawQueryRequest {
   string query = 1;
   string parameters_json = 2;  // Optional: {"@param": "value"}
-  ResultType result_type = 3;  // SCALAR
 }
 ```
 
@@ -160,8 +156,7 @@ message RawQueryRequest {
 var request = new RawQueryRequest
 {
     Query = "SELECT COUNT(*) FROM Users WHERE Active = @Active",
-    ParametersJson = "{\"Active\": true}",
-    ResultType = ResultType.Scalar
+    ParametersJson = "{\"Active\": true}"
 };
 
 var response = await client.ExecuteScalarAsync(request);
@@ -187,8 +182,7 @@ message SingleResult {
 var request = new RawQueryRequest
 {
     Query = "SELECT Id, Name, Email FROM Users WHERE Id = @Id",
-    ParametersJson = "{\"Id\": 123}",
-    ResultType = ResultType.Single
+    ParametersJson = "{\"Id\": 123}"
 };
 
 var response = await client.ExecuteSingleAsync(request);
@@ -218,8 +212,7 @@ message MultipleResult {
 var request = new RawQueryRequest
 {
     Query = "SELECT Id, Name FROM Users WHERE Active = @Active ORDER BY Name",
-    ParametersJson = "{\"Active\": true}",
-    ResultType = ResultType.Multiple
+    ParametersJson = "{\"Active\": true}"
 };
 
 var response = await client.ExecuteMultipleAsync(request);
@@ -247,8 +240,7 @@ message VoidResult {
 var request = new RawQueryRequest
 {
     Query = "UPDATE Users SET LastLogin = @LoginTime WHERE Id = @UserId",
-    ParametersJson = "{\"LoginTime\": \"2024-01-30T10:00:00Z\", \"UserId\": 123}",
-    ResultType = ResultType.Void
+    ParametersJson = "{\"LoginTime\": \"2024-01-30T10:00:00Z\", \"UserId\": 123}"
 };
 
 var response = await client.ExecuteNonQueryAsync(request);
@@ -276,8 +268,7 @@ The query analyzer automatically detects potential SQL injection patterns:
 var request = new RawQueryRequest
 {
     Query = "SELECT * FROM Users WHERE Name = @Name",
-    ParametersJson = "{\"Name\": \"John\"}",  // Safe!
-    ResultType = ResultType.Multiple
+    ParametersJson = "{\"Name\": \"John\"}"  // Safe!
 };
 ```
 

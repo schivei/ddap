@@ -90,7 +90,13 @@ public static class RawQueryBinarySerializer
             "System.Double" => (T?)(object)BitConverter.ToDouble(data, 0),
             "System.Single" => (T?)(object)BitConverter.ToSingle(data, 0),
             "System.Boolean" => (T?)(object)BitConverter.ToBoolean(data, 0),
-            "System.DateTime" => (T?)(object)DateTime.Parse(Encoding.UTF8.GetString(data)),
+            "System.DateTime" => (T?)
+                (object)
+                    DateTime.ParseExact(
+                        Encoding.UTF8.GetString(data),
+                        "O",
+                        System.Globalization.CultureInfo.InvariantCulture
+                    ),
             "System.Guid" => (T?)(object)new Guid(data),
             _ => JsonSerializer.Deserialize<T>(data),
         };

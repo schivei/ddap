@@ -49,17 +49,27 @@ public static class QueryAnalyzer
         RegexOptions.IgnoreCase | RegexOptions.Compiled
     );
 
-    // SQL injection detection patterns
-    private static readonly Regex[] InjectionPatterns = new[]
-    {
-        new Regex(@"('|(--)|;|\/\*|\*\/|xp_|sp_)", RegexOptions.Compiled),
-        new Regex(
-            @"(\b(OR|AND)\b\s*\d+\s*=\s*\d+)",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled
-        ),
-        new Regex(@"(UNION\s+SELECT)", RegexOptions.IgnoreCase | RegexOptions.Compiled),
-        new Regex(@"(DROP\s+TABLE)", RegexOptions.IgnoreCase | RegexOptions.Compiled),
-    };
+    // SQL injection detection patterns (static for performance)
+    private static readonly Regex OrAndInjectionPattern = new(
+        @"\b(OR|AND)\b\s*\d+\s*=\s*\d+",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
+    private static readonly Regex UnionSelectPattern = new(
+        @"UNION\s+SELECT",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
+    private static readonly Regex DropTablePattern = new(
+        @"DROP\s+TABLE",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
+    private static readonly Regex StatementTerminationPattern = new(
+        @";.*--",
+        RegexOptions.Compiled
+    );
+    private static readonly Regex ExtendedProcedurePattern = new(
+        @"xp_\w+",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
 
     /// <summary>
     /// Determines the type of SQL query.
@@ -108,24 +118,20 @@ public static class QueryAnalyzer
             return false;
 
         // Check for suspicious patterns that indicate SQL injection attempts
-        // These patterns look for common injection techniques
-        var suspiciousPatterns = new[]
-        {
-            new Regex(
-                @"\b(OR|AND)\b\s*\d+\s*=\s*\d+",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled
-            ), // OR 1=1, AND 1=1
-            new Regex(@"UNION\s+SELECT", RegexOptions.IgnoreCase | RegexOptions.Compiled), // UNION SELECT attacks
-            new Regex(@"DROP\s+TABLE", RegexOptions.IgnoreCase | RegexOptions.Compiled), // DROP TABLE
-            new Regex(@";.*--", RegexOptions.Compiled), // Statement termination with comment
-            new Regex(@"xp_\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled), // SQL Server extended procedures
-        };
+        if (OrAndInjectionPattern.IsMatch(query))
+            return true;
 
-        foreach (var pattern in suspiciousPatterns)
-        {
-            if (pattern.IsMatch(query))
-                return true;
-        }
+        if (UnionSelectPattern.IsMatch(query))
+            return true;
+
+        if (DropTablePattern.IsMatch(query))
+            return true;
+
+        if (StatementTerminationPattern.IsMatch(query))
+            return true;
+
+        if (ExtendedProcedurePattern.IsMatch(query))
+            return true;
 
         return false;
     }
@@ -157,7 +163,7 @@ public static class QueryAnalyzer
     {
         var fromMatch = Regex.Match(
             query,
-            @"\bFROM\s+([\w\.\[\]\s]+?)(?:\s+WHERE|\s+JOIN|\s+ORDER|\s+GROUP|\s+LIMIT|;|$)",
+            @"\bFROM\s+([\w\.\[\]]+)(?:\s+WHERE|\s+JOIN|\s+ORDER|\s+GROUP|\s+LIMIT|;|$)",
             RegexOptions.IgnoreCase
         );
         return fromMatch.Success ? fromMatch.Groups[1].Value.Trim().Trim('[', ']').Trim() : null;
