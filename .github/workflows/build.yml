@@ -86,6 +86,9 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Debug
 
+    - name: Install Playwright Browsers
+      run: pwsh tests/Ddap.Docs.Tests/bin/Debug/net10.0/playwright.ps1 install --with-deps
+
     - name: Run tests
       run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests"
       env:
