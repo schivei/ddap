@@ -20,7 +20,7 @@ export NUGET_API_KEY=sua-chave-api-aqui
 
 ## Adicionar Novo Pacote Deprecado
 
-Edite `unlist-deprecated-packages.sh` linha ~78:
+Edite `unlist-deprecated-packages.sh` linha ~74:
 
 ```bash
 DEPRECATED_PACKAGES=(

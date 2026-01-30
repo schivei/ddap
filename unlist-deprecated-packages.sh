@@ -4,7 +4,8 @@
 # This script identifies Ddap.* packages by schivei that are no longer in the current solution
 # and unlists all their versions from NuGet.org
 
-set -e  # Exit on error
+# Note: We don't use 'set -e' here because we handle errors explicitly
+# throughout the script to provide better error messages and summaries
 
 # Colors for output
 RED='\033[0;31m'
@@ -33,16 +34,27 @@ fi
 
 # Check if jq is available (for JSON parsing)
 if ! command -v jq &> /dev/null; then
-    echo -e "${YELLOW}Warning: jq is not installed. Installing...${NC}"
-    # Try to install jq
-    if command -v apt-get &> /dev/null; then
-        sudo apt-get update && sudo apt-get install -y jq
-    elif command -v yum &> /dev/null; then
-        sudo yum install -y jq
-    elif command -v brew &> /dev/null; then
-        brew install jq
+    echo -e "${YELLOW}Warning: jq is not installed.${NC}"
+    
+    # Check if we can use sudo (don't prompt for password)
+    if sudo -n true 2>/dev/null; then
+        echo -e "${YELLOW}Attempting to install jq...${NC}"
+        # Try to install jq
+        if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y jq
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y jq
+        elif command -v brew &> /dev/null; then
+            brew install jq
+        else
+            echo -e "${RED}Error: Could not install jq automatically.${NC}"
+            echo -e "${RED}Please install jq manually: https://stedolan.github.io/jq/download/${NC}"
+            exit 1
+        fi
     else
-        echo -e "${RED}Error: Could not install jq. Please install it manually.${NC}"
+        echo -e "${RED}Error: jq is required but not installed.${NC}"
+        echo -e "${RED}Please install jq manually: https://stedolan.github.io/jq/download/${NC}"
+        echo -e "${RED}Or run with sudo privileges if automatic installation is desired.${NC}"
         exit 1
     fi
 fi
@@ -87,10 +99,12 @@ get_package_versions() {
     # Log to stderr so it doesn't interfere with the return value
     echo -e "${BLUE}Fetching versions for ${package_id}...${NC}" >&2
     
-    # Fetch package versions
-    local response=$(curl -s "$url")
+    # Fetch package versions and capture exit code
+    local response
+    response=$(curl -s "$url")
+    local curl_exit=$?
     
-    if [ $? -ne 0 ] || [ -z "$response" ]; then
+    if [ $curl_exit -ne 0 ] || [ -z "$response" ]; then
         echo -e "${YELLOW}  Package ${package_id} not found on NuGet.org or error fetching${NC}" >&2
         return 1
     fi
@@ -121,22 +135,28 @@ unlist_package_version() {
     echo -e "${BLUE}  Unlisting ${package_id} version ${version}...${NC}"
     
     # Use dotnet nuget delete to unlist the package
-    local result=$(dotnet nuget delete "$package_id" "$version" \
+    # Capture output and exit code separately
+    local result
+    if result=$(dotnet nuget delete "$package_id" "$version" \
         --api-key "$NUGET_API_KEY" \
         --source https://api.nuget.org/v3/index.json \
-        --non-interactive 2>&1)
-    
-    if [ $? -eq 0 ]; then
+        --non-interactive 2>&1); then
         echo -e "${GREEN}    ✓ Successfully unlisted ${package_id} ${version}${NC}"
         return 0
     else
+        # Redact API key from error output for security
+        local sanitized_result="$result"
+        if [ -n "$NUGET_API_KEY" ]; then
+            sanitized_result="${sanitized_result//$NUGET_API_KEY/[REDACTED_API_KEY]}"
+        fi
+        
         # Check if already unlisted
-        if echo "$result" | grep -q "already unlisted\|does not exist"; then
+        if echo "$sanitized_result" | grep -q "already unlisted\|does not exist"; then
             echo -e "${YELLOW}    ⚠ ${package_id} ${version} already unlisted or doesn't exist${NC}"
             return 0
         else
             echo -e "${RED}    ✗ Failed to unlist ${package_id} ${version}${NC}"
-            echo -e "${RED}    Error: $result${NC}"
+            echo -e "${RED}    Error: $sanitized_result${NC}"
             return 1
         fi
     fi
@@ -152,10 +172,14 @@ unlist_all_versions() {
     echo -e "${BLUE}========================================${NC}"
     echo
     
-    # Get all versions
-    local versions=$(get_package_versions "$package_id")
+    # Get all versions and capture exit code immediately
+    local versions
+    local get_versions_exit_code
     
-    if [ $? -ne 0 ] || [ -z "$versions" ]; then
+    versions=$(get_package_versions "$package_id")
+    get_versions_exit_code=$?
+    
+    if [ "$get_versions_exit_code" -ne 0 ] || [ -z "$versions" ]; then
         echo -e "${YELLOW}No versions to unlist for ${package_id}${NC}"
         echo
         return 0
