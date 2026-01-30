@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="controlGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="url(#bgGradient)"/>
+  
+  <!-- Control knob/dial representing "Developer in Control" -->
+  <g transform="translate(128, 128)">
+    <!-- Main control circle -->
+    <circle cx="0" cy="0" r="70" fill="#1e293b" opacity="0.8"/>
+    <circle cx="0" cy="0" r="65" fill="url(#controlGradient)"/>
+    
+    <!-- Control indicator line -->
+    <line x1="0" y1="-40" x2="0" y2="-55" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Center hub -->
+    <circle cx="0" cy="0" r="12" fill="#1e293b"/>
+    <circle cx="0" cy="0" r="8" fill="#ffffff"/>
+    
+    <!-- Notches around the dial (representing different control options) -->
+    <g opacity="0.6">
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(45)"/>
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(90)"/>
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(135)"/>
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(180)"/>
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(225)"/>
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(270)"/>
+      <line x1="0" y1="-68" x2="0" y2="-75" stroke="#ffffff" stroke-width="3" stroke-linecap="round" transform="rotate(315)"/>
+    </g>
+  </g>
+  
+  <!-- Three arc segments representing REST, GraphQL, gRPC (bottom) -->
+  <g opacity="0.3">
+    <path d="M 40 180 Q 64 215, 128 220 Q 192 215, 216 180" stroke="#ffffff" stroke-width="4" fill="none"/>
+    <path d="M 50 190 Q 70 215, 128 218 Q 186 215, 206 190" stroke="#ffffff" stroke-width="3" fill="none"/>
+  </g>
+  
+  <!-- Data flow lines (top) -->
+  <g opacity="0.4">
+    <path d="M 60 60 L 128 40 L 196 60" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="60" cy="60" r="4" fill="#ffffff"/>
+    <circle cx="128" cy="40" r="4" fill="#ffffff"/>
+    <circle cx="196" cy="60" r="4" fill="#ffffff"/>
+  </g>
+</svg>

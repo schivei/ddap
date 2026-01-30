@@ -1,10 +1,14 @@
-# 🎛️ DDAP - Developer in Control
-
-> Dynamic Data API Provider. You control everything. We handle the boilerplate.
-
-[![NuGet](https://img.shields.io/nuget/v/Ddap.Core)](https://www.nuget.org/packages/Ddap.Core)
-[![License](https://img.shields.io/github/license/schivei/ddap)](LICENSE)
-[![Build](https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml)](https://github.com/schivei/ddap/actions)
+<div align="center">
+  <img src="icons/icon.svg" alt="DDAP Icon" width="128" height="128">
+  
+  # 🎛️ DDAP - Developer in Control
+  
+  > Dynamic Data API Provider. You control everything. We handle the boilerplate.
+  
+  [![NuGet](https://img.shields.io/nuget/v/Ddap.Core)](https://www.nuget.org/packages/Ddap.Core)
+  [![License](https://img.shields.io/github/license/schivei/ddap)](LICENSE)
+  [![Build](https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml)](https://github.com/schivei/ddap/actions)
+</div>
 
 ## ⚡ What is DDAP?
 
@@ -54,6 +58,96 @@ Unlike other frameworks that lock you into specific libraries, databases, or pat
 │  ✅ You own the architecture        │
 └─────────────────────────────────────┘
 ```
+
+---
+
+## 🤔 Why DDAP?
+
+### The Problem: Framework Lock-In
+
+Most API frameworks promise to speed up development, but they lock you into their choices:
+- 🔒 **Fixed Dependencies**: Forced to use specific libraries (Newtonsoft.Json, Entity Framework, etc.)
+- 🔒 **Hidden Magic**: Behavior you can't see, debug, or modify
+- 🔒 **Database Coupling**: Tight integration with specific database providers
+- 🔒 **Migration Pain**: When you need to change, you rewrite everything
+
+**Example**: Your framework uses Newtonsoft.Json internally. You want to switch to System.Text.Json for performance. You can't—it's hardcoded. You're stuck.
+
+### The DDAP Solution: Infrastructure, Not Opinion
+
+DDAP takes a radically different approach. We provide **infrastructure** without forcing any decisions:
+
+#### 🎯 Developer Empowerment
+**You make every technical decision.** Want to use Dapper? Use Dapper. Want Entity Framework? Use Entity Framework. Want to switch tomorrow? Switch. DDAP adapts to your choices—you never adapt to DDAP.
+
+```csharp
+// YOUR choice of database - any IDbConnection works
+builder.Services.AddDdap()
+    .AddDapper(() => new MySqlConnection(...))  // Or SqlConnection, NpgsqlConnection, etc.
+    .AddRest();
+
+// Later, switch to Entity Framework - no problem
+builder.Services.AddDdap()
+    .AddEntityFramework<MyDbContext>()
+    .AddRest();
+```
+
+#### 🪶 Minimal Dependencies
+**DDAP Core has ZERO opinionated dependencies.** We don't bundle:
+- ❌ No JSON library (you choose: System.Text.Json, Newtonsoft.Json, or custom)
+- ❌ No database drivers (you add only what you need)
+- ❌ No specific ORM version (you control your dependency graph)
+- ❌ No hidden middleware (you see and control everything)
+
+**Result**: Your application stays lean. You only pay for what you use.
+
+#### 🛡️ Resilient Abstraction
+**DDAP abstracts the right things:**
+- ✅ **Schema Discovery**: We handle reading database metadata
+- ✅ **Code Generation**: We generate boilerplate (controllers, queries, types)
+- ✅ **API Plumbing**: We provide base classes you can extend
+- ❌ **NOT Business Logic**: Your domain stays yours
+- ❌ **NOT Configuration**: You configure everything explicitly
+
+If DDAP disappeared tomorrow, your application would still work—you own the architecture.
+
+#### 🔄 Zero-Downtime Evolution
+**Auto-Reload System** detects schema changes and reloads without restarting:
+
+```csharp
+options.AutoReload = new AutoReloadOptions
+{
+    Enabled = true,
+    IdleTimeout = TimeSpan.FromMinutes(5),
+    Strategy = ReloadStrategy.InvalidateAndRebuild,  // You choose
+    Behavior = ReloadBehavior.ServeOldSchema         // You choose
+};
+```
+
+Deploy database changes. DDAP detects them. API updates automatically. Zero downtime.
+
+### When to Use DDAP
+
+✅ **Use DDAP when you want:**
+- Full control over your technology stack
+- To avoid framework lock-in
+- Minimal dependencies in your application
+- Explicit, debuggable configuration
+- Freedom to evolve your architecture
+- Database-first or schema-first development
+- Multiple API protocols (REST + GraphQL + gRPC)
+
+❌ **Don't use DDAP if:**
+- You prefer frameworks that make all decisions for you
+- You're building a non-database-backed API
+- You want an all-in-one solution with batteries included
+- You're okay with framework lock-in
+
+### The DDAP Philosophy
+
+> **"Framework features should be opt-in, not opt-out. Decisions should be explicit, not implicit. The developer should control the framework, not the other way around."**
+
+**DDAP is infrastructure you control, not a framework that controls you.**
 
 ---
 
