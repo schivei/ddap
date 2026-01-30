@@ -24,8 +24,9 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-echo "📊 Checking Coverage Per File (Class Level)"
-echo "Requirements: ${MIN_LINE_COVERAGE}% line coverage, ${MIN_BRANCH_COVERAGE}% branch coverage per file"
+echo "📊 Strict Per-File Coverage Validation (No Exceptions)"
+echo "Requirements: ${MIN_LINE_COVERAGE}% line coverage AND ${MIN_BRANCH_COVERAGE}% branch coverage"
+echo "Policy: ALL files must meet threshold - no exceptions, no special cases"
 echo "=============================================================================="
 
 # Extract overall summary
@@ -93,27 +94,26 @@ echo "  Failed: $FAILED_COUNT"
 echo ""
 
 if [ "$FAILED_COUNT" -gt 0 ]; then
-    echo "❌ COVERAGE CHECK FAILED!"
+    echo "❌ COVERAGE CHECK FAILED - Build Blocked!"
     echo ""
-    echo "$FAILED_COUNT file(s) below coverage thresholds:"
+    echo "⚠️  Policy: ALL files must meet ${MIN_LINE_COVERAGE}% line AND ${MIN_BRANCH_COVERAGE}% branch coverage"
+    echo "⚠️  No exceptions - the threshold applies equally to every file"
+    echo ""
+    echo "$FAILED_COUNT file(s) below minimum thresholds:"
     echo ""
     grep "^FAIL|" "$TEMP_RESULTS" | while IFS='|' read -r status file line branch; do
-        echo "  - $file (Line: ${line}%, Branch: ${branch}%)"
+        echo "  ❌ $file"
+        echo "      Line Coverage: ${line}% (required: ${MIN_LINE_COVERAGE}%)"
+        echo "      Branch Coverage: ${branch}% (required: ${MIN_BRANCH_COVERAGE}%)"
     done
     echo ""
-    echo "⚠️  These files need more test coverage to meet the requirements:"
-    echo "     - Minimum Line Coverage: ${MIN_LINE_COVERAGE}%"
-    echo "     - Minimum Branch Coverage: ${MIN_BRANCH_COVERAGE}%"
-    echo ""
-    echo "Excluded modules (not validated):"
-    echo "  - Test assemblies, Example projects"
-    echo "  - Generated code, Assembly info files"
-    echo "  - Templates (not application code)"
-    echo ""
-    echo "💡 To fix: Add more unit tests covering the failed files"
+    echo "🎯 Action Required:"
+    echo "   Add more unit tests to bring these files up to ${MIN_LINE_COVERAGE}%/${MIN_BRANCH_COVERAGE}%"
+    echo "   The coverage requirement is uniform - no files get special treatment"
     echo ""
     exit 1
 fi
 
-echo "✅ All ${TOTAL_FILES} files meet the ${MIN_LINE_COVERAGE}% line and ${MIN_BRANCH_COVERAGE}% branch coverage thresholds!"
+echo "✅ SUCCESS! All ${TOTAL_FILES} files meet the strict ${MIN_LINE_COVERAGE}%/${MIN_BRANCH_COVERAGE}% threshold!"
+echo "✅ No exceptions were made - every file passed the uniform coverage requirement"
 exit 0
