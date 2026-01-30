@@ -11,18 +11,18 @@ REPORT_FILE="coverage/report/Summary.json"
 MIN_LINE_COVERAGE=80
 MIN_BRANCH_COVERAGE=80
 
-# Files to skip from validation (protobuf generated + E2E-only)
-SKIP_FILES=(
-    "Ddap.Grpc.RawQuery.MultipleResult"
-    "Ddap.Grpc.RawQuery.RawqueryReflection"
-    "Ddap.Grpc.RawQuery.RawQueryRequest"
-    "Ddap.Grpc.RawQuery.RawQueryService"
-    "Ddap.Grpc.RawQuery.ScalarResult"
-    "Ddap.Grpc.RawQuery.SingleResult"
-    "Ddap.Grpc.RawQuery.VoidResult"
-    "Ddap.Grpc.RawQueryServiceExtensions"
-    "Ddap.Grpc.Services.RawQueryServiceImpl"
-)
+# Read files to skip from .coverage-ignore file
+SKIP_FILES=()
+if [ -f .coverage-ignore ]; then
+    while IFS= read -r pattern || [ -n "$pattern" ]; do
+        # Skip comments (lines starting with #) and empty lines
+        [[ "$pattern" =~ ^#.*$ ]] && continue
+        [[ -z "$pattern" ]] && continue
+        SKIP_FILES+=("$pattern")
+    done < .coverage-ignore
+else
+    echo "⚠️  Warning: .coverage-ignore file not found"
+fi
 
 if [ ! -f "$REPORT_FILE" ]; then
     echo "❌ Coverage report not found at $REPORT_FILE"
