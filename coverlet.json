@@ -20,7 +20,6 @@
     "[*.Example.*]*",
     "[Ddap.Data.EntityFramework]*",
     "[Ddap.Data.Dapper]*",
-    "[Ddap.Data]*",
     "[Ddap.Auth]*",
     "[Ddap.CodeGen]*",
     "[Ddap.Memory]*",
