@@ -192,6 +192,13 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Update version in Directory.Build.props for prerelease
+      run: |
+        # Append run number to VersionPrefix
+        sed -i "s/<\/VersionPrefix>/.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
+        # Force VersionSuffix to be prerelease regardless of configuration
+        perl -i -0777 -pe 's/<VersionSuffix\b[^>]*>.*?<\/VersionSuffix\s*>/<VersionSuffix>preview-${{ github.run_number }}<\/VersionSuffix>/gs' Directory.Build.props
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
