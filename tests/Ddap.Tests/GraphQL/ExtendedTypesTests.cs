@@ -116,11 +116,11 @@ public class ExtendedTypesTests
 
         // Act
         var valueNode = timeOnlyType.ParseValue(expectedTime);
-        string stringValue = (string)valueNode.Value!;
 
         // Assert
         valueNode.Should().NotBeNull();
         valueNode.Should().BeOfType<DateTimeValueNode>();
+        string stringValue = (string)valueNode.Value!;
         stringValue.Should().StartWith("14:30:00");
     }
 
