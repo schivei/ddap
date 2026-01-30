@@ -34,7 +34,6 @@ The following modules and files are excluded from coverage requirements:
 - **Data Providers** (`Ddap.Data.*`, `Ddap.Data.Dapper.*`) - Require actual database connections for full coverage
 - **Auth Module** (`Ddap.Auth`) - Requires complex authentication setup
 - **CodeGen Module** (`Ddap.CodeGen`) - Requires specific generation conditions
-- **Memory Module** (`Ddap.Memory`) - Simple in-memory implementation
 - **Subscriptions Module** (`Ddap.Subscriptions`) - Requires messaging infrastructure
 - **Test Projects** (`*.Tests.*`) - Test code is not covered
 - **Example Projects** (`*.Example.*`) - Examples are not covered
@@ -68,7 +67,7 @@ reportgenerator \
   -targetdir:"coverage/report" \
   -reporttypes:"Html;TextSummary;JsonSummary" \
   -verbosity:Info \
-  -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Memory.*;-Ddap.Subscriptions.*" \
+  -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Subscriptions.*" \
   -filefilters:"-*.g.cs;-*Generated*"
 ```
 
