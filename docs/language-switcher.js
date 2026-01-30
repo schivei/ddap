@@ -76,7 +76,7 @@
     /**
      * Apply language to document
      */
-    function applyLanguage(language) {
+    function applyLanguage(language, persist = true) {
         if (!SUPPORTED_LANGUAGES[language]) {
             console.warn(`Invalid language: ${language}. Using default.`);
             language = DEFAULT_LANGUAGE;
@@ -88,8 +88,10 @@
         document.documentElement.setAttribute('lang', language);
         document.documentElement.setAttribute('dir', langInfo.dir);
         
-        // Save to localStorage
-        localStorage.setItem(STORAGE_KEY, language);
+        // Save to localStorage if persist is true
+        if (persist) {
+            localStorage.setItem(STORAGE_KEY, language);
+        }
         
         // Update language switcher UI
         updateLanguageSwitcher(language);
@@ -345,7 +347,7 @@
         },
         reset: function() {
             localStorage.removeItem(STORAGE_KEY);
-            applyLanguage(getPreferredLanguage());
+            applyLanguage(getPreferredLanguage(), false);
         }
     };
 })();
