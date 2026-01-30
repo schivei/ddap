@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>Getting Started with DDAP - DDAP</title>
+    <title>Get Started | DDAP Documentation</title>
     
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="lib/github-markdown.min.css">
@@ -43,250 +43,7 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                
-        <div id="markdown-content" class="markdown-body">
-            <h1>Getting Started with DDAP</h1>
-<p>Welcome to DDAP (Dynamic Data API Provider)! This guide will help you get started with creating automatic REST, gRPC, and GraphQL APIs from your database schema.</p>
-<h2>What is DDAP?</h2>
-<p>DDAP is a .NET 10 library that automatically generates APIs from your database schema. Point it at your database, and it will:</p>
-<ul>
-<li>Load your database metadata (tables, columns, relationships, indexes)</li>
-<li>Generate REST, gRPC, and/or GraphQL endpoints</li>
-<li>Support JSON and XML content negotiation</li>
-<li>Provide extensibility through partial classes</li>
-</ul>
-<h2>Prerequisites</h2>
-<p>Before you begin, make sure you have:</p>
-<ul>
-<li><strong>.NET 10 SDK</strong> or later installed</li>
-<li>A database (SQL Server, MySQL, or PostgreSQL)</li>
-<li>Basic knowledge of ASP.NET Core</li>
-<li>Your database connection string</li>
-</ul>
-<h2>Quick Start with Templates</h2>
-<p>The fastest way to get started with DDAP is using the project template:</p>
-<pre><code class="language-bash"># Install the template
-dotnet new install Ddap.Templates
-
-# Create a new DDAP API (interactive mode will prompt you)
-dotnet new ddap-api --name MyDdapApi
-cd MyDdapApi
-
-# Run your API
-dotnet run
-</code></pre>
-<p>That's it! Your API is now running with auto-generated endpoints for your database.</p>
-<blockquote>
-<p><strong>Learn more:</strong> See <a href="./templates.md">Templates Guide</a> for detailed template options and customization.</p>
-</blockquote>
-<h2>Manual Installation</h2>
-<p>If you prefer manual setup or want to add DDAP to an existing project:</p>
-<h3>Step 1: Create a New ASP.NET Core Project</h3>
-<pre><code class="language-bash">dotnet new webapi -n MyDdapApi
-cd MyDdapApi
-</code></pre>
-<h3>Step 2: Install DDAP Packages</h3>
-<p>Install the core package and your choice of providers:</p>
-<pre><code class="language-bash"># Core package (required)
-dotnet add package Ddap.Core
-
-# Choose your database provider
-dotnet add package Ddap.Data.Dapper      # Generic Dapper provider
-# Plus your database-specific driver:
-dotnet add package Microsoft.Data.SqlClient    # For SQL Server
-# OR
-dotnet add package MySqlConnector              # For MySQL
-# OR
-dotnet add package Npgsql                      # For PostgreSQL
-
-# Choose your API providers (one or more)
-dotnet add package Ddap.Rest                       # REST API
-dotnet add package Ddap.GraphQL                    # GraphQL
-dotnet add package Ddap.Grpc                       # gRPC
-</code></pre>
-<h3>Step 3: Configure DDAP in Program.cs</h3>
-<p>Here's a minimal example using SQL Server:</p>
-<pre><code class="language-csharp">using Ddap.Core;
-using Ddap.Data.Dapper;
-using Ddap.Rest;
-using Microsoft.Data.SqlClient;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Configure DDAP
-var connectionString = "Server=localhost;Database=MyDb;Integrated Security=true;";
-builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = connectionString;
-    })
-    .AddDapper(() =&gt; new SqlConnection(connectionString))  // Use SQL Server with Dapper
-    .AddRest();            // Enable REST API
-
-var app = builder.Build();
-
-app.UseRouting();
-app.MapControllers();
-
-app.Run();
-</code></pre>
-<h3>Step 4: Run Your Application</h3>
-<pre><code class="language-bash">dotnet run
-</code></pre>
-<p>That's it! Your API is now running and automatically exposing your database entities.</p>
-<h2>Testing Your API</h2>
-<p>Once your application is running, you can test the generated endpoints:</p>
-<h3>Get All Entities</h3>
-<pre><code class="language-bash">curl http://localhost:5000/api/entity
-</code></pre>
-<p>This returns metadata about all tables/entities in your database.</p>
-<h3>Get Entity Metadata</h3>
-<pre><code class="language-bash">curl http://localhost:5000/api/entity/Users/metadata
-</code></pre>
-<p>Replace <code>Users</code> with the name of any table in your database.</p>
-<h3>Content Negotiation (REST)</h3>
-<p>DDAP supports multiple output formats. You control the serialization:</p>
-<pre><code class="language-bash"># JSON (default - you choose System.Text.Json or Newtonsoft.Json)
-curl -H "Accept: application/json" http://localhost:5000/api/entity
-
-# XML (if you configure XML formatters)
-curl -H "Accept: application/xml" http://localhost:5000/api/entity
-</code></pre>
-<h2>Adding More API Providers</h2>
-<p>DDAP supports multiple API protocols. You can add GraphQL and gRPC:</p>
-<pre><code class="language-csharp">using Ddap.Core;
-using Ddap.Data.Dapper;
-using Ddap.Rest;
-using Ddap.GraphQL;
-using Ddap.Grpc;
-using Microsoft.Data.SqlClient;
-
-var builder = WebApplication.CreateBuilder(args);
-
-var connectionString = "Server=localhost;Database=MyDb;...";
-builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = connectionString;
-    })
-    .AddDapper(() =&gt; new SqlConnection(connectionString))
-    .AddRest()      // REST API
-    .AddGraphQL()   // GraphQL
-    .AddGrpc();     // gRPC
-
-var app = builder.Build();
-
-app.UseRouting();
-app.MapControllers();
-app.MapGraphQL("/graphql");  // GraphQL endpoint
-
-app.Run();
-</code></pre>
-<h3>Testing GraphQL</h3>
-<p>Navigate to <code>http://localhost:5000/graphql</code> in your browser to access the GraphQL playground, or use curl:</p>
-<pre><code class="language-bash">curl -X POST http://localhost:5000/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query": "{ entities { name schema propertyCount } }"}'
-</code></pre>
-<h2>Using Different Database Providers</h2>
-<h3>MySQL</h3>
-<pre><code class="language-csharp">using Ddap.Data.Dapper;
-using MySqlConnector;
-
-var connectionString = "Server=localhost;Database=MyDb;User=root;Password=secret;";
-builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = connectionString;
-    })
-    .AddDapper(() =&gt; new MySqlConnection(connectionString))
-    .AddRest();
-</code></pre>
-<h3>PostgreSQL</h3>
-<pre><code class="language-csharp">using Ddap.Data.Dapper;
-using Npgsql;
-
-var connectionString = "Host=localhost;Database=MyDb;Username=postgres;Password=secret;";
-builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = connectionString;
-    })
-    .AddDapper(() =&gt; new NpgsqlConnection(connectionString))
-    .AddRest();
-</code></pre>
-<h3>Entity Framework Core</h3>
-<p>For database-agnostic Entity Framework Core support:</p>
-<pre><code class="language-csharp">using Ddap.Data.EntityFramework;
-
-builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = "...";
-    })
-    .AddEntityFramework&lt;MyDbContext&gt;()
-    .AddRest();
-</code></pre>
-<h2>Configuration from appsettings.json</h2>
-<p>It's recommended to store your connection string in <code>appsettings.json</code>:</p>
-<pre><code class="language-json">{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=MyDb;Integrated Security=true;"
-  }
-}
-</code></pre>
-<p>Then reference it in your code:</p>
-<pre><code class="language-csharp">var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = connectionString;
-    })
-    .AddDapper(() =&gt; new SqlConnection(connectionString))
-    .AddRest();
-</code></pre>
-<h2>Auto-Reload Configuration</h2>
-<p>Enable automatic schema reloading when your database changes:</p>
-<pre><code class="language-csharp">builder.Services
-    .AddDdap(options =&gt;
-    {
-        options.ConnectionString = connectionString;
-        options.AutoReload = new AutoReloadOptions
-        {
-            Enabled = true,
-            IdleTimeout = TimeSpan.FromMinutes(5)
-        };
-    })
-    .AddDapper(() =&gt; new SqlConnection(connectionString))
-    .AddRest();
-</code></pre>
-<p>When enabled, DDAP automatically detects database schema changes and reloads without restarting your application—perfect for rapid development and zero-downtime deployments.</p>
-<blockquote>
-<p><strong>Learn more:</strong> See <a href="./auto-reload.md">Auto-Reload Guide</a> for configuration options, strategies, and lifecycle hooks.</p>
-</blockquote>
-<h2>Next Steps</h2>
-<p>Now that you have DDAP running, explore these topics:</p>
-<ul>
-<li><strong><a href="./philosophy.md">Philosophy</a></strong> - Understand the "Developer in Control" philosophy</li>
-<li><strong><a href="./templates.md">Templates</a></strong> - Use project templates for faster setup</li>
-<li><strong><a href="./auto-reload.md">Auto-Reload</a></strong> - Configure automatic schema reloading</li>
-<li><strong><a href="./architecture.md">Architecture</a></strong> - Learn about DDAP's architecture and design</li>
-<li><strong><a href="./advanced.md">Advanced Usage</a></strong> - Extensibility, custom endpoints, and advanced patterns</li>
-<li><strong><a href="./database-providers.md">Database Providers</a></strong> - Deep dive into database provider options</li>
-<li><strong><a href="./api-providers.md">API Providers</a></strong> - Learn about REST, gRPC, and GraphQL providers</li>
-<li><strong><a href="./troubleshooting.md">Troubleshooting</a></strong> - Common issues and solutions</li>
-</ul>
-<h2>Example Application</h2>
-<p>Check out the complete example application at <a href="https://github.com/schivei/ddap/tree/main/examples/Ddap.Example.Api"><code>examples/Ddap.Example.Api</code></a> for a working reference implementation.</p>
-<h2>Need Help?</h2>
-<ul>
-<li><strong>Documentation</strong>: <a href="https://schivei.github.io/ddap">https://schivei.github.io/ddap</a></li>
-<li><strong>Issues</strong>: <a href="https://github.com/schivei/ddap/issues">GitHub Issues</a></li>
-<li><strong>Contributing</strong>: See <a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a></li>
-</ul>
-
-        </div>
-    
+                <!-- CONTENT_PLACEHOLDER -->
             </article>
         </div>
     </main>
@@ -331,17 +88,61 @@ builder.Services
 
     <script src="theme-toggle.js"></script>
     <script src="language-switcher.js"></script>
-    
-
     <script>
-        // Set current language
-        localStorage.setItem('ddap-language', 'en');
+        // Load and render markdown content with language support
+        const baseMdFile = 'get-started.md';
         
-        // Remove loading indicator since content is static
-        document.addEventListener('DOMContentLoaded', function() {
-            const loadingDiv = document.getElementById('loading');
-            if (loadingDiv) loadingDiv.style.display = 'none';
+        function getLocalizedMarkdownPath(baseFile) {
+            // Get current language from localStorage or default to 'en'
+            const currentLang = localStorage.getItem('ddap-language') || 'en';
+            
+            // If English, use the base file
+            if (currentLang === 'en') {
+                return baseFile;
+            }
+            
+            // For other languages, try to load from locales directory
+            // e.g., get-started.md -> locales/pt-br/get-started.md
+            return `locales/${currentLang}/${baseFile}`;
+        }
+        
+        function loadMarkdown(mdPath) {
+            fetch(mdPath)
+                .then(response => {
+                    if (!response.ok) {
+                        // If translated version not found, fallback to English
+                        if (mdPath.includes('locales/')) {
+                            console.log(`Translated version not found, loading English version`);
+                            return fetch(baseMdFile);
+                        }
+                        throw new Error('Document not found');
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    const rawHtml = marked.parse(markdown);
+                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+                    document.getElementById('content').innerHTML = sanitizedHtml;
+                    document.title = (document.querySelector('#content h1')?.textContent || 'Get Started') + ' | DDAP Documentation';
+                })
+                .catch(error => {
+                    document.getElementById('content').innerHTML = 
+                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
+                });
+        }
+        
+        // Load markdown with current language
+        const mdFile = getLocalizedMarkdownPath(baseMdFile);
+        loadMarkdown(mdFile);
+        
+        // Listen for language changes (when user switches language)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'ddap-language') {
+                // Reload content with new language
+                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
+                loadMarkdown(newMdFile);
+            }
         });
     </script>
-    </body>
+</body>
 </html>
