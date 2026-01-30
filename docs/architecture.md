@@ -485,12 +485,13 @@ Test with real databases using containers:
 
 ```csharp
 [Fact]
-public async Task SqlServerProvider_LoadsEntities()
+public async Task DapperProvider_LoadsEntities()
 {
     using var container = new SqlServerContainer();
     await container.StartAsync();
     
-    var provider = new SqlServerDapperProvider(connectionString);
+    var connectionString = container.GetConnectionString();
+    var provider = new DapperDataProvider(() => new SqlConnection(connectionString));
     var repository = new EntityRepository();
     
     await provider.LoadEntitiesAsync(repository);
