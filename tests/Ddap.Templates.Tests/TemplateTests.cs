@@ -24,13 +24,78 @@ public class TemplateTests : IDisposable
         var artifactsDir = Path.GetFullPath(
             Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "..", "artifacts")
         );
-        var templatePackages = Directory.GetFiles(artifactsDir, "Ddap.Templates.*.nupkg");
+
+        // Create artifacts directory if it doesn't exist
+        if (!Directory.Exists(artifactsDir))
+        {
+            Directory.CreateDirectory(artifactsDir);
+        }
+
+        // Check if package exists, if not build it
+        var templatePackages = Directory.Exists(artifactsDir)
+            ? Directory.GetFiles(artifactsDir, "Ddap.Templates.*.nupkg")
+            : Array.Empty<string>();
+
+        if (templatePackages.Length == 0)
+        {
+            // Build the template package
+            var projectPath = Path.GetFullPath(
+                Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    "src",
+                    "Ddap.Templates",
+                    "Ddap.Templates.csproj"
+                )
+            );
+            RunCommand(
+                "dotnet",
+                $"pack {projectPath} --configuration Debug --output {artifactsDir}",
+                Directory.GetCurrentDirectory()
+            );
+
+            // Get the newly created package
+            templatePackages = Directory.GetFiles(artifactsDir, "Ddap.Templates.*.nupkg");
+        }
+
         _templatePackagePath =
             templatePackages.OrderByDescending(File.GetLastWriteTime).FirstOrDefault()
-            ?? throw new FileNotFoundException("Template package not found in artifacts directory");
+            ?? throw new FileNotFoundException(
+                $"Template package not found in artifacts directory: {artifactsDir}"
+            );
+
+        // Try to uninstall existing template first (ignore errors)
+        try
+        {
+            RunCommand("dotnet", "new uninstall Ddap.Templates");
+        }
+        catch
+        {
+            // Template might not be installed, ignore
+        }
 
         // Install the template
-        RunCommand("dotnet", $"new install {_templatePackagePath}");
+        try
+        {
+            RunCommand("dotnet", $"new install {_templatePackagePath}");
+        }
+        catch (Exception ex)
+        {
+            // If installation fails with code 106 (already installed), try to uninstall and reinstall
+            if (ex.Message.Contains("106"))
+            {
+                RunCommand("dotnet", "new uninstall Ddap.Templates");
+                RunCommand("dotnet", $"new install {_templatePackagePath}");
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
 
     public void Dispose()
