@@ -116,7 +116,7 @@ public class ExtendedTypesTests
 
         // Act
         var valueNode = timeOnlyType.ParseValue(expectedTime);
-        string stringValue = (string)valueNode.Value;
+        string stringValue = (string)valueNode.Value!;
 
         // Assert
         valueNode.Should().NotBeNull();
