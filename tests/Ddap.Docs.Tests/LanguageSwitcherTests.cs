@@ -19,7 +19,7 @@ public class LanguageSwitcherTests : PageTest
     {
         // Clear localStorage before each test
         await Context.ClearCookiesAsync();
-        
+
         // Navigate to the documentation home page
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -44,7 +44,7 @@ public class LanguageSwitcherTests : PageTest
     {
         // Act: Get the current language from document
         var currentLang = await Page.GetAttributeAsync("html", "lang");
-        
+
         // Assert: Default language should be English
         Assert.That(currentLang, Is.EqualTo("en"), "Default language is not English");
     }
@@ -54,22 +54,25 @@ public class LanguageSwitcherTests : PageTest
     {
         // Arrange: Clear localStorage and set browser language to Portuguese
         await Page.EvaluateAsync("localStorage.clear()");
-        
+
         // Create a new page with Portuguese language setting
-        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
-        {
-            Locale = "pt-BR"
-        });
+        var context = await Browser.NewContextAsync(
+            new BrowserNewContextOptions { Locale = "pt-BR" }
+        );
         var page = await context.NewPageAsync();
-        
+
         // Act: Navigate to the page
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
+
         // Assert: Language should be detected as Portuguese
         var currentLang = await page.GetAttributeAsync("html", "lang");
-        Assert.That(currentLang, Is.EqualTo("pt-br"), "Browser language detection failed for Portuguese");
-        
+        Assert.That(
+            currentLang,
+            Is.EqualTo("pt-br"),
+            "Browser language detection failed for Portuguese"
+        );
+
         await page.CloseAsync();
         await context.CloseAsync();
     }
@@ -79,22 +82,21 @@ public class LanguageSwitcherTests : PageTest
     {
         // Arrange: Clear localStorage and set browser language to Spanish
         await Page.EvaluateAsync("localStorage.clear()");
-        
+
         // Create a new page with Spanish language setting
-        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
-        {
-            Locale = "es-ES"
-        });
+        var context = await Browser.NewContextAsync(
+            new BrowserNewContextOptions { Locale = "es-ES" }
+        );
         var page = await context.NewPageAsync();
-        
+
         // Act: Navigate to the page
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
+
         // Assert: Language should be detected as Spanish
         var currentLang = await page.GetAttributeAsync("html", "lang");
         Assert.That(currentLang, Is.EqualTo("es"), "Browser language detection failed for Spanish");
-        
+
         await page.CloseAsync();
         await context.CloseAsync();
     }
@@ -104,22 +106,28 @@ public class LanguageSwitcherTests : PageTest
     {
         // Arrange: Clear localStorage and set unsupported browser language
         await Page.EvaluateAsync("localStorage.clear()");
-        
+
         // Create a new page with unsupported language setting
-        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
-        {
-            Locale = "ko-KR" // Korean - not supported
-        });
+        var context = await Browser.NewContextAsync(
+            new BrowserNewContextOptions
+            {
+                Locale = "ko-KR", // Korean - not supported
+            }
+        );
         var page = await context.NewPageAsync();
-        
+
         // Act: Navigate to the page
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
+
         // Assert: Language should fallback to English
         var currentLang = await page.GetAttributeAsync("html", "lang");
-        Assert.That(currentLang, Is.EqualTo("en"), "Fallback to English failed for unsupported language");
-        
+        Assert.That(
+            currentLang,
+            Is.EqualTo("en"),
+            "Fallback to English failed for unsupported language"
+        );
+
         await page.CloseAsync();
         await context.CloseAsync();
     }
@@ -130,14 +138,14 @@ public class LanguageSwitcherTests : PageTest
         // Arrange: Open language dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
         Assert.That(languageToggle, Is.Not.Null);
-        
+
         await languageToggle!.ClickAsync();
         await Page.WaitForTimeoutAsync(300);
 
         // Act: Click on Portuguese option
         var ptOption = await Page.QuerySelectorAsync("[data-language='pt-br']");
         Assert.That(ptOption, Is.Not.Null, "Portuguese language option not found");
-        
+
         await ptOption!.ClickAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
@@ -152,14 +160,14 @@ public class LanguageSwitcherTests : PageTest
         // Arrange: Open language dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
         Assert.That(languageToggle, Is.Not.Null);
-        
+
         await languageToggle!.ClickAsync();
         await Page.WaitForTimeoutAsync(300);
 
         // Act: Click on Spanish option
         var esOption = await Page.QuerySelectorAsync("[data-language='es']");
         Assert.That(esOption, Is.Not.Null, "Spanish language option not found");
-        
+
         await esOption!.ClickAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
@@ -172,9 +180,11 @@ public class LanguageSwitcherTests : PageTest
     public async Task LocalStorage_PersistsLanguageChoice()
     {
         // Arrange: Switch to Portuguese
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             window.ddapLanguage.switch('pt-br');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(500);
 
         // Act: Get stored language from localStorage
@@ -190,32 +200,38 @@ public class LanguageSwitcherTests : PageTest
     public async Task LocalStorage_OverridesBrowserDetection()
     {
         // Arrange: Set Portuguese in localStorage
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             localStorage.setItem('ddap-language', 'pt-br');
-        ");
+        "
+        );
 
         // Create a new page with English browser language
-        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
-        {
-            Locale = "en-US"
-        });
+        var context = await Browser.NewContextAsync(
+            new BrowserNewContextOptions { Locale = "en-US" }
+        );
         var page = await context.NewPageAsync();
-        
+
         // Set localStorage in the new context
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await page.EvaluateAsync(@"
+        await page.EvaluateAsync(
+            @"
             localStorage.setItem('ddap-language', 'pt-br');
-        ");
-        
+        "
+        );
+
         // Act: Reload page
         await page.ReloadAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         // Assert: Saved preference should override browser language
         var currentLang = await page.GetAttributeAsync("html", "lang");
-        Assert.That(currentLang, Is.EqualTo("pt-br"), 
-            "localStorage preference did not override browser language");
-        
+        Assert.That(
+            currentLang,
+            Is.EqualTo("pt-br"),
+            "localStorage preference did not override browser language"
+        );
+
         await page.CloseAsync();
         await context.CloseAsync();
     }
@@ -250,7 +266,13 @@ public class LanguageSwitcherTests : PageTest
         await Page.WaitForTimeoutAsync(300);
 
         // Act: Click outside the dropdown
-        await Page.ClickAsync("body", new PageClickOptions { Position = new Position { X = 10, Y = 10 } });
+        await Page.ClickAsync(
+            "body",
+            new PageClickOptions
+            {
+                Position = new Position { X = 10, Y = 10 },
+            }
+        );
         await Page.WaitForTimeoutAsync(300);
 
         // Assert: Dropdown should be closed
@@ -268,8 +290,11 @@ public class LanguageSwitcherTests : PageTest
         var languageOptions = await Page.QuerySelectorAllAsync(".language-option");
 
         // Assert: All expected languages should be present
-        Assert.That(languageOptions.Count, Is.EqualTo(expectedLanguages.Length), 
-            "Not all languages are available in dropdown");
+        Assert.That(
+            languageOptions.Count,
+            Is.EqualTo(expectedLanguages.Length),
+            "Not all languages are available in dropdown"
+        );
 
         foreach (var lang in expectedLanguages)
         {
@@ -282,9 +307,11 @@ public class LanguageSwitcherTests : PageTest
     public async Task ActiveLanguage_IsMarked_InDropdown()
     {
         // Arrange: Switch to French
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             window.ddapLanguage.switch('fr');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(500);
 
         // Reload to ensure UI is updated
@@ -344,9 +371,11 @@ public class LanguageSwitcherTests : PageTest
     public async Task LanguageAPI_Reset_ClearsLocalStorage()
     {
         // Arrange: Set a language
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             window.ddapLanguage.switch('de');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(500);
 
         // Act: Reset language
@@ -364,9 +393,11 @@ public class LanguageSwitcherTests : PageTest
     public async Task ScreenReader_Announcement_OnLanguageChange()
     {
         // Arrange: Switch to Japanese
-        await Page.EvaluateAsync(@"
+        await Page.EvaluateAsync(
+            @"
             window.ddapLanguage.switch('ja');
-        ");
+        "
+        );
         await Page.WaitForTimeoutAsync(1000);
 
         // Act: Check for announcer element
@@ -432,8 +463,11 @@ public class LanguageSwitcherTests : PageTest
         var hreflangLinks = await Page.QuerySelectorAllAsync("link[hreflang]");
 
         // Assert: Should have hreflang tags for all languages + x-default
-        Assert.That(hreflangLinks.Count, Is.GreaterThanOrEqualTo(8), 
-            "Not all hreflang tags present");
+        Assert.That(
+            hreflangLinks.Count,
+            Is.GreaterThanOrEqualTo(8),
+            "Not all hreflang tags present"
+        );
 
         // Assert: Should have x-default
         var defaultLink = await Page.QuerySelectorAsync("link[hreflang='x-default']");
