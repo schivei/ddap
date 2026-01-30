@@ -16,7 +16,7 @@
             [Ddap.Example.*]*
             [*.Example.*]*
             
-            <!-- Exclude generated code -->
+            <!-- Exclude auto-generated code -->
             [*]*.g.cs
             [*]*Generated*
             [*]*Reflection*
@@ -30,6 +30,33 @@
             [Ddap.Grpc]Ddap.Grpc.RawQuery.SingleResult
             [Ddap.Grpc]Ddap.Grpc.RawQuery.VoidResult
             
+            <!-- Exclude source generators (auto-generate code, not testable) -->
+            [Ddap.CodeGen]*
+            
+            <!-- Exclude E2E-only code (requires running servers, tested via integration/E2E tests) -->
+            <!-- REST Controllers - require ASP.NET Core server -->
+            [*]*Controller
+            [Ddap.Rest]*Controller*
+            [Ddap.GraphQL]*Controller*
+            
+            <!-- gRPC Services - require gRPC server -->
+            [*]*ServiceImpl
+            [Ddap.Grpc]*Service.cs
+            [Ddap.Grpc]Ddap.Grpc.Services.*
+            
+            <!-- Dependency Injection Extensions - require DI container -->
+            [*]*ServiceExtensions
+            [*]*ServiceCollectionExtensions
+            
+            <!-- Middleware and Pipeline - require ASP.NET Core pipeline -->
+            [*]*Middleware
+            [*]*Pipeline*
+            
+            <!-- Specific E2E-only files -->
+            [Ddap.Grpc]Ddap.Grpc.RawQueryServiceExtensions
+            [Ddap.Grpc]Ddap.Grpc.EntityService
+            [Ddap.Rest]Ddap.Rest.EntityController*
+            
             <!-- Exclude specific files -->
             [*]*AssemblyInfo*
             [*]*AssemblyAttributes*
@@ -42,7 +69,7 @@
             [Ddap.Core]Ddap.Core.AutoReloadOptions
           </Exclude>
           
-          <!-- Include main application code -->
+          <!-- Include main application code (unit-testable business logic) -->
           <Include>
             [Ddap.Core]*
             [Ddap.Rest]*
@@ -56,7 +83,6 @@
             [Ddap.Data.EntityFramework]*
             [Ddap.Data.Dapper]*
             [Ddap.Auth]*
-            [Ddap.CodeGen]*
             [Ddap.Subscriptions]*
           </Include>
           
