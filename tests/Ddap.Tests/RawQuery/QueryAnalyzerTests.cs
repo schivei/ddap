@@ -40,7 +40,9 @@ public class QueryAnalyzerTests
     public void DetermineQueryType_Should_Return_Unknown_For_Null_Query()
     {
         // Act
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type
         var result = QueryAnalyzer.DetermineQueryType(null);
+#pragma warning restore CS8625
 
         // Assert
         result.Should().Be(QueryType.Unknown);
@@ -155,7 +157,9 @@ public class QueryAnalyzerTests
     public void ExtractTableName_Should_Return_Null_For_Empty_Query()
     {
         // Act
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type
         var result = QueryAnalyzer.ExtractTableName(null);
+#pragma warning restore CS8625
 
         // Assert
         result.Should().BeNull();
