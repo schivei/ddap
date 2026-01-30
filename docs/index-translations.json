@@ -2,6 +2,7 @@
   "en": {
     "title": "DDAP - Developer in Control | Dynamic Data API Provider",
     "description": "DDAP - Dynamic Data API Provider. Developer in Control. Generate REST, GraphQL, and gRPC APIs from your database without constraints.",
+    "skip_to_content": "Skip to main content",
     "hero_title": "DDAP",
     "hero_tagline": "Dynamic Data API Provider",
     "hero_subtitle": "You control everything. We handle the boilerplate.",
@@ -26,6 +27,7 @@
   "pt-br": {
     "title": "DDAP - Desenvolvedor no Controle | Provedor de API de Dados Dinâmicos",
     "description": "DDAP - Provedor de API de Dados Dinâmicos. Desenvolvedor no Controle. Gere APIs REST, GraphQL e gRPC do seu banco de dados sem restrições.",
+    "skip_to_content": "Pular para o conteúdo principal",
     "hero_title": "DDAP",
     "hero_tagline": "Provedor de API de Dados Dinâmicos",
     "hero_subtitle": "Você controla tudo. Nós cuidamos do boilerplate.",
@@ -50,6 +52,7 @@
   "es": {
     "title": "DDAP - Desarrollador en Control | Proveedor de API de Datos Dinámicos",
     "description": "DDAP - Proveedor de API de Datos Dinámicos. Desarrollador en Control. Genere APIs REST, GraphQL y gRPC desde su base de datos sin restricciones.",
+    "skip_to_content": "Saltar al contenido principal",
     "hero_title": "DDAP",
     "hero_tagline": "Proveedor de API de Datos Dinámicos",
     "hero_subtitle": "Tú controlas todo. Nosotros manejamos el código repetitivo.",
@@ -74,6 +77,7 @@
   "fr": {
     "title": "DDAP - Développeur aux Commandes | Fournisseur d'API de Données Dynamiques",
     "description": "DDAP - Fournisseur d'API de Données Dynamiques. Développeur aux Commandes. Générez des APIs REST, GraphQL et gRPC à partir de votre base de données sans contraintes.",
+    "skip_to_content": "Passer au contenu principal",
     "hero_title": "DDAP",
     "hero_tagline": "Fournisseur d'API de Données Dynamiques",
     "hero_subtitle": "Vous contrôlez tout. Nous gérons le code standard.",
@@ -98,6 +102,7 @@
   "de": {
     "title": "DDAP - Entwickler in Kontrolle | Dynamischer Daten-API-Provider",
     "description": "DDAP - Dynamischer Daten-API-Provider. Entwickler in Kontrolle. Generieren Sie REST-, GraphQL- und gRPC-APIs aus Ihrer Datenbank ohne Einschränkungen.",
+    "skip_to_content": "Zum Hauptinhalt springen",
     "hero_title": "DDAP",
     "hero_tagline": "Dynamischer Daten-API-Provider",
     "hero_subtitle": "Sie kontrollieren alles. Wir kümmern uns um den Boilerplate.",
@@ -122,6 +127,7 @@
   "ja": {
     "title": "DDAP - 開発者がコントロール | 動的データAPIプロバイダー",
     "description": "DDAP - 動的データAPIプロバイダー。開発者がコントロール。制約なしでデータベースからREST、GraphQL、gRPC APIを生成。",
+    "skip_to_content": "メインコンテンツにスキップ",
     "hero_title": "DDAP",
     "hero_tagline": "動的データAPIプロバイダー",
     "hero_subtitle": "すべてをあなたがコントロール。定型コードは私たちが処理します。",
@@ -146,6 +152,7 @@
   "zh": {
     "title": "DDAP - 开发者掌控 | 动态数据API提供者",
     "description": "DDAP - 动态数据API提供者。开发者掌控。从您的数据库生成REST、GraphQL和gRPC API，无任何限制。",
+    "skip_to_content": "跳转到主要内容",
     "hero_title": "DDAP",
     "hero_tagline": "动态数据API提供者",
     "hero_subtitle": "您控制一切。我们处理样板代码。",

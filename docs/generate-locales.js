@@ -34,6 +34,38 @@ function localizeHtml(html, lang, t) {
         `<meta name="description" content="${t.description}">`
     );
 
+    // Update hreflang URLs to use actual subdirectories
+    localized = localized.replace(
+        /href="https:\/\/schivei\.github\.io\/ddap\/index\.html\?lang=pt-br"/,
+        'href="https://schivei.github.io/ddap/pt-br/index.html"'
+    );
+    localized = localized.replace(
+        /href="https:\/\/schivei\.github\.io\/ddap\/index\.html\?lang=es"/,
+        'href="https://schivei.github.io/ddap/es/index.html"'
+    );
+    localized = localized.replace(
+        /href="https:\/\/schivei\.github\.io\/ddap\/index\.html\?lang=fr"/,
+        'href="https://schivei.github.io/ddap/fr/index.html"'
+    );
+    localized = localized.replace(
+        /href="https:\/\/schivei\.github\.io\/ddap\/index\.html\?lang=de"/,
+        'href="https://schivei.github.io/ddap/de/index.html"'
+    );
+    localized = localized.replace(
+        /href="https:\/\/schivei\.github\.io\/ddap\/index\.html\?lang=ja"/,
+        'href="https://schivei.github.io/ddap/ja/index.html"'
+    );
+    localized = localized.replace(
+        /href="https:\/\/schivei\.github\.io\/ddap\/index\.html\?lang=zh"/,
+        'href="https://schivei.github.io/ddap/zh/index.html"'
+    );
+
+    // Update Skip to content text
+    localized = localized.replace(
+        /<a href="#main-content" class="skip-to-content">Skip to main content<\/a>/,
+        `<a href="#main-content" class="skip-to-content">${t.skip_to_content}</a>`
+    );
+
     // Update hero tagline
     localized = localized.replace(
         /<p class="hero-tagline">Dynamic Data API Provider<\/p>/,
