@@ -34,9 +34,6 @@
             <!-- Exclude CodeGen (requires specific conditions) -->
             [Ddap.CodeGen]*
             
-            <!-- Exclude Memory module (simple in-memory implementation) -->
-            [Ddap.Memory]*
-            
             <!-- Exclude Subscriptions (requires messaging infrastructure) -->
             [Ddap.Subscriptions]*
             

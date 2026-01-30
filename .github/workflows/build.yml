@@ -105,7 +105,7 @@ jobs:
           -targetdir:"coverage/report" \
           -reporttypes:"Html;MarkdownSummaryGithub;Cobertura;JsonSummary" \
           -verbosity:Info \
-          -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Memory.*;-Ddap.Subscriptions.*" \
+          -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Subscriptions.*" \
           -filefilters:"-*.g.cs;-*Generated*"
     
     - name: Check Coverage Threshold Per Class
