@@ -24,9 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ddap.Core\Ddap.Core.csproj" />
-    <ProjectReference Include="..\..\src\Ddap.Data.Dapper.SqlServer\Ddap.Data.Dapper.SqlServer.csproj" />
-    <ProjectReference Include="..\..\src\Ddap.Data.Dapper.MySQL\Ddap.Data.Dapper.MySQL.csproj" />
-    <ProjectReference Include="..\..\src\Ddap.Data.Dapper.PostgreSQL\Ddap.Data.Dapper.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\src\Ddap.Rest\Ddap.Rest.csproj" />
     <ProjectReference Include="..\..\src\Ddap.GraphQL\Ddap.GraphQL.csproj" />
     <ProjectReference Include="..\..\src\Ddap.Grpc\Ddap.Grpc.csproj" />
