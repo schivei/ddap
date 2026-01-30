@@ -379,7 +379,7 @@ public class TemplateTests : IDisposable
             Directory.CreateDirectory(workingDirectory);
         }
 
-        var process = new Process
+        using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
@@ -398,10 +398,11 @@ public class TemplateTests : IDisposable
         var error = process.StandardError.ReadToEnd();
         process.WaitForExit();
 
-        if (process.ExitCode != 0 && !string.IsNullOrEmpty(error))
+        if (process.ExitCode != 0)
         {
+            var errorMessage = !string.IsNullOrEmpty(error) ? error : output;
             throw new Exception(
-                $"Command '{command} {arguments}' failed with exit code {process.ExitCode}. Error: {error}"
+                $"Command '{command} {arguments}' failed with exit code {process.ExitCode}. Error: {errorMessage}"
             );
         }
 
