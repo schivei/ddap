@@ -15,5 +15,6 @@
     <Nullable>enable</Nullable>
     <Description>Dapper data provider for DDAP with SQL Server optimized queries for enhanced metadata discovery.</Description>
     <PackageTags>ddap;dapper;sqlserver;data;provider;database;microsoft</PackageTags>
+    <PackageReadmeFile></PackageReadmeFile>
   </PropertyGroup>
 </Project>
