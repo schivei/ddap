@@ -291,25 +291,60 @@ public partial class EntityController
 
 ## 📦 Packages
 
+### Package Status Legend
+- ✅ **Stable**: Production-ready, fully tested
+- ⚠️ **Known Issues**: Functional with documented issues
+
+### Core Infrastructure
+
 | Package | Description | Status |
 |---------|-------------|--------|
-| **Server Packages** | | |
-| `Ddap.Core` | Core abstractions and infrastructure | ✅ Stable |
-| `Ddap.Data.Dapper` | Dapper provider (database-agnostic) | ✅ Stable |
+| `Ddap.Core` | Core abstractions, infrastructure, and base types | ✅ Stable |
+
+### Data Access Providers
+
+| Package | Description | Status |
+|---------|-------------|--------|
+| **Dapper-Based** | | |
+| `Ddap.Data.Dapper` | Dapper provider (works with ANY `IDbConnection`) | ✅ Stable |
+| **Entity Framework-Based** | | |
 | `Ddap.Data.EntityFramework` | Entity Framework Core provider | ✅ Stable |
-| `Ddap.Rest` | REST API endpoints | ✅ Stable |
-| `Ddap.GraphQL` | GraphQL API (HotChocolate) | ✅ Stable |
-| `Ddap.Grpc` | gRPC services | ✅ Stable |
-| `Ddap.Auth` | Authentication and authorization | ✅ Stable |
-| `Ddap.Subscriptions` | Real-time subscriptions | ✅ Stable |
-| `Ddap.Aspire` | .NET Aspire orchestration | ✅ Stable |
-| `Ddap.Templates` | Project templates | ✅ Stable |
-| `Ddap.CodeGen` | Source generators | ✅ Stable |
-| **Client Packages** | | |
-| `Ddap.Client.Core` | Core client abstractions | ✅ Stable |
-| `Ddap.Client.Rest` | REST client | ✅ Stable |
-| `Ddap.Client.GraphQL` | GraphQL client | ✅ Stable |
-| `Ddap.Client.Grpc` | gRPC client | ✅ Stable |
+
+> **Note**: Dapper is database-agnostic. Add your database driver (e.g., `Microsoft.Data.SqlClient`, `MySqlConnector`, `Npgsql`) alongside `Ddap.Data.Dapper`.
+
+### API Protocol Providers
+
+| Package | Description | Status |
+|---------|-------------|--------|
+| `Ddap.Rest` | REST API endpoints with full controller customization | ✅ Stable |
+| `Ddap.GraphQL` | GraphQL API powered by HotChocolate | ✅ Stable |
+| `Ddap.Grpc` | High-performance gRPC services | ✅ Stable |
+
+### Additional Features
+
+| Package | Description | Status |
+|---------|-------------|--------|
+| `Ddap.Auth` | JWT authentication and authorization | ✅ Stable |
+| `Ddap.Subscriptions` | Real-time subscriptions (WebSockets, SignalR) | ✅ Stable |
+| `Ddap.Aspire` | .NET Aspire orchestration and observability | ✅ Stable |
+
+### Development Tools
+
+| Package | Description | Status |
+|---------|-------------|--------|
+| `Ddap.Templates` | Project templates (`dotnet new ddap-api`) | ⚠️ [Known Issues](https://github.com/schivei/ddap/issues) |
+| `Ddap.CodeGen` | Source generators for boilerplate code | ✅ Stable |
+
+> **⚠️ Template Known Issue**: API provider flags (--rest, --graphql, --grpc) currently not working. Fix in progress. [Track issue](https://github.com/schivei/ddap/issues)
+
+### Client Libraries
+
+| Package | Description | Status |
+|---------|-------------|--------|
+| `Ddap.Client.Core` | Core client abstractions and base types | ✅ Stable |
+| `Ddap.Client.Rest` | Type-safe REST client | ✅ Stable |
+| `Ddap.Client.GraphQL` | GraphQL client with query building | ✅ Stable |
+| `Ddap.Client.Grpc` | High-performance gRPC client | ✅ Stable |
 
 ---
 
