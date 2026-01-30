@@ -124,9 +124,6 @@ builder.Services.AddSingleton<IRawQueryExecutor, EntityFrameworkRawQueryExecutor
 // Add raw query services
 builder.Services.AddRawQueryServices(new DefaultRawQueryPolicy());
 
-// Add gRPC
-builder.Services.AddGrpc();
-
 var app = builder.Build();
 
 // Map raw query service
