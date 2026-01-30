@@ -45,4 +45,27 @@ public class DdapGrpcClientTests
         client.Dispose();
         client.Dispose();
     }
+
+    [Fact]
+    public void IsConnected_WhenChannelNotCreated_ShouldReturnFalse()
+    {
+        // Arrange
+        var options = new DdapClientOptions { BaseUrl = "https://api.example.com" };
+        var client = new DdapGrpcClient(options);
+
+        // Act & Assert - should return false when channel hasn't been created yet
+        client.IsConnected.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Dispose_WhenChannelNotCreated_ShouldNotThrow()
+    {
+        // Arrange
+        var options = new DdapClientOptions { BaseUrl = "https://api.example.com" };
+        var client = new DdapGrpcClient(options);
+
+        // Act & Assert - should not throw when channel was never created
+        Action act = () => client.Dispose();
+        act.Should().NotThrow();
+    }
 }

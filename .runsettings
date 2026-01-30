@@ -19,6 +19,16 @@
             <!-- Exclude generated code -->
             [*]*.g.cs
             [*]*Generated*
+            [*]*Reflection*
+            
+            <!-- Exclude protobuf generated code -->
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.MultipleResult
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.RawqueryReflection
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.RawQueryRequest
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.RawQueryService
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.ScalarResult
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.SingleResult
+            [Ddap.Grpc]Ddap.Grpc.RawQuery.VoidResult
             
             <!-- Exclude specific files -->
             [*]*AssemblyInfo*
