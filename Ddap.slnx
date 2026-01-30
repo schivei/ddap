@@ -5,7 +5,6 @@
     <Project Path="src/Ddap.CodeGen/Ddap.CodeGen.csproj" />
     <Project Path="src/Ddap.Core/Ddap.Core.csproj" />
     <Project Path="src/Ddap.Data.EntityFramework/Ddap.Data.EntityFramework.csproj" />
-    <Project Path="src/Ddap.Data/Ddap.Data.csproj" />
     <Project Path="src/Ddap.GraphQL/Ddap.GraphQL.csproj" />
     <Project Path="src/Ddap.Grpc/Ddap.Grpc.csproj" />
     <Project Path="src/Ddap.Memory/Ddap.Memory.csproj" />

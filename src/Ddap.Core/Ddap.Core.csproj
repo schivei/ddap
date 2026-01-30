@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Ddap.Data" />
     <InternalsVisibleTo Include="Ddap.Data.Dapper" />
     <InternalsVisibleTo Include="Ddap.Data.EntityFramework" />
   </ItemGroup>
