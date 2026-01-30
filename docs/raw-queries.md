@@ -384,7 +384,7 @@ WARNING: Potential SQL injection detected: SELECT * FROM Users WHERE 1=1
    
    // ✅ DO THIS INSTEAD
    Query = "SELECT * FROM Users WHERE Name = @Name",
-   ParametersJson = "{\"Name\": \"" + userName + "\"}"
+   ParametersJson = System.Text.Json.JsonSerializer.Serialize(new { Name = userName })
    ```
 
 2. **Don't use AllowAllRawQueryPolicy in production** without proper authorization
