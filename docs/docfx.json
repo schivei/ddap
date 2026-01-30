@@ -38,14 +38,67 @@
           "toc.yml"
         ],
         "exclude": [
-          "_site/**"
+          "_site/**",
+          "locales/**"
         ]
+      },
+      {
+        "files": [
+          "locales/en/*.md",
+          "locales/en/toc.yml"
+        ],
+        "dest": "."
+      },
+      {
+        "files": [
+          "locales/pt-br/*.md",
+          "locales/pt-br/toc.yml"
+        ],
+        "dest": "pt-br"
+      },
+      {
+        "files": [
+          "locales/es/*.md",
+          "locales/es/toc.yml"
+        ],
+        "dest": "es"
+      },
+      {
+        "files": [
+          "locales/fr/*.md",
+          "locales/fr/toc.yml"
+        ],
+        "dest": "fr"
+      },
+      {
+        "files": [
+          "locales/de/*.md",
+          "locales/de/toc.yml"
+        ],
+        "dest": "de"
+      },
+      {
+        "files": [
+          "locales/ja/*.md",
+          "locales/ja/toc.yml"
+        ],
+        "dest": "ja"
+      },
+      {
+        "files": [
+          "locales/zh/*.md",
+          "locales/zh/toc.yml"
+        ],
+        "dest": "zh"
       }
     ],
     "resource": [
       {
         "files": [
-          "images/**"
+          "images/**",
+          "*.js",
+          "*.css",
+          "*.html"
         ]
       }
     ],
@@ -76,6 +129,36 @@
       "_gitContribute": {
         "repo": "https://github.com/schivei/ddap",
         "branch": "main"
+      },
+      "_languages": {
+        "en": {
+          "name": "English",
+          "path": "/"
+        },
+        "pt-br": {
+          "name": "Português (Brasil)",
+          "path": "/pt-br/"
+        },
+        "es": {
+          "name": "Español",
+          "path": "/es/"
+        },
+        "fr": {
+          "name": "Français",
+          "path": "/fr/"
+        },
+        "de": {
+          "name": "Deutsch",
+          "path": "/de/"
+        },
+        "ja": {
+          "name": "日本語",
+          "path": "/ja/"
+        },
+        "zh": {
+          "name": "中文",
+          "path": "/zh/"
+        }
       }
     }
   }

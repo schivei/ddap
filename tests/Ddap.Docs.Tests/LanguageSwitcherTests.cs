@@ -1,0 +1,442 @@
+using Microsoft.Playwright;
+using Microsoft.Playwright.NUnit;
+using NUnit.Framework;
+
+namespace Ddap.Docs.Tests;
+
+/// <summary>
+/// Language switcher tests for DDAP documentation website.
+/// Tests language detection, switching, localStorage persistence, and fallback.
+/// </summary>
+[Parallelizable(ParallelScope.Self)]
+[TestFixture]
+public class LanguageSwitcherTests : PageTest
+{
+    private const string DocsBaseUrl = "http://localhost:8000";
+
+    [SetUp]
+    public async Task Setup()
+    {
+        // Clear localStorage before each test
+        await Context.ClearCookiesAsync();
+        
+        // Navigate to the documentation home page
+        await Page.GotoAsync($"{DocsBaseUrl}/index.html");
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    [Test]
+    public async Task LanguageSwitcher_ExistsOnPage()
+    {
+        // Assert: Language switcher should be present
+        var languageSwitcher = await Page.QuerySelectorAsync("#language-switcher");
+        Assert.That(languageSwitcher, Is.Not.Null, "Language switcher not found on page");
+
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        Assert.That(languageToggle, Is.Not.Null, "Language toggle button not found");
+
+        var languageDropdown = await Page.QuerySelectorAsync("#language-dropdown");
+        Assert.That(languageDropdown, Is.Not.Null, "Language dropdown not found");
+    }
+
+    [Test]
+    public async Task DefaultLanguage_IsEnglish()
+    {
+        // Act: Get the current language from document
+        var currentLang = await Page.GetAttributeAsync("html", "lang");
+        
+        // Assert: Default language should be English
+        Assert.That(currentLang, Is.EqualTo("en"), "Default language is not English");
+    }
+
+    [Test]
+    public async Task BrowserLanguageDetection_Portuguese()
+    {
+        // Arrange: Clear localStorage and set browser language to Portuguese
+        await Page.EvaluateAsync("localStorage.clear()");
+        
+        // Create a new page with Portuguese language setting
+        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            Locale = "pt-BR"
+        });
+        var page = await context.NewPageAsync();
+        
+        // Act: Navigate to the page
+        await page.GotoAsync($"{DocsBaseUrl}/index.html");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        
+        // Assert: Language should be detected as Portuguese
+        var currentLang = await page.GetAttributeAsync("html", "lang");
+        Assert.That(currentLang, Is.EqualTo("pt-br"), "Browser language detection failed for Portuguese");
+        
+        await page.CloseAsync();
+        await context.CloseAsync();
+    }
+
+    [Test]
+    public async Task BrowserLanguageDetection_Spanish()
+    {
+        // Arrange: Clear localStorage and set browser language to Spanish
+        await Page.EvaluateAsync("localStorage.clear()");
+        
+        // Create a new page with Spanish language setting
+        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            Locale = "es-ES"
+        });
+        var page = await context.NewPageAsync();
+        
+        // Act: Navigate to the page
+        await page.GotoAsync($"{DocsBaseUrl}/index.html");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        
+        // Assert: Language should be detected as Spanish
+        var currentLang = await page.GetAttributeAsync("html", "lang");
+        Assert.That(currentLang, Is.EqualTo("es"), "Browser language detection failed for Spanish");
+        
+        await page.CloseAsync();
+        await context.CloseAsync();
+    }
+
+    [Test]
+    public async Task BrowserLanguageDetection_Fallback_ToEnglish()
+    {
+        // Arrange: Clear localStorage and set unsupported browser language
+        await Page.EvaluateAsync("localStorage.clear()");
+        
+        // Create a new page with unsupported language setting
+        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            Locale = "ko-KR" // Korean - not supported
+        });
+        var page = await context.NewPageAsync();
+        
+        // Act: Navigate to the page
+        await page.GotoAsync($"{DocsBaseUrl}/index.html");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        
+        // Assert: Language should fallback to English
+        var currentLang = await page.GetAttributeAsync("html", "lang");
+        Assert.That(currentLang, Is.EqualTo("en"), "Fallback to English failed for unsupported language");
+        
+        await page.CloseAsync();
+        await context.CloseAsync();
+    }
+
+    [Test]
+    public async Task LanguageSwitch_ToPortuguese_UpdatesUI()
+    {
+        // Arrange: Open language dropdown
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        Assert.That(languageToggle, Is.Not.Null);
+        
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Act: Click on Portuguese option
+        var ptOption = await Page.QuerySelectorAsync("[data-language='pt-br']");
+        Assert.That(ptOption, Is.Not.Null, "Portuguese language option not found");
+        
+        await ptOption!.ClickAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        // Assert: Language should be changed to Portuguese
+        var currentLang = await Page.GetAttributeAsync("html", "lang");
+        Assert.That(currentLang, Is.EqualTo("pt-br"), "Language was not switched to Portuguese");
+    }
+
+    [Test]
+    public async Task LanguageSwitch_ToSpanish_UpdatesUI()
+    {
+        // Arrange: Open language dropdown
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        Assert.That(languageToggle, Is.Not.Null);
+        
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Act: Click on Spanish option
+        var esOption = await Page.QuerySelectorAsync("[data-language='es']");
+        Assert.That(esOption, Is.Not.Null, "Spanish language option not found");
+        
+        await esOption!.ClickAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        // Assert: Language should be changed to Spanish
+        var currentLang = await Page.GetAttributeAsync("html", "lang");
+        Assert.That(currentLang, Is.EqualTo("es"), "Language was not switched to Spanish");
+    }
+
+    [Test]
+    public async Task LocalStorage_PersistsLanguageChoice()
+    {
+        // Arrange: Switch to Portuguese
+        await Page.EvaluateAsync(@"
+            window.ddapLanguage.switch('pt-br');
+        ");
+        await Page.WaitForTimeoutAsync(500);
+
+        // Act: Get stored language from localStorage
+        var storedLanguage = await Page.EvaluateAsync<string>(
+            "localStorage.getItem('ddap-language')"
+        );
+
+        // Assert: Language should be stored in localStorage
+        Assert.That(storedLanguage, Is.EqualTo("pt-br"), "Language not persisted in localStorage");
+    }
+
+    [Test]
+    public async Task LocalStorage_OverridesBrowserDetection()
+    {
+        // Arrange: Set Portuguese in localStorage
+        await Page.EvaluateAsync(@"
+            localStorage.setItem('ddap-language', 'pt-br');
+        ");
+
+        // Create a new page with English browser language
+        var context = await Browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            Locale = "en-US"
+        });
+        var page = await context.NewPageAsync();
+        
+        // Set localStorage in the new context
+        await page.GotoAsync($"{DocsBaseUrl}/index.html");
+        await page.EvaluateAsync(@"
+            localStorage.setItem('ddap-language', 'pt-br');
+        ");
+        
+        // Act: Reload page
+        await page.ReloadAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        // Assert: Saved preference should override browser language
+        var currentLang = await page.GetAttributeAsync("html", "lang");
+        Assert.That(currentLang, Is.EqualTo("pt-br"), 
+            "localStorage preference did not override browser language");
+        
+        await page.CloseAsync();
+        await context.CloseAsync();
+    }
+
+    [Test]
+    public async Task LanguageDropdown_Opens_OnClick()
+    {
+        // Arrange: Get language toggle button
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        Assert.That(languageToggle, Is.Not.Null);
+
+        // Act: Click the toggle button
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Assert: Dropdown should be visible
+        var dropdown = await Page.QuerySelectorAsync("#language-dropdown");
+        var isVisible = await dropdown!.IsVisibleAsync();
+        Assert.That(isVisible, Is.True, "Language dropdown did not open");
+
+        // Assert: aria-expanded should be true
+        var ariaExpanded = await languageToggle.GetAttributeAsync("aria-expanded");
+        Assert.That(ariaExpanded, Is.EqualTo("true"), "aria-expanded not set correctly");
+    }
+
+    [Test]
+    public async Task LanguageDropdown_Closes_OnOutsideClick()
+    {
+        // Arrange: Open the dropdown
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Act: Click outside the dropdown
+        await Page.ClickAsync("body", new PageClickOptions { Position = new Position { X = 10, Y = 10 } });
+        await Page.WaitForTimeoutAsync(300);
+
+        // Assert: Dropdown should be closed
+        var ariaExpanded = await languageToggle.GetAttributeAsync("aria-expanded");
+        Assert.That(ariaExpanded, Is.EqualTo("false"), "Dropdown did not close on outside click");
+    }
+
+    [Test]
+    public async Task AllLanguages_AreAvailable_InDropdown()
+    {
+        // Arrange: Expected languages
+        var expectedLanguages = new[] { "en", "pt-br", "es", "fr", "de", "ja", "zh" };
+
+        // Act: Get all language options
+        var languageOptions = await Page.QuerySelectorAllAsync(".language-option");
+
+        // Assert: All expected languages should be present
+        Assert.That(languageOptions.Count, Is.EqualTo(expectedLanguages.Length), 
+            "Not all languages are available in dropdown");
+
+        foreach (var lang in expectedLanguages)
+        {
+            var option = await Page.QuerySelectorAsync($"[data-language='{lang}']");
+            Assert.That(option, Is.Not.Null, $"Language option for {lang} not found");
+        }
+    }
+
+    [Test]
+    public async Task ActiveLanguage_IsMarked_InDropdown()
+    {
+        // Arrange: Switch to French
+        await Page.EvaluateAsync(@"
+            window.ddapLanguage.switch('fr');
+        ");
+        await Page.WaitForTimeoutAsync(500);
+
+        // Reload to ensure UI is updated
+        await Page.ReloadAsync();
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForTimeoutAsync(500);
+
+        // Act: Open dropdown
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Assert: French option should have active class
+        var frOption = await Page.QuerySelectorAsync("[data-language='fr']");
+        var hasActiveClass = await frOption!.EvaluateAsync<bool>(
+            "el => el.classList.contains('active')"
+        );
+        Assert.That(hasActiveClass, Is.True, "Active language not marked in dropdown");
+
+        // Assert: French option should have aria-current
+        var ariaCurrent = await frOption.GetAttributeAsync("aria-current");
+        Assert.That(ariaCurrent, Is.EqualTo("true"), "aria-current not set for active language");
+    }
+
+    [Test]
+    public async Task LanguageAPI_IsAccessible_Globally()
+    {
+        // Act: Check if global API is available
+        var apiExists = await Page.EvaluateAsync<bool>(
+            "typeof window.ddapLanguage !== 'undefined'"
+        );
+
+        // Assert: API should be available
+        Assert.That(apiExists, Is.True, "Global language API not available");
+
+        // Assert: API methods should exist
+        var hasSwitchMethod = await Page.EvaluateAsync<bool>(
+            "typeof window.ddapLanguage.switch === 'function'"
+        );
+        var hasCurrentMethod = await Page.EvaluateAsync<bool>(
+            "typeof window.ddapLanguage.current === 'function'"
+        );
+        var hasSupportedMethod = await Page.EvaluateAsync<bool>(
+            "typeof window.ddapLanguage.supported === 'function'"
+        );
+        var hasResetMethod = await Page.EvaluateAsync<bool>(
+            "typeof window.ddapLanguage.reset === 'function'"
+        );
+
+        Assert.That(hasSwitchMethod, Is.True, "switch method not available");
+        Assert.That(hasCurrentMethod, Is.True, "current method not available");
+        Assert.That(hasSupportedMethod, Is.True, "supported method not available");
+        Assert.That(hasResetMethod, Is.True, "reset method not available");
+    }
+
+    [Test]
+    public async Task LanguageAPI_Reset_ClearsLocalStorage()
+    {
+        // Arrange: Set a language
+        await Page.EvaluateAsync(@"
+            window.ddapLanguage.switch('de');
+        ");
+        await Page.WaitForTimeoutAsync(500);
+
+        // Act: Reset language
+        await Page.EvaluateAsync("window.ddapLanguage.reset()");
+        await Page.WaitForTimeoutAsync(500);
+
+        // Assert: localStorage should be cleared
+        var storedLanguage = await Page.EvaluateAsync<string?>(
+            "localStorage.getItem('ddap-language')"
+        );
+        Assert.That(storedLanguage, Is.Null, "localStorage not cleared after reset");
+    }
+
+    [Test]
+    public async Task ScreenReader_Announcement_OnLanguageChange()
+    {
+        // Arrange: Switch to Japanese
+        await Page.EvaluateAsync(@"
+            window.ddapLanguage.switch('ja');
+        ");
+        await Page.WaitForTimeoutAsync(1000);
+
+        // Act: Check for announcer element
+        var announcer = await Page.QuerySelectorAsync("#language-announcer");
+
+        // Assert: Announcer should exist
+        Assert.That(announcer, Is.Not.Null, "Screen reader announcer not found");
+
+        // Assert: Announcer should have proper ARIA attributes
+        var role = await announcer!.GetAttributeAsync("role");
+        var ariaLive = await announcer.GetAttributeAsync("aria-live");
+        var ariaAtomic = await announcer.GetAttributeAsync("aria-atomic");
+
+        Assert.That(role, Is.EqualTo("status"), "Announcer role incorrect");
+        Assert.That(ariaLive, Is.EqualTo("polite"), "aria-live not set correctly");
+        Assert.That(ariaAtomic, Is.EqualTo("true"), "aria-atomic not set correctly");
+    }
+
+    [Test]
+    public async Task KeyboardNavigation_ArrowKeys_InDropdown()
+    {
+        // Arrange: Open dropdown
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Focus first option
+        var firstOption = await Page.QuerySelectorAsync(".language-option:first-child");
+        await firstOption!.FocusAsync();
+
+        // Act: Press ArrowDown
+        await Page.Keyboard.PressAsync("ArrowDown");
+        await Page.WaitForTimeoutAsync(100);
+
+        // Assert: Focus should move to second option
+        var focusedElement = await Page.EvaluateAsync<string>(
+            "document.activeElement.getAttribute('data-language')"
+        );
+        Assert.That(focusedElement, Is.Not.EqualTo("en"), "Arrow key navigation not working");
+    }
+
+    [Test]
+    public async Task KeyboardNavigation_Escape_ClosesDropdown()
+    {
+        // Arrange: Open dropdown
+        var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        await languageToggle!.ClickAsync();
+        await Page.WaitForTimeoutAsync(300);
+
+        // Act: Press Escape
+        await Page.Keyboard.PressAsync("Escape");
+        await Page.WaitForTimeoutAsync(300);
+
+        // Assert: Dropdown should be closed
+        var ariaExpanded = await languageToggle.GetAttributeAsync("aria-expanded");
+        Assert.That(ariaExpanded, Is.EqualTo("false"), "Escape key did not close dropdown");
+    }
+
+    [Test]
+    public async Task HreflangTags_PresentInHead()
+    {
+        // Act: Get all link tags with hreflang
+        var hreflangLinks = await Page.QuerySelectorAllAsync("link[hreflang]");
+
+        // Assert: Should have hreflang tags for all languages + x-default
+        Assert.That(hreflangLinks.Count, Is.GreaterThanOrEqualTo(8), 
+            "Not all hreflang tags present");
+
+        // Assert: Should have x-default
+        var defaultLink = await Page.QuerySelectorAsync("link[hreflang='x-default']");
+        Assert.That(defaultLink, Is.Not.Null, "x-default hreflang tag not found");
+    }
+}
