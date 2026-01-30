@@ -17,5 +17,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>gRPC API provider for DDAP with high-performance binary protocol support, HTTP/2, streaming, and Protocol Buffers.</Description>
+    <PackageTags>ddap;grpc;rpc;protobuf;http2;streaming;api</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>
