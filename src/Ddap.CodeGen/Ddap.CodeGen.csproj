@@ -11,5 +11,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <Description>Source code generator for DDAP that provides compile-time code generation for entity types and API endpoints.</Description>
+    <PackageTags>ddap;codegen;source-generator;roslyn;compiler;analyzer</PackageTags>
+    <PackageReadmeFile></PackageReadmeFile>
   </PropertyGroup>
 </Project>

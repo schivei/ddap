@@ -13,5 +13,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Dapper data provider for DDAP with PostgreSQL optimized queries for enhanced metadata discovery.</Description>
+    <PackageTags>ddap;dapper;postgresql;postgres;data;provider;database</PackageTags>
+    <PackageReadmeFile></PackageReadmeFile>
   </PropertyGroup>
 </Project>
