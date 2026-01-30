@@ -126,6 +126,7 @@ jobs:
           echo "✅ Coverage report generated successfully"
           cat coverage/report/SummaryGithub.md
         else
+          mkdir -p coverage/report
           echo "## Code Coverage Report" > coverage/report/SummaryGithub.md
           echo "" >> coverage/report/SummaryGithub.md
           echo "⚠️ Coverage report could not be generated." >> coverage/report/SummaryGithub.md
