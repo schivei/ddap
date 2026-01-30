@@ -121,7 +121,14 @@ public class DdapRestClient : IDdapClient
         }
 
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<TEntity>(responseContent, _jsonOptions)!;
+        var result = JsonSerializer.Deserialize<TEntity>(responseContent, _jsonOptions);
+
+        if (result == null)
+        {
+            throw new DdapApiException("Failed to deserialize created entity");
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -148,7 +155,14 @@ public class DdapRestClient : IDdapClient
         }
 
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<TEntity>(responseContent, _jsonOptions)!;
+        var result = JsonSerializer.Deserialize<TEntity>(responseContent, _jsonOptions);
+
+        if (result == null)
+        {
+            throw new DdapApiException("Failed to deserialize updated entity");
+        }
+
+        return result;
     }
 
     /// <summary>

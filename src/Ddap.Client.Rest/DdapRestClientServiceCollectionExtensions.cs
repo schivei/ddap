@@ -16,13 +16,24 @@ public static class DdapRestClientServiceCollectionExtensions
         Action<DdapClientOptions> configureOptions
     )
     {
-        var options = new DdapClientOptions();
-        configureOptions(options);
-
         services.AddDdapClientCore(configureOptions);
+
         services
-            .AddHttpClient<DdapRestClient>()
-            .AddPolicyHandler(ResiliencePolicyProvider.GetRetryPolicy(options));
+            .AddHttpClient<DdapRestClient>(
+                (sp, client) =>
+                {
+                    var options = sp.GetRequiredService<DdapClientOptions>();
+                    client.BaseAddress = new Uri(options.BaseUrl);
+                    client.Timeout = options.Timeout;
+                }
+            )
+            .AddPolicyHandler(
+                (sp, _) =>
+                {
+                    var options = sp.GetRequiredService<DdapClientOptions>();
+                    return ResiliencePolicyProvider.GetRetryPolicy(options);
+                }
+            );
 
         return services;
     }

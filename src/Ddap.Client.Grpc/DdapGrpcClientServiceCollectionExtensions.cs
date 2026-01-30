@@ -16,11 +16,12 @@ public static class DdapGrpcClientServiceCollectionExtensions
         Action<DdapClientOptions> configureOptions
     )
     {
-        var options = new DdapClientOptions();
-        configureOptions(options);
-
         services.AddDdapClientCore(configureOptions);
-        services.AddSingleton<DdapGrpcClient>();
+        services.AddSingleton<DdapGrpcClient>(sp =>
+        {
+            var options = sp.GetRequiredService<DdapClientOptions>();
+            return new DdapGrpcClient(options);
+        });
 
         return services;
     }
