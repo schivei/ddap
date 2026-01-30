@@ -25,9 +25,6 @@
             [*]*AssemblyAttributes*
             
             <!-- Exclude data providers (require actual database for full coverage) -->
-            [Ddap.Data.Dapper.MySQL]*
-            [Ddap.Data.Dapper.PostgreSQL]*
-            [Ddap.Data.Dapper.SqlServer]*
             [Ddap.Data.EntityFramework]*
             [Ddap.Data.Dapper]*
             [Ddap.Data]*

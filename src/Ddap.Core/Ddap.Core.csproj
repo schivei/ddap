@@ -15,9 +15,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Ddap.Data" />
     <InternalsVisibleTo Include="Ddap.Data.Dapper" />
-    <InternalsVisibleTo Include="Ddap.Data.Dapper.SqlServer" />
-    <InternalsVisibleTo Include="Ddap.Data.Dapper.MySQL" />
-    <InternalsVisibleTo Include="Ddap.Data.Dapper.PostgreSQL" />
     <InternalsVisibleTo Include="Ddap.Data.EntityFramework" />
   </ItemGroup>
 </Project>
