@@ -27,7 +27,6 @@
             <!-- Exclude data providers (require actual database for full coverage) -->
             [Ddap.Data.EntityFramework]*
             [Ddap.Data.Dapper]*
-            [Ddap.Data]*
             
             <!-- Exclude auth module (requires complex auth setup) -->
             [Ddap.Auth]*
