@@ -30,8 +30,10 @@ jobs:
 
     - name: Update version in Directory.Build.props
       run: |
-        sed -i "s/<VersionPrefix>.*<\/VersionPrefix>/<VersionPrefix>${{ github.event.inputs.version }}.${{ github.run_number }}<\/VersionPrefix>/" Directory.Build.props
-        sed -i "s/<VersionSuffix.*/<VersionSuffix><\/VersionSuffix>/" Directory.Build.props
+        # Update version prefix
+        perl -i -pe 's/<VersionPrefix>.*?<\/VersionPrefix>/<VersionPrefix>${{ github.event.inputs.version }}.${{ github.run_number }}<\/VersionPrefix>/g' Directory.Build.props
+        # Remove VersionSuffix for release builds - handle multiline element
+        perl -i -0777 -pe 's/<VersionSuffix\b[^>]*>.*?<\/VersionSuffix\s*>/<VersionSuffix><\/VersionSuffix>/gs' Directory.Build.props
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_FILE }}
