@@ -40,6 +40,9 @@
             <!-- Exclude Subscriptions (requires messaging infrastructure) -->
             [Ddap.Subscriptions]*
             
+            <!-- Exclude Templates (not application code) -->
+            [Ddap.Templates]*
+            
             <!-- Exclude internal configuration classes -->
             [Ddap.Core]Ddap.Core.Internals.*
             [Ddap.Core]Ddap.Core.AutoReloadOptions

@@ -87,7 +87,7 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Debug
 
     - name: Run tests
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests"
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"

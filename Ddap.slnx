@@ -10,8 +10,10 @@
     <Project Path="src/Ddap.Memory/Ddap.Memory.csproj" />
     <Project Path="src/Ddap.Rest/Ddap.Rest.csproj" />
     <Project Path="src/Ddap.Subscriptions/Ddap.Subscriptions.csproj" />
+    <Project Path="src/Ddap.Templates/Ddap.Templates.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Ddap.Tests/Ddap.Tests.csproj" />
+    <Project Path="tests/Ddap.Templates.Tests/Ddap.Templates.Tests.csproj" />
   </Folder>
 </Solution>
