@@ -1,9 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ddap.Core\Ddap.Core.csproj" />
+    <ProjectReference Include="..\..\src\Ddap.Data.Dapper\Ddap.Data.Dapper.csproj" />
     <ProjectReference Include="..\..\src\Ddap.Rest\Ddap.Rest.csproj" />
     <ProjectReference Include="..\..\src\Ddap.Grpc\Ddap.Grpc.csproj" />
     <ProjectReference Include="..\..\src\Ddap.GraphQL\Ddap.GraphQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
   </ItemGroup>
 
   <PropertyGroup>
