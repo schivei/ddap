@@ -29,7 +29,7 @@ public class EntityRepositoryIntegrationTests : IDisposable
             Name = "Test Entity",
             Value = 42,
             CreatedAt = DateTime.UtcNow,
-            IsActive = true
+            IsActive = true,
         };
 
         // Act
@@ -50,9 +50,30 @@ public class EntityRepositoryIntegrationTests : IDisposable
         // Arrange
         var entities = new[]
         {
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 1", Value = 1, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 2", Value = 2, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 3", Value = 3, CreatedAt = DateTime.UtcNow, IsActive = true }
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 1",
+                Value = 1,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 2",
+                Value = 2,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 3",
+                Value = 3,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
         };
 
         // Act
@@ -74,7 +95,7 @@ public class EntityRepositoryIntegrationTests : IDisposable
             Name = "Test Entity",
             Value = 100,
             CreatedAt = DateTime.UtcNow,
-            IsActive = true
+            IsActive = true,
         };
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
@@ -105,9 +126,30 @@ public class EntityRepositoryIntegrationTests : IDisposable
         // Arrange
         var entities = new[]
         {
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 1", Value = 1, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 2", Value = 2, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 3", Value = 3, CreatedAt = DateTime.UtcNow, IsActive = true }
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 1",
+                Value = 1,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 2",
+                Value = 2,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 3",
+                Value = 3,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
         };
         await _dbSet.AddRangeAsync(entities);
         await _context.SaveChangesAsync();
@@ -130,7 +172,7 @@ public class EntityRepositoryIntegrationTests : IDisposable
             Name = "Original Name",
             Value = 10,
             CreatedAt = DateTime.UtcNow,
-            IsActive = true
+            IsActive = true,
         };
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
@@ -160,7 +202,7 @@ public class EntityRepositoryIntegrationTests : IDisposable
             Name = "To Delete",
             Value = 99,
             CreatedAt = DateTime.UtcNow,
-            IsActive = true
+            IsActive = true,
         };
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
@@ -180,9 +222,30 @@ public class EntityRepositoryIntegrationTests : IDisposable
         // Arrange
         var entities = new[]
         {
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Active 1", Value = 100, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Active 2", Value = 200, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Inactive", Value = 300, CreatedAt = DateTime.UtcNow, IsActive = false }
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Active 1",
+                Value = 100,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Active 2",
+                Value = 200,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Inactive",
+                Value = 300,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = false,
+            },
         };
         await _dbSet.AddRangeAsync(entities);
         await _context.SaveChangesAsync();
@@ -202,9 +265,30 @@ public class EntityRepositoryIntegrationTests : IDisposable
         // Arrange
         var entities = new[]
         {
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 1", Value = 1, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 2", Value = 2, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Entity 3", Value = 3, CreatedAt = DateTime.UtcNow, IsActive = true }
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 1",
+                Value = 1,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 2",
+                Value = 2,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Entity 3",
+                Value = 3,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
         };
         await _dbSet.AddRangeAsync(entities);
         await _context.SaveChangesAsync();
@@ -222,9 +306,30 @@ public class EntityRepositoryIntegrationTests : IDisposable
         // Arrange
         var entities = new[]
         {
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Active 1", Value = 100, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Active 2", Value = 200, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Inactive", Value = 300, CreatedAt = DateTime.UtcNow, IsActive = false }
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Active 1",
+                Value = 100,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Active 2",
+                Value = 200,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Inactive",
+                Value = 300,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = false,
+            },
         };
         await _dbSet.AddRangeAsync(entities);
         await _context.SaveChangesAsync();
@@ -248,7 +353,7 @@ public class EntityRepositoryIntegrationTests : IDisposable
             Name = "Test",
             Value = 1,
             CreatedAt = DateTime.UtcNow,
-            IsActive = true
+            IsActive = true,
         };
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
@@ -276,8 +381,22 @@ public class EntityRepositoryIntegrationTests : IDisposable
         // Arrange
         var entities = new[]
         {
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Active", Value = 100, CreatedAt = DateTime.UtcNow, IsActive = true },
-            new TestEntity { Id = Guid.NewGuid().ToString(), Name = "Inactive", Value = 200, CreatedAt = DateTime.UtcNow, IsActive = false }
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Active",
+                Value = 100,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+            },
+            new TestEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Inactive",
+                Value = 200,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = false,
+            },
         };
         await _dbSet.AddRangeAsync(entities);
         await _context.SaveChangesAsync();
