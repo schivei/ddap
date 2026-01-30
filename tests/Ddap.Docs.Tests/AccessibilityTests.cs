@@ -199,10 +199,11 @@ public class AccessibilityTests : PageTest
     {
         // Act: Check for ARIA labels on key elements
         var themeToggle = await Page.QuerySelectorAsync("button#theme-toggle");
-        var ariaLabel = await themeToggle?.GetAttributeAsync("aria-label");
+        Assert.That(themeToggle, Is.Not.Null, "Theme toggle button not found");
+
+        var ariaLabel = await themeToggle.GetAttributeAsync("aria-label");
 
         // Assert: Theme toggle should have ARIA label
-        Assert.That(themeToggle, Is.Not.Null, "Theme toggle button not found");
         Assert.That(ariaLabel, Is.Not.Null.And.Not.Empty, "Theme toggle missing aria-label");
     }
 
@@ -267,24 +268,33 @@ public class AccessibilityTests : PageTest
 
         Assert.That(navLinks.Count, Is.GreaterThan(0), "No navigation links found");
 
-        // Act: Check first 3 links (to avoid too many page loads)
-        for (int i = 0; i < Math.Min(3, navLinks.Count); i++)
+        // Collect hrefs first to avoid stale element references
+        var hrefs = new List<string>();
+        foreach (var link in navLinks)
         {
-            var href = await navLinks[i].GetAttributeAsync("href");
+            var href = await link.GetAttributeAsync("href");
             if (href != null && !href.StartsWith("http"))
             {
-                // Navigate to the linked page
-                await Page.GotoAsync($"{DocsBaseUrl}/{href}");
-                await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-                // Assert: Page loaded successfully
-                var title = await Page.TitleAsync();
-                Assert.That(title, Is.Not.Null.And.Not.Empty, $"Page {href} did not load properly");
-
-                // Go back to home
-                await Page.GotoAsync($"{DocsBaseUrl}/index.html");
-                await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                hrefs.Add(href);
             }
+        }
+
+        // Act: Check first 3 links (to avoid too many page loads)
+        for (int i = 0; i < Math.Min(3, hrefs.Count); i++)
+        {
+            var href = hrefs[i];
+
+            // Navigate to the linked page
+            await Page.GotoAsync($"{DocsBaseUrl}/{href}");
+            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+            // Assert: Page loaded successfully
+            var title = await Page.TitleAsync();
+            Assert.That(title, Is.Not.Null.And.Not.Empty, $"Page {href} did not load properly");
+
+            // Go back to home
+            await Page.GotoAsync($"{DocsBaseUrl}/index.html");
+            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         }
     }
 

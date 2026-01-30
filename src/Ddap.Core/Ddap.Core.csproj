@@ -5,12 +5,7 @@
     <Nullable>enable</Nullable>
     <Description>Core abstractions and infrastructure for DDAP (Dynamic Data API Provider). Provides entity discovery, metadata models, configuration options, and repository interfaces.</Description>
     <PackageTags>ddap;core;api;dynamic;data;provider;infrastructure;abstractions</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference

@@ -12,11 +12,14 @@ Parcourir la documentation de l'API par espace de noms :
 - **Ddap.Rest** - Fournisseur d'API REST
 - **Ddap.GraphQL** - Fournisseur GraphQL
 - **Ddap.Grpc** - Fournisseur gRPC
-- **Ddap.Memory** - Gestion des entités en mémoire
 - **Ddap.CodeGen** - Générateurs de code source
 - **Ddap.Aspire** - Intégration avec .NET Aspire
 - **Ddap.Auth** - Authentification et autorisation
 - **Ddap.Subscriptions** - Abonnements en temps réel
+- **Ddap.Client.Core** - Abstractions client principales
+- **Ddap.Client.Rest** - Client REST
+- **Ddap.Client.GraphQL** - Client GraphQL
+- **Ddap.Client.Grpc** - Client gRPC
 
 ## Interfaces Principales
 

@@ -10,7 +10,6 @@ DDAP (Dynamic Data API Provider) is a comprehensive .NET 10 solution that automa
 - **Modular Architecture**: 7 separate libraries for different concerns
   - `Ddap.Core`: Core abstractions and interfaces
   - `Ddap.Data`: Data providers (EFCore/Dapper)
-  - `Ddap.Memory`: In-memory entity management
   - `Ddap.CodeGen`: Source generators (structure created)
   - `Ddap.Rest`: REST API provider
   - `Ddap.Grpc`: gRPC provider

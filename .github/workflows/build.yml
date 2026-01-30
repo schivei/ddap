@@ -84,14 +84,45 @@ jobs:
       continue-on-error: false
 
     - name: Build
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Debug
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
+
+    # E2E tests temporarily disabled due to Playwright race conditions in CI
+    # - name: Start Documentation Server
+    #   run: |
+    #     cd docs
+    #     python3 -m http.server 8000 &
+    #     echo $! > /tmp/docs_server.pid
+    #     echo "Documentation server started on localhost:8000 (PID: $!)"
+    #     # Wait for server to be ready
+    #     sleep 3
+    #     # Verify server is responding
+    #     curl -f http://localhost:8000/index.html || (echo "Failed to start documentation server" && exit 1)
+    #     echo "Documentation server verified and ready"
+    #   shell: bash
+
+    # - name: Install Playwright Browsers
+    #   run: pwsh tests/Ddap.Docs.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
     - name: Run tests
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests"
+      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests&FullyQualifiedName!~Ddap.Docs.Tests"
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
         POSTGRES_CONNECTION: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres_password;"
+
+    # - name: Stop Documentation Server
+    #   if: always()
+    #   run: |
+    #     if [ -f /tmp/docs_server.pid ]; then
+    #       SERVER_PID=$(cat /tmp/docs_server.pid)
+    #       echo "Stopping documentation server (PID: $SERVER_PID)"
+    #       kill $SERVER_PID 2>/dev/null || echo "Server already stopped"
+    #       rm -f /tmp/docs_server.pid
+    #       echo "Documentation server stopped"
+    #     else
+    #       echo "No documentation server PID file found"
+    #     fi
+    #   shell: bash
 
     - name: Install ReportGenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
@@ -105,16 +136,17 @@ jobs:
           -targetdir:"coverage/report" \
           -reporttypes:"Html;MarkdownSummaryGithub;Cobertura;JsonSummary" \
           -verbosity:Info \
-          -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Memory.*;-Ddap.Subscriptions.*" \
+          -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Subscriptions.*" \
           -filefilters:"-*.g.cs;-*Generated*"
     
-    - name: Check Coverage Threshold Per Class
+    - name: Check Coverage Threshold Per File
       run: |
-        # Install jq for JSON parsing
-        sudo apt-get update && sudo apt-get install -y jq
+        # Install jq for JSON parsing if not available
+        if ! command -v jq &> /dev/null; then
+          sudo apt-get update && sudo apt-get install -y jq
+        fi
         chmod +x check-coverage.sh
         ./check-coverage.sh
-      continue-on-error: true
 
     - name: Create Coverage Summary
       if: always()
@@ -123,6 +155,7 @@ jobs:
           echo "✅ Coverage report generated successfully"
           cat coverage/report/SummaryGithub.md
         else
+          mkdir -p coverage/report
           echo "## Code Coverage Report" > coverage/report/SummaryGithub.md
           echo "" >> coverage/report/SummaryGithub.md
           echo "⚠️ Coverage report could not be generated." >> coverage/report/SummaryGithub.md
@@ -168,10 +201,10 @@ jobs:
       run: dotnet restore ${{ env.SOLUTION_FILE }}
 
     - name: Build
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Debug
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
 
     - name: Pack
-      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --output ./artifacts
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ./artifacts
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4

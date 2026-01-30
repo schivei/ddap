@@ -225,10 +225,6 @@ type EntityMetadata {
 
 ### Additional Packages
 
-#### Ddap.Memory
-- In-memory entity management
-- Testing and development support
-
 #### Ddap.CodeGen
 - Source generators for compile-time code generation
 - Reduces runtime overhead

@@ -182,7 +182,6 @@ ddap/
 │   ├── Ddap.Data/                      # Legacy data provider (deprecated)
 │   ├── Ddap.Data.EntityFramework/      # EF Core provider (database-agnostic)
 │   ├── Ddap.Data.Dapper/               # Generic Dapper provider for any database
-│   ├── Ddap.Memory/                    # In-memory entity management
 │   ├── Ddap.CodeGen/                   # Source generators
 │   ├── Ddap.Rest/                      # REST API provider (JSON/XML)
 │   ├── Ddap.Grpc/                      # gRPC provider

@@ -51,13 +51,12 @@ DDAP (Dynamic Data API Provider) is now a comprehensive .NET 10 solution with 13
 
 ### 13 Total Projects
 
-#### Core Libraries (4)
+#### Core Libraries (3)
 1. **Ddap.Core** - Core abstractions and interfaces
    - Internals/ folder with split implementation files
    - InternalsVisibleTo for data providers
-2. **Ddap.Memory** - In-memory entity management
-3. **Ddap.CodeGen** - Source generators (structure ready)
-4. **Ddap.Aspire** - .NET Aspire integration ⭐ NEW
+2. **Ddap.CodeGen** - Source generators (structure ready)
+3. **Ddap.Aspire** - .NET Aspire integration ⭐ NEW
 
 #### Database Providers (5)
 5. **Ddap.Data** - Legacy provider (deprecated but functional)

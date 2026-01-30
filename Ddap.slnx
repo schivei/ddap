@@ -8,10 +8,10 @@
     <Project Path="src/Ddap.Client.Rest/Ddap.Client.Rest.csproj" />
     <Project Path="src/Ddap.CodeGen/Ddap.CodeGen.csproj" />
     <Project Path="src/Ddap.Core/Ddap.Core.csproj" />
+    <Project Path="src/Ddap.Data.Dapper/Ddap.Data.Dapper.csproj" />
     <Project Path="src/Ddap.Data.EntityFramework/Ddap.Data.EntityFramework.csproj" />
     <Project Path="src/Ddap.GraphQL/Ddap.GraphQL.csproj" />
     <Project Path="src/Ddap.Grpc/Ddap.Grpc.csproj" />
-    <Project Path="src/Ddap.Memory/Ddap.Memory.csproj" />
     <Project Path="src/Ddap.Rest/Ddap.Rest.csproj" />
     <Project Path="src/Ddap.Subscriptions/Ddap.Subscriptions.csproj" />
     <Project Path="src/Ddap.Templates/Ddap.Templates.csproj" />
@@ -21,7 +21,10 @@
     <Project Path="tests/Ddap.Client.GraphQL.Tests/Ddap.Client.GraphQL.Tests.csproj" />
     <Project Path="tests/Ddap.Client.Grpc.Tests/Ddap.Client.Grpc.Tests.csproj" />
     <Project Path="tests/Ddap.Client.Rest.Tests/Ddap.Client.Rest.Tests.csproj" />
+    <Project Path="tests/Ddap.Docs.Tests/Ddap.Docs.Tests.csproj" />
     <Project Path="tests/Ddap.Tests/Ddap.Tests.csproj" />
+    <Project Path="tests/Ddap.Grpc.Tests/Ddap.Grpc.Tests.csproj" />
+    <Project Path="tests/Ddap.IntegrationTests/Ddap.IntegrationTests.csproj" />
     <Project Path="tests/Ddap.Templates.Tests/Ddap.Templates.Tests.csproj" />
   </Folder>
 </Solution>
