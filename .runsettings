@@ -45,6 +45,12 @@
             <!-- Dependency Injection Extensions - require DI container -->
             [*]*ServiceExtensions
             [*]*ServiceCollectionExtensions
+            [Ddap.Aspire]Ddap.Aspire.DdapServiceExtensions
+            [Ddap.Client.Core]Ddap.Client.Core.DdapClientServiceCollectionExtensions
+            [Ddap.Client.GraphQL]Ddap.Client.GraphQL.DdapGraphQLClientServiceCollectionExtensions
+            [Ddap.Client.Grpc]Ddap.Client.Grpc.DdapGrpcClientServiceCollectionExtensions
+            [Ddap.Client.Rest]Ddap.Client.Rest.DdapRestClientServiceCollectionExtensions
+            [Ddap.Core]Ddap.Core.DdapServiceCollectionExtensions
             
             <!-- Middleware and Pipeline - require ASP.NET Core pipeline -->
             [*]*Middleware
@@ -52,8 +58,11 @@
             
             <!-- Specific E2E-only files -->
             [Ddap.Grpc]Ddap.Grpc.RawQueryServiceExtensions
+            [Ddap.Grpc]Ddap.Grpc.Services.RawQueryServiceImpl
             [Ddap.Grpc]Ddap.Grpc.EntityService
             [Ddap.Rest]Ddap.Rest.EntityController*
+            [Ddap.Auth]Ddap.Auth.Attributes.DdapAuthorizeAttribute
+            [Ddap.Auth]Ddap.Auth.DdapAuthExtensions
             
             <!-- Exclude specific files -->
             [*]*AssemblyInfo*
