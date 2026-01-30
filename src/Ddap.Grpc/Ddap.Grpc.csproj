@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\Ddap.Core\Ddap.Core.csproj" />
+    <ProjectReference Include="..\Ddap.Auth\Ddap.Auth.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -11,6 +12,10 @@
       Version="10.0.2"
     />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\rawquery.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <PropertyGroup>
