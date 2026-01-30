@@ -1169,10 +1169,14 @@ html {
     overflow-x: auto;
 }
 
+/* Wrap tables for horizontal scrolling */
 .doc-content table {
     width: 100%;
-    overflow-x: auto;
+}
+
+.doc-content > table {
     display: block;
+    overflow-x: auto;
 }
 
 @media (max-width: 768px) {

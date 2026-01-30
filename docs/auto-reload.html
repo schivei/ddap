@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
 </head>
 <body>
@@ -99,7 +100,9 @@
                 return response.text();
             })
             .then(markdown => {
-                document.getElementById('content').innerHTML = marked.parse(markdown);
+                const rawHtml = marked.parse(markdown);
+                const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+                document.getElementById('content').innerHTML = sanitizedHtml;
                 document.title = (document.querySelector('#content h1')?.textContent || 'Auto Reload') + ' | DDAP Documentation';
             })
             .catch(error => {
