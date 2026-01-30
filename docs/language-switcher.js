@@ -21,16 +21,32 @@
     const STORAGE_KEY = 'ddap-language';
     
     // Base path for the site (e.g., '/ddap' for GitHub Pages deployment)
-    // Auto-detect from the page URL or use root '/'
+    // Auto-detects the '/ddap' prefix; otherwise uses an empty string for root-relative paths
     const BASE_PATH = (function() {
         // Check if we're running on GitHub Pages at /ddap
         const path = window.location.pathname;
         if (path.startsWith('/ddap/') || path === '/ddap') {
             return '/ddap';
         }
-        // Default to root for local development
+        // Default to root for local development (no base path prefix)
         return '';
     })();
+    
+    /**
+     * Helper function to get path parts with base path removed
+     * Returns an object with pathParts array and startIndex after base path
+     */
+    function getPathPartsWithoutBase(pathname) {
+        const pathParts = pathname.split('/').filter(p => p);
+        let startIndex = 0;
+        
+        // Remove base path if present (e.g., 'ddap' from the path parts)
+        if (pathParts.length > 0 && BASE_PATH && pathParts[0] === BASE_PATH.substring(1)) {
+            startIndex = 1;
+        }
+        
+        return { pathParts, startIndex };
+    }
     
     /**
      * Get the user's preferred language
@@ -38,13 +54,7 @@
      */
     function getPreferredLanguage() {
         // Check URL path first (e.g., /ddap/pt-br/get-started.html or /pt-br/get-started.html)
-        const pathParts = window.location.pathname.split('/').filter(p => p);
-        
-        // Remove base path if present (e.g., 'ddap' from the path parts)
-        let startIndex = 0;
-        if (pathParts.length > 0 && BASE_PATH && pathParts[0] === BASE_PATH.substring(1)) {
-            startIndex = 1;
-        }
+        const { pathParts, startIndex } = getPathPartsWithoutBase(window.location.pathname);
         
         if (pathParts.length > startIndex) {
             const potentialLang = pathParts[startIndex];
@@ -85,14 +95,7 @@
      * Get current page path relative to docs root
      */
     function getCurrentPagePath() {
-        const path = window.location.pathname;
-        const pathParts = path.split('/').filter(p => p);
-        
-        // Remove base path if present (e.g., 'ddap' from the path parts)
-        let startIndex = 0;
-        if (pathParts.length > 0 && BASE_PATH && pathParts[0] === BASE_PATH.substring(1)) {
-            startIndex = 1;
-        }
+        const { pathParts, startIndex } = getPathPartsWithoutBase(window.location.pathname);
         
         // Check if we're in a locale directory
         const locales = Object.keys(SUPPORTED_LANGUAGES);
