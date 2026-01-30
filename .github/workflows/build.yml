@@ -86,12 +86,42 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Debug
 
+    - name: Start Documentation Server
+      run: |
+        cd docs
+        python3 -m http.server 8000 &
+        echo $! > /tmp/docs_server.pid
+        echo "Documentation server started on localhost:8000 (PID: $!)"
+        # Wait for server to be ready
+        sleep 3
+        # Verify server is responding
+        curl -f http://localhost:8000/index.html || (echo "Failed to start documentation server" && exit 1)
+        echo "Documentation server verified and ready"
+      shell: bash
+
+    - name: Install Playwright Browsers
+      run: pwsh tests/Ddap.Docs.Tests/bin/Debug/net10.0/playwright.ps1 install --with-deps
+
     - name: Run tests
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests&FullyQualifiedName!~Ddap.Docs.Tests"
+      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Debug --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests"
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
         POSTGRES_CONNECTION: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres_password;"
+
+    - name: Stop Documentation Server
+      if: always()
+      run: |
+        if [ -f /tmp/docs_server.pid ]; then
+          SERVER_PID=$(cat /tmp/docs_server.pid)
+          echo "Stopping documentation server (PID: $SERVER_PID)"
+          kill $SERVER_PID 2>/dev/null || echo "Server already stopped"
+          rm -f /tmp/docs_server.pid
+          echo "Documentation server stopped"
+        else
+          echo "No documentation server PID file found"
+        fi
+      shell: bash
 
     - name: Install ReportGenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
