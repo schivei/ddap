@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>Api Providers | DDAP Documentation</title>
+    <title>{{TITLE}} | DDAP Documentation</title>
     
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="lib/github-markdown.min.css">
@@ -90,7 +90,7 @@
     <script src="language-switcher.js"></script>
     <script>
         // Load and render markdown content with language support
-        const baseMdFile = 'api-providers.md';
+        const baseMdFile = '{{MD_FILE}}';
         
         function getLocalizedMarkdownPath(baseFile) {
             // Get current language from localStorage or default to 'en'
@@ -123,7 +123,7 @@
                     const rawHtml = marked.parse(markdown);
                     const sanitizedHtml = DOMPurify.sanitize(rawHtml);
                     document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || 'Api Providers') + ' | DDAP Documentation';
+                    document.title = (document.querySelector('#content h1')?.textContent || '{{TITLE}}') + ' | DDAP Documentation';
                 })
                 .catch(error => {
                     document.getElementById('content').innerHTML = 
@@ -144,5 +144,16 @@
             }
         });
     </script>
-</body>
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'en');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
 </html>

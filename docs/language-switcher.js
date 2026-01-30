@@ -137,8 +137,7 @@
     
     /**
      * Switch to a different language
-     * For index.html: navigates to localized version (e.g., /pt-br/index.html)
-     * For other pages: reloads content dynamically from locales folder
+     * Navigates to the static HTML page in the correct locale folder
      */
     function switchLanguage(language) {
         if (!SUPPORTED_LANGUAGES[language]) {
@@ -150,20 +149,8 @@
         
         const currentPage = getCurrentPagePath();
         
-        // For index.html, navigate to localized version
-        if (currentPage === 'index.html' || currentPage === '') {
-            window.location.href = buildLanguageUrl(language, currentPage);
-        } else {
-            // For documentation pages, trigger content reload via storage event
-            // This allows the page's markdown loader to fetch the translated version
-            localStorage.setItem(STORAGE_KEY, language);
-            
-            // Trigger a custom event for same-tab updates
-            window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language } }));
-            
-            // Reload the page to show translated content
-            window.location.reload();
-        }
+        // Navigate to the static HTML page in the correct locale folder
+        window.location.href = buildLanguageUrl(language, currentPage);
     }
     
     /**
