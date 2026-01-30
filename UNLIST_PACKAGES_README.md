@@ -24,6 +24,19 @@ echo 'export NUGET_API_KEY=your-api-key-here' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+### ⚠️ Nota de Segurança
+
+**Importante**: A API key é passada como argumento de linha de comando (`--api-key`) para o comando `dotnet nuget delete`. Em sistemas Unix/Linux, isso pode ser visível temporariamente em listagens de processos (via `ps` ou `/proc`). 
+
+**Recomendações de segurança**:
+- Execute o script apenas em máquinas confiáveis onde você tem controle
+- Não execute em servidores compartilhados ou ambientes multi-usuário não confiáveis
+- A exposição é temporária (apenas durante a execução)
+- Use uma API key com permissões mínimas (apenas unlist/delete packages)
+- Considere revogar e recriar a API key após uso em ambientes não confiáveis
+
+**Alternativa mais segura**: Para ambientes de produção/CI-CD, considere usar o portal web do NuGet.org para unlist pacotes manualmente.
+
 ## 🚀 Uso
 
 ### Executar em modo de teste (dry-run)
