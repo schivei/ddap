@@ -47,7 +47,9 @@ public class DdapGrpcClient : IDdapClient, IDisposable
         try
         {
             var channel = GetChannel();
-            await channel.ConnectAsync(cancellationToken);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromSeconds(5)); // 5 second timeout
+            await channel.ConnectAsync(cts.Token);
             return IsConnected;
         }
         catch

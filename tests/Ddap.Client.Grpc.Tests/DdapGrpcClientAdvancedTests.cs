@@ -22,12 +22,12 @@ public class DdapGrpcClientAdvancedTests
     }
 
     [Fact]
-    public async Task TestConnectionAsync_WithInvalidUrl_ReturnsFalse()
+    public async Task TestConnectionAsync_WithUnreachableUrl_ReturnsFalse()
     {
         // Arrange
         var options = new DdapClientOptions
         {
-            BaseUrl = "http://invalid-url-that-does-not-exist.com",
+            BaseUrl = "http://localhost:9999", // Port that won't be listening
         };
         var client = new DdapGrpcClient(options);
 
