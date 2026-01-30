@@ -89,26 +89,60 @@
     <script src="theme-toggle.js"></script>
     <script src="language-switcher.js"></script>
     <script>
-        // Load and render markdown content
-        const mdFile = 'client-grpc.md';
+        // Load and render markdown content with language support
+        const baseMdFile = 'client-grpc.md';
         
-        fetch(mdFile)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Document not found');
-                }
-                return response.text();
-            })
-            .then(markdown => {
-                const rawHtml = marked.parse(markdown);
-                const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                document.getElementById('content').innerHTML = sanitizedHtml;
-                document.title = (document.querySelector('#content h1')?.textContent || 'Client Grpc') + ' | DDAP Documentation';
-            })
-            .catch(error => {
-                document.getElementById('content').innerHTML = 
-                    '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-            });
+        function getLocalizedMarkdownPath(baseFile) {
+            // Get current language from localStorage or default to 'en'
+            const currentLang = localStorage.getItem('ddap-language') || 'en';
+            
+            // If English, use the base file
+            if (currentLang === 'en') {
+                return baseFile;
+            }
+            
+            // For other languages, try to load from locales directory
+            // e.g., get-started.md -> locales/pt-br/get-started.md
+            return `locales/${currentLang}/${baseFile}`;
+        }
+        
+        function loadMarkdown(mdPath) {
+            fetch(mdPath)
+                .then(response => {
+                    if (!response.ok) {
+                        // If translated version not found, fallback to English
+                        if (mdPath.includes('locales/')) {
+                            console.log(`Translated version not found, loading English version`);
+                            return fetch(baseMdFile);
+                        }
+                        throw new Error('Document not found');
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    const rawHtml = marked.parse(markdown);
+                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+                    document.getElementById('content').innerHTML = sanitizedHtml;
+                    document.title = (document.querySelector('#content h1')?.textContent || 'Client Grpc') + ' | DDAP Documentation';
+                })
+                .catch(error => {
+                    document.getElementById('content').innerHTML = 
+                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
+                });
+        }
+        
+        // Load markdown with current language
+        const mdFile = getLocalizedMarkdownPath(baseMdFile);
+        loadMarkdown(mdFile);
+        
+        // Listen for language changes (when user switches language)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'ddap-language') {
+                // Reload content with new language
+                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
+                loadMarkdown(newMdFile);
+            }
+        });
     </script>
 </body>
 </html>

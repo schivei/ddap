@@ -137,8 +137,8 @@
     
     /**
      * Switch to a different language
-     * Note: This performs a page reload to navigate to the localized content.
-     * For DocFX-based documentation, this is more reliable than dynamic content loading.
+     * For index.html: navigates to localized version (e.g., /pt-br/index.html)
+     * For other pages: reloads content dynamically from locales folder
      */
     function switchLanguage(language) {
         if (!SUPPORTED_LANGUAGES[language]) {
@@ -148,9 +148,22 @@
         
         applyLanguage(language);
         
-        // Reload page to navigate to localized content
         const currentPage = getCurrentPagePath();
-        window.location.href = buildLanguageUrl(language, currentPage);
+        
+        // For index.html, navigate to localized version
+        if (currentPage === 'index.html' || currentPage === '') {
+            window.location.href = buildLanguageUrl(language, currentPage);
+        } else {
+            // For documentation pages, trigger content reload via storage event
+            // This allows the page's markdown loader to fetch the translated version
+            localStorage.setItem(STORAGE_KEY, language);
+            
+            // Trigger a custom event for same-tab updates
+            window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language } }));
+            
+            // Reload the page to show translated content
+            window.location.reload();
+        }
     }
     
     /**
