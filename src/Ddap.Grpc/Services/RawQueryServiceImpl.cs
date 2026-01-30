@@ -293,9 +293,14 @@ public class RawQueryServiceImpl : RawQueryService.RawQueryServiceBase
         {
             return JsonSerializer.Deserialize<Dictionary<string, object>>(parametersJson);
         }
-        catch
+        catch (JsonException ex)
         {
-            return null;
+            throw new RpcException(
+                new Status(
+                    StatusCode.InvalidArgument,
+                    $"Failed to deserialize parameters JSON: {ex.Message}"
+                )
+            );
         }
     }
 }
