@@ -22,7 +22,6 @@
     "[Ddap.Data.Dapper]*",
     "[Ddap.Auth]*",
     "[Ddap.CodeGen]*",
-    "[Ddap.Memory]*",
     "[Ddap.Subscriptions]*",
     "[Ddap.Core]Ddap.Core.Internals.*",
     "[Ddap.Core]Ddap.Core.AutoReloadOptions"
