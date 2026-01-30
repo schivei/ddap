@@ -36,8 +36,17 @@ public class QueryAnalyzerTests
         result.Should().Be(expected);
     }
 
+    [Fact]
+    public void DetermineQueryType_Should_Return_Unknown_For_Null_Query()
+    {
+        // Act
+        var result = QueryAnalyzer.DetermineQueryType(null);
+
+        // Assert
+        result.Should().Be(QueryType.Unknown);
+    }
+
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     public void DetermineQueryType_Should_Return_Unknown_For_Empty_Query(string query)

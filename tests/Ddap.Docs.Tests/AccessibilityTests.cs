@@ -199,10 +199,11 @@ public class AccessibilityTests : PageTest
     {
         // Act: Check for ARIA labels on key elements
         var themeToggle = await Page.QuerySelectorAsync("button#theme-toggle");
-        var ariaLabel = await themeToggle?.GetAttributeAsync("aria-label");
+        Assert.That(themeToggle, Is.Not.Null, "Theme toggle button not found");
+        
+        var ariaLabel = await themeToggle.GetAttributeAsync("aria-label");
 
         // Assert: Theme toggle should have ARIA label
-        Assert.That(themeToggle, Is.Not.Null, "Theme toggle button not found");
         Assert.That(ariaLabel, Is.Not.Null.And.Not.Empty, "Theme toggle missing aria-label");
     }
 

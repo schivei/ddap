@@ -2,7 +2,7 @@
 
 # Script to check per-class coverage thresholds
 # Requirements: 80% line coverage and 80% branch coverage per class
-# Note: In .NET, coverage is typically measured at the class/type level, not individual source files
+# This script will FAIL the build if requirements are not met
 # Prerequisite: jq must be installed (handled by CI workflow)
 
 set -e
@@ -24,9 +24,8 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-echo "📊 Checking Coverage Per Class"
-echo "Requirements: ${MIN_LINE_COVERAGE}% line coverage, ${MIN_BRANCH_COVERAGE}% branch coverage per class"
-echo "Note: Coverage is measured at class/type level (standard for .NET projects)"
+echo "📊 Checking Coverage Per File (Class Level)"
+echo "Requirements: ${MIN_LINE_COVERAGE}% line coverage, ${MIN_BRANCH_COVERAGE}% branch coverage per file"
 echo "=============================================================================="
 
 # Extract overall summary
@@ -38,11 +37,12 @@ echo "Overall Coverage (filtered modules):"
 echo "  Line Coverage: ${OVERALL_LINE}%"
 echo "  Branch Coverage: ${OVERALL_BRANCH}%"
 echo ""
-echo "Per-Class Analysis:"
+echo "Per-File Analysis:"
 echo "---"
 
-# Create temporary file for tracking results (securely)
-TEMP_RESULTS="$(mktemp -t coverage_results_XXXXXX)"
+# Create temporary file for tracking results
+TEMP_RESULTS="$(mktemp)"
+trap 'rm -f "$TEMP_RESULTS"' EXIT
 
 # Iterate through each assembly and class
 while IFS= read -r assembly; do
@@ -59,11 +59,11 @@ while IFS= read -r assembly; do
             BRANCH_COV="N/A"
             BRANCH_CHECK=1
         else
-            # Check if branch coverage meets threshold using jq for numeric comparison
+            # Check if branch coverage meets threshold
             BRANCH_CHECK=$(jq -n --argjson cov "$BRANCH_COV" --argjson min "$MIN_BRANCH_COVERAGE" 'if ($cov >= $min) then 1 else 0 end')
         fi
         
-        # Check if line coverage meets threshold using jq for numeric comparison
+        # Check if line coverage meets threshold
         LINE_CHECK=$(jq -n --argjson cov "$LINE_COV" --argjson min "$MIN_LINE_COVERAGE" 'if ($cov >= $min) then 1 else 0 end')
         
         if [ "$LINE_CHECK" = "1" ] && [ "$BRANCH_CHECK" = "1" ]; then
@@ -93,28 +93,27 @@ echo "  Failed: $FAILED_COUNT"
 echo ""
 
 if [ "$FAILED_COUNT" -gt 0 ]; then
-    echo "❌ $FAILED_COUNT class(es) below coverage thresholds:"
+    echo "❌ COVERAGE CHECK FAILED!"
+    echo ""
+    echo "$FAILED_COUNT file(s) below coverage thresholds:"
     echo ""
     grep "^FAIL|" "$TEMP_RESULTS" | while IFS='|' read -r status file line branch; do
         echo "  - $file (Line: ${line}%, Branch: ${branch}%)"
     done
     echo ""
-    echo "⚠️  These classes need more test coverage to meet the requirements:"
+    echo "⚠️  These files need more test coverage to meet the requirements:"
     echo "     - Minimum Line Coverage: ${MIN_LINE_COVERAGE}%"
     echo "     - Minimum Branch Coverage: ${MIN_BRANCH_COVERAGE}%"
     echo ""
-    echo "Note: The following modules are excluded from coverage requirements:"
-    echo "  - Data providers (*.Data.*, require database integration)"
-    echo "  - Test assemblies (*.Tests.*)"
-    echo "  - Example projects (*.Example.*)"
-    echo "  - Auth, CodeGen, Memory, Subscriptions modules"
+    echo "Excluded modules (not validated):"
+    echo "  - Data providers (*.Data.*, require database)"
+    echo "  - Auth, CodeGen, Subscriptions (require infrastructure)"
+    echo "  - Test assemblies, Example projects"
     echo ""
-    rm -f "$TEMP_RESULTS"
-    # Exit with 0 to not fail the build, just warn about coverage
-    # This allows incremental improvement without blocking all changes
-    exit 0
+    echo "💡 To fix: Add more unit tests covering the failed files"
+    echo ""
+    exit 1
 fi
 
-rm -f "$TEMP_RESULTS"
-echo "✅ All files meet the ${MIN_LINE_COVERAGE}% coverage threshold!"
+echo "✅ All ${TOTAL_FILES} files meet the ${MIN_LINE_COVERAGE}% line and ${MIN_BRANCH_COVERAGE}% branch coverage thresholds!"
 exit 0

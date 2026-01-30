@@ -138,13 +138,14 @@ jobs:
           -classfilters:"-*.Tests.*;-*.Example.*;-Ddap.Data.*;-Ddap.Auth.*;-Ddap.CodeGen.*;-Ddap.Subscriptions.*" \
           -filefilters:"-*.g.cs;-*Generated*"
     
-    - name: Check Coverage Threshold Per Class
+    - name: Check Coverage Threshold Per File
       run: |
-        # Install jq for JSON parsing
-        sudo apt-get update && sudo apt-get install -y jq
+        # Install jq for JSON parsing if not available
+        if ! command -v jq &> /dev/null; then
+          sudo apt-get update && sudo apt-get install -y jq
+        fi
         chmod +x check-coverage.sh
         ./check-coverage.sh
-      continue-on-error: true
 
     - name: Create Coverage Summary
       if: always()
