@@ -181,6 +181,41 @@ jobs:
         fail_ci_if_error: false
       continue-on-error: true
 
+  check-changes:
+    name: Check for Package Code Changes
+    runs-on: ubuntu-latest
+    outputs:
+      should-publish: ${{ steps.check.outputs.should-publish }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Check for changes in package code
+      id: check
+      run: |
+        # Get the list of changed files
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+        else
+          # For push events, compare with previous commit
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || echo "all")
+        fi
+        
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+        
+        # Check if any relevant files changed
+        # Publish if changes are in src/, Directory.Build.props, or Directory.Build.targets
+        if echo "$CHANGED_FILES" | grep -qE '^(src/|Directory\.Build\.(props|targets))'; then
+          echo "should-publish=true" >> $GITHUB_OUTPUT
+          echo "✅ Package code changes detected - publishing will proceed"
+        else
+          echo "should-publish=false" >> $GITHUB_OUTPUT
+          echo "⏭️ No package code changes detected - skipping publish"
+        fi
+
   pack:
     name: Pack NuGet Packages
     runs-on: ubuntu-latest
@@ -222,8 +257,8 @@ jobs:
   publish:
     name: Publish to NuGet
     runs-on: ubuntu-latest
-    needs: pack
-    if: github.ref == 'refs/heads/main'
+    needs: [check-changes, pack]
+    if: github.ref == 'refs/heads/main' && needs.check-changes.outputs.should-publish == 'true'
     
     steps:
     - name: Download artifacts
