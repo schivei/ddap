@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>Auto-Reload System - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../es/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Auto-Reload System</h1>
+<h2>Overview</h2>
+<p>The Auto-Reload System in DDAP automatically detects changes to your database schema and reloads the GraphQL schema without requiring application restarts.</p>
+<p><strong>Why Auto-Reload is Useful:</strong></p>
+<ul>
+<li>Zero-downtime schema updates</li>
+<li>Faster development cycles</li>
+<li>Reduced deployment complexity</li>
+<li>Continuous availability during schema updates</li>
+</ul>
+<h2>Quick Start</h2>
+<pre><code class="language-csharp">builder.Services.AddDdap(options =&gt;
+{
+    options.ConnectionString = "Server=localhost;Database=MyDb;...";
+    options.AutoReload = new AutoReloadOptions
+    {
+        Enabled = true,
+        IdleTimeout = TimeSpan.FromMinutes(5)
+    };
+});
+</code></pre>
+<h2>Configuration Options</h2>
+<pre><code class="language-csharp">public class AutoReloadOptions
+{
+    public bool Enabled { get; set; } = false;
+    public TimeSpan IdleTimeout { get; set; } = TimeSpan.FromMinutes(5);
+    public ReloadStrategy Strategy { get; set; } = ReloadStrategy.InvalidateAndRebuild;
+    public ReloadBehavior Behavior { get; set; } = ReloadBehavior.ServeOldSchema;
+    public ChangeDetection ChangeDetection { get; set; } = ChangeDetection.CheckHash;
+    public Func&lt;IServiceProvider, Task&lt;bool&gt;&gt;? OnBeforeReloadAsync { get; set; }
+    public Func&lt;IServiceProvider, Task&gt;? OnAfterReloadAsync { get; set; }
+    public Func&lt;IServiceProvider, Exception, Task&gt;? OnReloadErrorAsync { get; set; }
+}
+</code></pre>
+<h2>Reload Strategies</h2>
+<h3>InvalidateAndRebuild</h3>
+<p>Complete schema rebuild from scratch - most thorough but slowest.</p>
+<pre><code class="language-csharp">Strategy = ReloadStrategy.InvalidateAndRebuild
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Handles all schema changes reliably</li>
+<li>❌ Slowest (1-5 seconds)</li>
+</ul>
+<h3>HotReload</h3>
+<p>Incremental updates without full rebuild - fastest but may not handle all changes.</p>
+<pre><code class="language-csharp">Strategy = ReloadStrategy.HotReload
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Fastest (100-500ms)</li>
+<li>❌ Cannot handle breaking changes or renames</li>
+</ul>
+<h3>RestartExecutor</h3>
+<p>Restart GraphQL executor - balanced approach.</p>
+<pre><code class="language-csharp">Strategy = ReloadStrategy.RestartExecutor
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Moderate speed (500ms-2s)</li>
+<li>✅ Handles most changes</li>
+</ul>
+<h2>Reload Behaviors</h2>
+<h3>ServeOldSchema</h3>
+<p>Continue serving requests with old schema during reload - zero downtime.</p>
+<pre><code class="language-csharp">Behavior = ReloadBehavior.ServeOldSchema
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Zero downtime</li>
+<li>❌ 2x memory during reload</li>
+</ul>
+<h3>BlockRequests</h3>
+<p>Reject new requests during reload - returns HTTP 503.</p>
+<pre><code class="language-csharp">Behavior = ReloadBehavior.BlockRequests
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Lower memory usage</li>
+<li>❌ Requests fail during reload</li>
+</ul>
+<h3>QueueRequests</h3>
+<p>Queue requests during reload and process after - balanced approach.</p>
+<pre><code class="language-csharp">Behavior = ReloadBehavior.QueueRequests
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ No failed requests</li>
+<li>❌ Increased latency during reload</li>
+</ul>
+<h2>Change Detection</h2>
+<h3>AlwaysReload</h3>
+<p>Always reload after idle timeout without checking for changes.</p>
+<pre><code class="language-csharp">ChangeDetection = ChangeDetection.AlwaysReload
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Simple and predictable</li>
+<li>❌ Wastes resources on unnecessary reloads</li>
+</ul>
+<h3>CheckHash</h3>
+<p>Compare schema hash to detect changes - reliable and database-agnostic.</p>
+<pre><code class="language-csharp">ChangeDetection = ChangeDetection.CheckHash
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Catches all schema changes</li>
+<li>❌ Higher overhead than timestamps</li>
+</ul>
+<p><strong>Hash includes:</strong> Tables, columns, types, keys, indexes, constraints</p>
+<h3>CheckTimestamps</h3>
+<p>Check database object modification timestamps - fastest method.</p>
+<pre><code class="language-csharp">ChangeDetection = ChangeDetection.CheckTimestamps
+</code></pre>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✅ Fastest detection</li>
+<li>❌ Database-specific, may miss some changes</li>
+</ul>
+<p><strong>Database Support:</strong></p>
+<ul>
+<li>SQL Server: <code>sys.objects.modify_date</code></li>
+<li>PostgreSQL: <code>pg_class.relfilenode</code></li>
+<li>MySQL: <code>information_schema.tables.update_time</code></li>
+</ul>
+<h2>Lifecycle Hooks</h2>
+<p>Execute custom logic at specific points in the reload process.</p>
+<h3>OnBeforeReloadAsync</h3>
+<p>Invoked before reload starts. Return <code>true</code> to proceed, <code>false</code> to cancel.</p>
+<pre><code class="language-csharp">OnBeforeReloadAsync = async (sp) =&gt;
+{
+    var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+    logger.LogInformation("Schema reload starting");
+    
+    // Check if reload should proceed
+    var cache = sp.GetService&lt;IMemoryCache&gt;();
+    if (cache?.Get("BlockReload") is true)
+        return false; // Cancel reload
+    
+    return true; // Proceed
+}
+</code></pre>
+<h3>OnAfterReloadAsync</h3>
+<p>Invoked after reload completes successfully.</p>
+<pre><code class="language-csharp">OnAfterReloadAsync = async (sp) =&gt;
+{
+    var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+    logger.LogInformation("Schema reload completed");
+    
+    // Warm up caches with new schema
+    var repository = sp.GetRequiredService&lt;IEntityRepository&gt;();
+    await repository.WarmCacheAsync();
+}
+</code></pre>
+<h3>OnReloadErrorAsync</h3>
+<p>Invoked when reload fails.</p>
+<pre><code class="language-csharp">OnReloadErrorAsync = async (sp, exception) =&gt;
+{
+    var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+    logger.LogError(exception, "Schema reload failed");
+    
+    // Send alert
+    var alerting = sp.GetService&lt;IAlertingService&gt;();
+    await alerting?.SendAlertAsync("Schema Reload Failed", exception.Message);
+}
+</code></pre>
+<h2>Events</h2>
+<p>Subscribe to reload events for monitoring and diagnostics.</p>
+<pre><code class="language-csharp">builder.Services.AddSingleton&lt;IReloadEventHandler, MyReloadEventHandler&gt;();
+
+public class MyReloadEventHandler : IReloadEventHandler
+{
+    public Task OnReloadStartedAsync(ReloadStartedEvent evt)
+    {
+        // Log reload start
+        return Task.CompletedTask;
+    }
+    
+    public Task OnReloadCompletedAsync(ReloadCompletedEvent evt)
+    {
+        // Log duration and entity count
+        return Task.CompletedTask;
+    }
+    
+    public Task OnReloadFailedAsync(ReloadFailedEvent evt)
+    {
+        // Log error
+        return Task.CompletedTask;
+    }
+}
+</code></pre>
+<h2>Complete Example</h2>
+<p>Production-ready configuration:</p>
+<pre><code class="language-csharp">builder.Services.AddDdap(options =&gt;
+{
+    options.ConnectionString = connectionString;
+    options.AutoReload = new AutoReloadOptions
+    {
+        Enabled = true,
+        IdleTimeout = TimeSpan.FromMinutes(3),
+        Strategy = ReloadStrategy.InvalidateAndRebuild,
+        Behavior = ReloadBehavior.ServeOldSchema,
+        ChangeDetection = ChangeDetection.CheckHash,
+        
+        OnBeforeReloadAsync = async (sp) =&gt;
+        {
+            var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+            logger.LogInformation("Preparing for schema reload");
+            
+            // Check if blocked by configuration
+            var config = sp.GetRequiredService&lt;IConfiguration&gt;();
+            if (config.GetValue&lt;bool&gt;("BlockAutoReload"))
+                return false;
+            
+            return true;
+        },
+        
+        OnAfterReloadAsync = async (sp) =&gt;
+        {
+            var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+            logger.LogInformation("Schema reload completed");
+            
+            // Clear distributed cache
+            var cache = sp.GetService&lt;IDistributedCache&gt;();
+            await cache?.RemoveAsync("schema-metadata");
+            
+            // Warm up new schema
+            var repository = sp.GetRequiredService&lt;IEntityRepository&gt;();
+            await repository.PreloadMetadataAsync();
+        },
+        
+        OnReloadErrorAsync = async (sp, exception) =&gt;
+        {
+            var logger = sp.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+            logger.LogError(exception, "Schema reload failed");
+            
+            // Send alert in production
+            if (builder.Environment.IsProduction())
+            {
+                var alerting = sp.GetService&lt;IAlertingService&gt;();
+                await alerting?.SendAlertAsync(
+                    "DDAP Schema Reload Failed",
+                    exception.Message
+                );
+            }
+        }
+    };
+});
+</code></pre>
+<h2>Best Practices</h2>
+<p><strong>1. Environment-Specific Configuration</strong></p>
+<pre><code class="language-csharp">if (builder.Environment.IsDevelopment())
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        Strategy = ReloadStrategy.HotReload,
+        IdleTimeout = TimeSpan.FromSeconds(30)
+    };
+}
+else
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        Strategy = ReloadStrategy.InvalidateAndRebuild,
+        IdleTimeout = TimeSpan.FromMinutes(5)
+    };
+}
+</code></pre>
+<p><strong>2. Appropriate Idle Timeouts</strong></p>
+<ul>
+<li>Development: 30s-1m (fast feedback)</li>
+<li>Staging: 2-3m (balance)</li>
+<li>Production: 5-10m (stability)</li>
+</ul>
+<p><strong>3. Implement Monitoring</strong>
+Track reload frequency, duration, and failure rate using event handlers.</p>
+<p><strong>4. Consider Database Size</strong>
+For large schemas (1000+ tables):</p>
+<ul>
+<li>Use <code>CheckTimestamps</code> instead of <code>CheckHash</code></li>
+<li>Increase <code>IdleTimeout</code> to reduce check frequency</li>
+<li>Consider <code>HotReload</code> for minor changes</li>
+</ul>
+<p><strong>5. Test Reload Scenarios</strong>
+Test adding/removing tables, changing columns, and heavy traffic during reload.</p>
+<h2>Troubleshooting</h2>
+<h3>Schema Not Reloading</h3>
+<p><strong>Problem:</strong> Database changes not reflected in API.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Verify <code>Enabled = true</code></li>
+<li>Check idle timeout has passed</li>
+<li>Test with <code>ChangeDetection.AlwaysReload</code></li>
+<li>Check logs for reload errors</li>
+<li>Ensure database permissions for metadata queries</li>
+</ul>
+<h3>Frequent Unnecessary Reloads</h3>
+<p><strong>Problem:</strong> Schema reloads without changes.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Switch to <code>CheckHash</code> or <code>CheckTimestamps</code></li>
+<li>Increase <code>IdleTimeout</code></li>
+<li>Investigate what's triggering changes</li>
+</ul>
+<h3>High Memory Usage</h3>
+<p><strong>Problem:</strong> Memory spikes during reload.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Use <code>BlockRequests</code> instead of <code>ServeOldSchema</code></li>
+<li>Switch to <code>HotReload</code> strategy</li>
+<li>Increase <code>IdleTimeout</code> to reduce frequency</li>
+</ul>
+<h3>Requests Failing During Reload</h3>
+<p><strong>Problem:</strong> 503 errors with <code>BlockRequests</code>.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Switch to <code>ServeOldSchema</code> for zero downtime</li>
+<li>Use <code>QueueRequests</code> to buffer requests</li>
+<li>Implement client retry logic</li>
+</ul>
+<h3>Reload Takes Too Long</h3>
+<p><strong>Problem:</strong> Unacceptable reload duration.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Use faster strategy (<code>HotReload</code> &gt; <code>RestartExecutor</code> &gt; <code>InvalidateAndRebuild</code>)</li>
+<li>Filter tables to reduce schema size</li>
+<li>Optimize database metadata queries</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Memory Usage</h3>
+<table>
+<thead>
+<tr>
+<th>Behavior</th>
+<th>Memory Usage</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ServeOldSchema</code></td>
+<td>~2x during reload</td>
+<td>Two complete schemas in memory</td>
+</tr>
+<tr>
+<td><code>QueueRequests</code></td>
+<td>1x + queue</td>
+<td>Queue size depends on request rate</td>
+</tr>
+<tr>
+<td><code>BlockRequests</code></td>
+<td>1x</td>
+<td>Minimal overhead</td>
+</tr>
+</tbody></table>
+<h3>Reload Duration</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Typical Duration</th>
+<th>Scales With</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HotReload</code></td>
+<td>100-500ms</td>
+<td>Number of changes</td>
+</tr>
+<tr>
+<td><code>RestartExecutor</code></td>
+<td>500ms-2s</td>
+<td>Total tables</td>
+</tr>
+<tr>
+<td><code>InvalidateAndRebuild</code></td>
+<td>1-5s</td>
+<td>Total tables + columns</td>
+</tr>
+</tbody></table>
+<h3>Change Detection Overhead</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Check Time</th>
+<th>Database Load</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AlwaysReload</code></td>
+<td>0ms</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>CheckHash</code></td>
+<td>50-500ms</td>
+<td>Reads all metadata</td>
+</tr>
+<tr>
+<td><code>CheckTimestamps</code></td>
+<td>10-50ms</td>
+<td>Reads system tables only</td>
+</tr>
+</tbody></table>
+<h3>Recommendations</h3>
+<p><strong>Small Schemas (&lt;100 tables):</strong></p>
+<ul>
+<li>Use <code>InvalidateAndRebuild</code> + <code>CheckHash</code></li>
+<li>Impact is minimal, reliability is worth it</li>
+</ul>
+<p><strong>Medium Schemas (100-500 tables):</strong></p>
+<ul>
+<li>Use <code>RestartExecutor</code> + <code>CheckHash</code></li>
+<li>Balance between speed and reliability</li>
+</ul>
+<p><strong>Large Schemas (500+ tables):</strong></p>
+<ul>
+<li>Use <code>HotReload</code> + <code>CheckTimestamps</code></li>
+<li>Prioritize performance</li>
+<li>Test thoroughly for edge cases</li>
+</ul>
+<hr>
+<p>For more information, see:</p>
+<ul>
+<li><a href="./architecture.md">Architecture Documentation</a></li>
+<li><a href="./advanced.md">Advanced Usage Guide</a></li>
+<li><a href="./troubleshooting.md">Troubleshooting Guide</a></li>
+</ul>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'es');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
+</html>

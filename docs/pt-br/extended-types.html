@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>Extended Types Support - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../pt-br/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Extended Types Support</h1>
+<p>DDAP now supports additional .NET types in both data providers and GraphQL:</p>
+<h2>Supported Extended Types</h2>
+<h3>Unsigned Integer Types</h3>
+<ul>
+<li><code>uint</code> (32-bit unsigned integer)</li>
+<li><code>ulong</code> (64-bit unsigned integer)</li>
+<li><code>ushort</code> (16-bit unsigned integer)</li>
+<li><code>sbyte</code> (8-bit signed integer)</li>
+</ul>
+<h3>Modern Date/Time Types</h3>
+<ul>
+<li><code>DateOnly</code> - Date without time component</li>
+<li><code>TimeOnly</code> - Time without date component</li>
+<li><code>TimeSpan</code> - Duration/interval</li>
+<li><code>DateTimeOffset</code> - Date and time with timezone offset</li>
+</ul>
+<h2>Usage</h2>
+<h3>In Dapper Provider</h3>
+<p>The Dapper provider automatically maps SQL types to these CLR types:</p>
+<p><strong>MySQL Unsigned Types:</strong></p>
+<pre><code class="language-sql">CREATE TABLE Users (
+    Id INT UNSIGNED PRIMARY KEY,
+    Credits BIGINT UNSIGNED,
+    Age SMALLINT UNSIGNED,
+    Status TINYINT UNSIGNED
+);
+</code></pre>
+<p>Maps to:</p>
+<pre><code class="language-csharp">public class User {
+    public uint Id { get; set; }
+    public ulong Credits { get; set; }
+    public ushort Age { get; set; }
+    public byte Status { get; set; }
+}
+</code></pre>
+<p><strong>Date/Time Types:</strong></p>
+<pre><code class="language-sql">CREATE TABLE Events (
+    EventDate DATE,              -- Maps to DateOnly
+    EventTime TIME,              -- Maps to TimeOnly
+    Duration INTERVAL,           -- Maps to TimeSpan (PostgreSQL)
+    CreatedAt DATETIMEOFFSET     -- Maps to DateTimeOffset
+);
+</code></pre>
+<h3>In GraphQL</h3>
+<p>Enable extended types support in your GraphQL configuration:</p>
+<pre><code class="language-csharp">services.AddDdap(options =&gt; 
+{
+    options.ConnectionString = "...";
+})
+.AddGraphQL(graphql =&gt; 
+{
+    graphql.AddExtendedTypes(); // Enable support for extended types
+});
+</code></pre>
+<p>This adds:</p>
+<ul>
+<li>Type converters for unsigned integers (maps to signed equivalents)</li>
+<li>Custom scalar types for <code>DateOnly</code> and <code>TimeOnly</code></li>
+<li>Support for <code>TimeSpan</code> and <code>DateTimeOffset</code></li>
+</ul>
+<h2>GraphQL Schema</h2>
+<p>The extended types appear in your GraphQL schema as:</p>
+<pre><code class="language-graphql">scalar DateOnly  # ISO 8601 date: "2024-01-29"
+scalar TimeOnly  # ISO 8601 time: "14:30:00"
+
+type User {
+    id: Int!           # uint mapped to Int
+    credits: Long!     # ulong mapped to Long
+    age: Short!        # ushort mapped to Short
+    birthDate: DateOnly
+    workStartTime: TimeOnly
+}
+</code></pre>
+<h2>Breaking Changes</h2>
+<p>⚠️ <strong>Important:</strong> Starting with this version:</p>
+<ul>
+<li>SQL <code>date</code> type now maps to <code>DateOnly</code> (was <code>DateTime</code>)</li>
+<li>SQL <code>time</code> type now maps to <code>TimeOnly</code> (was <code>TimeSpan</code>)</li>
+</ul>
+<p>If you need <code>TimeSpan</code>, use:</p>
+<ul>
+<li>PostgreSQL: <code>INTERVAL</code> type</li>
+<li>Other databases: Store as numeric (milliseconds/ticks)</li>
+</ul>
+<h2>Example Query</h2>
+<pre><code class="language-graphql">query {
+    users {
+        id
+        credits
+        birthDate
+        workStartTime
+    }
+}
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+    "data": {
+        "users": [
+            {
+                "id": 1,
+                "credits": 9223372036854775807,
+                "birthDate": "1990-05-15",
+                "workStartTime": "09:00:00"
+            }
+        ]
+    }
+}
+</code></pre>
+<h2>Notes</h2>
+<ul>
+<li>Unsigned types are converted to their signed equivalents in GraphQL (which doesn't have unsigned types)</li>
+<li>Values exceeding signed type ranges will wrap around (unchecked conversion)</li>
+<li>Custom scalar types serialize to ISO 8601 strings for broad compatibility</li>
+</ul>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'pt-br');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
+</html>

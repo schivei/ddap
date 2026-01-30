@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>Troubleshooting - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../de/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Troubleshooting</h1>
+<p>This guide covers common issues, error messages, and their solutions when working with DDAP.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#installation-issues">Installation Issues</a></li>
+<li><a href="#configuration-issues">Configuration Issues</a></li>
+<li><a href="#database-connection-issues">Database Connection Issues</a></li>
+<li><a href="#metadata-loading-issues">Metadata Loading Issues</a></li>
+<li><a href="#api-issues">API Issues</a></li>
+<li><a href="#performance-issues">Performance Issues</a></li>
+<li><a href="#deployment-issues">Deployment Issues</a></li>
+</ul>
+<h2>Installation Issues</h2>
+<h3>Issue: Package Not Found</h3>
+<p><strong>Error:</strong></p>
+<pre><code>error NU1101: Unable to find package Ddap.Core
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Ensure you're using the correct package name</li>
+<li>Check NuGet.org availability: <a href="https://www.nuget.org/packages/Ddap.Core">https://www.nuget.org/packages/Ddap.Core</a></li>
+<li>Clear NuGet cache:<pre><code class="language-bash">dotnet nuget locals all --clear
+</code></pre>
+</li>
+<li>Add NuGet source explicitly:<pre><code class="language-bash">dotnet nuget add source https://api.nuget.org/v3/index.json
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Version Compatibility</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Package Ddap.Core requires .NET 10.0
+</code></pre>
+<p><strong>Solution:</strong>
+Ensure you're using .NET 10 SDK:</p>
+<pre><code class="language-bash">dotnet --version  # Should be 10.0.x
+</code></pre>
+<p>Download from: <a href="https://dotnet.microsoft.com/download">https://dotnet.microsoft.com/download</a></p>
+<h3>Issue: Conflicting Dependencies</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Package 'X' is not compatible with 'netcoreapp3.1'
+</code></pre>
+<p><strong>Solution:</strong>
+Update your project to target .NET 10:</p>
+<pre><code class="language-xml">&lt;Project Sdk="Microsoft.NET.Sdk.Web"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;net10.0&lt;/TargetFramework&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<h2>Configuration Issues</h2>
+<h3>Issue: AddDdap Not Found</h3>
+<p><strong>Error:</strong></p>
+<pre><code>'IServiceCollection' does not contain a definition for 'AddDdap'
+</code></pre>
+<p><strong>Solution:</strong>
+Add the using directive:</p>
+<pre><code class="language-csharp">using Ddap.Core;
+</code></pre>
+<h3>Issue: Provider Not Registered</h3>
+<p><strong>Error:</strong></p>
+<pre><code>No data provider registered
+</code></pre>
+<p><strong>Solution:</strong>
+Register a database provider after AddDdap. Use the generic <code>Ddap.Data.Dapper</code> package:</p>
+<pre><code class="language-csharp">using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;  // Or your chosen database driver
+
+var connectionString = "...";
+builder.Services
+    .AddDdap(options =&gt; { /* ... */ })
+    .AddDapper(() =&gt; new SqlConnection(connectionString));  // Don't forget this!
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Previous versions had database-specific packages like <code>Ddap.Data.Dapper.SqlServer</code>. The new architecture uses a single <code>Ddap.Data.Dapper</code> package that works with any <code>IDbConnection</code>.</p>
+</blockquote>
+<h3>Issue: Connection String Not Found</h3>
+<p><strong>Error:</strong></p>
+<pre><code>ArgumentNullException: Connection string cannot be null
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p>Check appsettings.json:</p>
+<pre><code class="language-json">{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;..."
+  }
+}
+</code></pre>
+</li>
+<li><p>Verify configuration access:</p>
+<pre><code class="language-csharp">var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connStr))
+{
+    throw new InvalidOperationException("Connection string not found");
+}
+</code></pre>
+</li>
+</ol>
+<h2>Database Connection Issues</h2>
+<h3>Issue: SQL Server Connection Failed</h3>
+<p><strong>Error:</strong></p>
+<pre><code>A network-related or instance-specific error occurred
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Verify SQL Server is running:</strong></p>
+<pre><code class="language-bash"># Windows
+Get-Service MSSQLSERVER
+
+# Linux/Docker
+docker ps | grep sqlserver
+</code></pre>
+</li>
+<li><p><strong>Test connection:</strong></p>
+<pre><code class="language-bash">sqlcmd -S localhost -U sa -P YourPassword
+</code></pre>
+</li>
+<li><p><strong>Check firewall:</strong></p>
+<ul>
+<li>Allow TCP port 1433</li>
+<li>Disable Windows Firewall temporarily to test</li>
+</ul>
+</li>
+<li><p><strong>Enable TCP/IP:</strong></p>
+<ul>
+<li>Open SQL Server Configuration Manager</li>
+<li>Enable TCP/IP protocol</li>
+<li>Restart SQL Server service</li>
+</ul>
+</li>
+<li><p><strong>Try different connection string formats:</strong></p>
+<pre><code class="language-csharp">// Windows Authentication
+"Server=localhost;Database=MyDb;Integrated Security=true;"
+
+// SQL Authentication
+"Server=localhost;Database=MyDb;User Id=sa;Password=YourPassword;"
+
+// With explicit port
+"Server=localhost,1433;Database=MyDb;User Id=sa;Password=YourPassword;"
+
+// Named instance
+"Server=localhost\\SQLEXPRESS;Database=MyDb;Integrated Security=true;"
+</code></pre>
+</li>
+</ol>
+<h3>Issue: MySQL Connection Failed</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Unable to connect to any of the specified MySQL hosts
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Verify MySQL is running:</strong></p>
+<pre><code class="language-bash">mysql --version
+systemctl status mysql
+</code></pre>
+</li>
+<li><p><strong>Test connection:</strong></p>
+<pre><code class="language-bash">mysql -h localhost -u root -p
+</code></pre>
+</li>
+<li><p><strong>Check bind-address in my.cnf:</strong></p>
+<pre><code class="language-ini">bind-address = 127.0.0.1  # Restrict to local connections (recommended)
+# For remote access, bind to a specific internal IP or CIDR (not 0.0.0.0) and secure the network.
+</code></pre>
+</li>
+<li><p><strong>Create a dedicated application user (recommended):</strong></p>
+<pre><code class="language-sql">-- Replace 'your-strong-password' with a secure password (min 16 chars, mixed case, numbers, symbols)
+-- Replace 'your_database' with your actual database name
+CREATE USER 'ddap_app'@'localhost' IDENTIFIED BY 'your-strong-password';
+GRANT SELECT, INSERT, UPDATE, DELETE ON your_database.* TO 'ddap_app'@'localhost';
+FLUSH PRIVILEGES;
+</code></pre>
+<p><strong>⚠️ Development-only (DO NOT USE IN PRODUCTION):</strong></p>
+<pre><code class="language-sql">-- Use a strong, unique password and restrict network access to trusted hosts only
+-- Replace 'your-strong-dev-password' and 'your_database' as appropriate
+CREATE USER 'ddap_app_dev'@'%' IDENTIFIED BY 'your-strong-dev-password';
+GRANT SELECT, INSERT, UPDATE, DELETE ON your_database.* TO 'ddap_app_dev'@'%';
+FLUSH PRIVILEGES;
+</code></pre>
+</li>
+</ol>
+<h3>Issue: PostgreSQL Connection Failed</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Connection refused
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Verify PostgreSQL is running:</strong></p>
+<pre><code class="language-bash">pg_isready
+systemctl status postgresql
+</code></pre>
+</li>
+<li><p><strong>Test connection:</strong></p>
+<pre><code class="language-bash">psql -h localhost -U postgres
+</code></pre>
+</li>
+<li><p><strong>Edit postgresql.conf:</strong></p>
+<pre><code class="language-ini"># In production, restrict PostgreSQL to localhost or a specific trusted interface.
+# Example (local-only):
+listen_addresses = 'localhost'
+# Example (single interface or subnet, adjust as needed):
+# listen_addresses = '192.0.2.10'
+</code></pre>
+</li>
+<li><p><strong>Edit pg_hba.conf:</strong></p>
+<pre><code># Allow local connections only (recommended default)
+host    all             all             127.0.0.1/32         scram-sha-256
+host    all             all             ::1/128              scram-sha-256
+
+# For remote access, restrict to the minimal required subnet or IP and a least-privilege role:
+# host   mydb           app_user        203.0.113.0/24       scram-sha-256
+
+# Development-only: allow all IPv4 addresses (DO NOT USE IN PRODUCTION)
+# host   all            all             0.0.0.0/0            md5
+</code></pre>
+</li>
+<li><p><strong>Restart PostgreSQL:</strong></p>
+<pre><code class="language-bash">systemctl restart postgresql
+</code></pre>
+</li>
+</ol>
+<h2>Metadata Loading Issues</h2>
+<h3>Issue: No Entities Loaded</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Repository contains no entities
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Check database has tables:</strong></p>
+<pre><code class="language-sql">-- SQL Server
+SELECT * FROM INFORMATION_SCHEMA.TABLES;
+
+-- MySQL
+SHOW TABLES;
+
+-- PostgreSQL
+\dt
+</code></pre>
+</li>
+<li><p><strong>Verify table permissions:</strong></p>
+<pre><code class="language-sql">-- SQL Server
+SELECT * FROM fn_my_permissions(NULL, 'DATABASE');
+</code></pre>
+</li>
+<li><p><strong>Check schema filter:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddDdap(options =&gt;
+{
+    options.ConnectionString = "...";
+    options.IncludeSchemas = new[] { "dbo", "myschema" };
+});
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Some Tables Missing</h3>
+<p><strong>Problem:</strong> Only some tables are loaded</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Check primary keys:</strong></p>
+<ul>
+<li>DDAP requires tables to have primary keys</li>
+<li>Add primary keys to tables</li>
+</ul>
+</li>
+<li><p><strong>Verify table ownership:</strong></p>
+<pre><code class="language-sql">-- SQL Server
+SELECT * FROM sys.tables WHERE is_ms_shipped = 0;
+</code></pre>
+</li>
+<li><p><strong>Check schema exclusions:</strong></p>
+<pre><code class="language-csharp">options.ExcludeSchemas = new[] { "sys", "internal" };
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Relationships Not Detected</h3>
+<p><strong>Problem:</strong> Foreign keys not showing up</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Verify foreign keys exist:</strong></p>
+<pre><code class="language-sql">-- SQL Server
+SELECT * FROM sys.foreign_keys;
+
+-- MySQL
+SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+WHERE REFERENCED_TABLE_NAME IS NOT NULL;
+
+-- PostgreSQL
+SELECT * FROM information_schema.table_constraints 
+WHERE constraint_type = 'FOREIGN KEY';
+</code></pre>
+</li>
+<li><p><strong>Create missing foreign keys:</strong></p>
+<pre><code class="language-sql">ALTER TABLE Orders
+ADD CONSTRAINT FK_Orders_Customers
+FOREIGN KEY (CustomerId) REFERENCES Customers(Id);
+</code></pre>
+</li>
+</ol>
+<h2>API Issues</h2>
+<h3>Issue: 404 Not Found on /api/entity</h3>
+<p><strong>Error:</strong></p>
+<pre><code>HTTP 404 - /api/entity
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Ensure routing is configured:</strong></p>
+<pre><code class="language-csharp">app.UseRouting();
+app.MapControllers();
+</code></pre>
+</li>
+<li><p><strong>Check REST provider is registered:</strong></p>
+<pre><code class="language-csharp">.AddRest()
+</code></pre>
+</li>
+<li><p><strong>Verify controllers are discovered:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddControllers()
+    .AddApplicationPart(typeof(EntityController).Assembly);
+</code></pre>
+</li>
+</ol>
+<h3>Issue: GraphQL Endpoint Not Working</h3>
+<p><strong>Error:</strong></p>
+<pre><code>HTTP 404 - /graphql
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Map GraphQL endpoint:</strong></p>
+<pre><code class="language-csharp">app.MapGraphQL("/graphql");
+</code></pre>
+</li>
+<li><p><strong>Check GraphQL provider is registered:</strong></p>
+<pre><code class="language-csharp">.AddGraphQL()
+</code></pre>
+</li>
+<li><p><strong>Add GraphQL services:</strong></p>
+<pre><code class="language-csharp">builder.Services
+    .AddGraphQLServer()
+    .AddQueryType&lt;Query&gt;();
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Content Negotiation Not Working</h3>
+<p><strong>Problem:</strong> Always returns JSON even with Accept: application/xml</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Add XML formatter:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddControllers()
+    .AddXmlSerializerFormatters();
+</code></pre>
+</li>
+<li><p><strong>Check Accept header:</strong></p>
+<pre><code class="language-bash">curl -v -H "Accept: application/xml" http://localhost:5000/api/entity
+</code></pre>
+</li>
+</ol>
+<h3>Issue: CORS Errors</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Access to fetch at 'http://localhost:5000' from origin 'http://localhost:3000' 
+has been blocked by CORS policy
+</code></pre>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddCors(options =&gt;
+{
+    options.AddDefaultPolicy(policy =&gt;
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+var app = builder.Build();
+app.UseCors();
+</code></pre>
+<h2>Performance Issues</h2>
+<h3>Issue: Slow Metadata Loading</h3>
+<p><strong>Problem:</strong> Application takes long to start</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Add indexes to system tables:</strong></p>
+<pre><code class="language-sql">-- SQL Server
+CREATE INDEX IX_Columns ON INFORMATION_SCHEMA.COLUMNS(TABLE_NAME);
+</code></pre>
+</li>
+<li><p><strong>Increase connection timeout:</strong></p>
+<pre><code class="language-csharp">options.ConnectionString = "...;Connection Timeout=60;";
+</code></pre>
+</li>
+<li><p><strong>Use caching:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddMemoryCache();
+builder.Services.AddSingleton&lt;IEntityRepository, CachedEntityRepository&gt;();
+</code></pre>
+</li>
+</ol>
+<h3>Issue: High Memory Usage</h3>
+<p><strong>Problem:</strong> Application consuming too much memory</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Enable garbage collection:</strong></p>
+<pre><code class="language-csharp">GCSettings.LatencyMode = GCLatencyMode.Batch;
+</code></pre>
+</li>
+<li><p><strong>Reduce entity cache:</strong></p>
+<pre><code class="language-csharp">options.MaxCachedEntities = 100;
+</code></pre>
+</li>
+<li><p><strong>Use server GC:</strong></p>
+<pre><code class="language-xml">&lt;PropertyGroup&gt;
+  &lt;ServerGarbageCollection&gt;true&lt;/ServerGarbageCollection&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Slow API Responses</h3>
+<p><strong>Problem:</strong> API requests are slow</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Enable response caching:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddResponseCaching();
+app.UseResponseCaching();
+
+[ResponseCache(Duration = 60)]
+[HttpGet("metadata")]
+public IActionResult GetMetadata()
+</code></pre>
+</li>
+<li><p><strong>Use connection pooling:</strong></p>
+<pre><code class="language-csharp">options.ConnectionString = "...;Min Pool Size=10;Max Pool Size=100;";
+</code></pre>
+</li>
+<li><p><strong>Add indexes to database:</strong></p>
+<pre><code class="language-sql">CREATE INDEX IX_Entity_Name ON Entities(Name);
+</code></pre>
+</li>
+</ol>
+<h2>Auto-Reload Issues</h2>
+<h3>Issue: Schema Not Reloading</h3>
+<p><strong>Problem:</strong> Database changes not reflected in API.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Verify Auto-Reload is enabled:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddDdap(options =&gt;
+{
+    options.AutoReload = new AutoReloadOptions
+    {
+        Enabled = true,  // Must be true
+        IdleTimeout = TimeSpan.FromMinutes(5)
+    };
+});
+</code></pre>
+</li>
+<li><p><strong>Check idle timeout has passed:</strong></p>
+<ul>
+<li>The system only checks for changes after the idle timeout</li>
+<li>Make a request, wait for the timeout, then make another request</li>
+</ul>
+</li>
+<li><p><strong>Test with AlwaysReload:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Detection = ChangeDetection.AlwaysReload;
+</code></pre>
+</li>
+<li><p><strong>Check logs for reload errors:</strong></p>
+<pre><code class="language-csharp">builder.Logging.SetMinimumLevel(LogLevel.Debug);
+</code></pre>
+</li>
+<li><p><strong>Verify database permissions:</strong></p>
+<ul>
+<li>Ensure the connection has SELECT permissions on metadata tables</li>
+<li>SQL Server: <code>INFORMATION_SCHEMA</code> views</li>
+<li>MySQL: <code>information_schema</code> database</li>
+<li>PostgreSQL: <code>information_schema</code> and <code>pg_catalog</code> schemas</li>
+</ul>
+</li>
+</ol>
+<h3>Issue: Frequent Unnecessary Reloads</h3>
+<p><strong>Problem:</strong> Schema reloads even when nothing changed.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Use CheckHash detection:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Detection = ChangeDetection.CheckHash;
+</code></pre>
+</li>
+<li><p><strong>Increase idle timeout:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.IdleTimeout = TimeSpan.FromMinutes(10);
+</code></pre>
+</li>
+<li><p><strong>Check what's triggering changes:</strong></p>
+<ul>
+<li>Enable debug logging to see what's being detected</li>
+<li>Some operations (like rebuilding indexes) may change metadata timestamps</li>
+</ul>
+</li>
+</ol>
+<h3>Issue: High Memory During Reload</h3>
+<p><strong>Problem:</strong> Memory usage spikes during schema reload.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Use BlockRequests instead of ServeOldSchema:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Behavior = ReloadBehavior.BlockRequests;
+</code></pre>
+<p>Note: This will return HTTP 503 during reload.</p>
+</li>
+<li><p><strong>Switch to HotReload strategy:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Strategy = ReloadStrategy.HotReload;
+</code></pre>
+</li>
+<li><p><strong>Increase idle timeout to reduce frequency:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.IdleTimeout = TimeSpan.FromMinutes(15);
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Requests Failing During Reload</h3>
+<p><strong>Problem:</strong> Getting HTTP 503 errors during reload.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Switch to ServeOldSchema for zero downtime:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Behavior = ReloadBehavior.ServeOldSchema;
+</code></pre>
+</li>
+<li><p><strong>Use QueueRequests to buffer:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Behavior = ReloadBehavior.QueueRequests;
+</code></pre>
+</li>
+<li><p><strong>Implement client retry logic:</strong></p>
+<pre><code class="language-javascript">async function fetchWithRetry(url, retries = 3) {
+    for (let i = 0; i &lt; retries; i++) {
+        const response = await fetch(url);
+        if (response.status !== 503) return response;
+        await new Promise(resolve =&gt; setTimeout(resolve, 1000));
+    }
+    throw new Error('Service unavailable');
+}
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Reload Takes Too Long</h3>
+<p><strong>Problem:</strong> Schema reload duration is unacceptable.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Use faster reload strategy:</strong></p>
+<pre><code class="language-csharp">// HotReload is fastest (100-500ms)
+options.AutoReload.Strategy = ReloadStrategy.HotReload;
+
+// Or RestartExecutor for balance (500ms-2s)
+options.AutoReload.Strategy = ReloadStrategy.RestartExecutor;
+</code></pre>
+</li>
+<li><p><strong>Use timestamp-based detection:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Detection = ChangeDetection.CheckTimestamps;
+</code></pre>
+</li>
+<li><p><strong>Filter tables to reduce schema size:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddDdap(options =&gt;
+{
+    options.IncludeSchemas = new[] { "dbo" };
+    options.ExcludeTables = new[] { "sys%", "__EFMigrations%" };
+});
+</code></pre>
+</li>
+</ol>
+<h2>Migration from Old API</h2>
+<h3>Issue: Package Names Changed</h3>
+<p><strong>Problem:</strong> Build fails with old package references.</p>
+<p><strong>Solution:</strong></p>
+<p><strong>Old packages (pre-1.0):</strong></p>
+<pre><code class="language-xml">&lt;PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="0.x.x" /&gt;
+&lt;PackageReference Include="Ddap.Data.Dapper.MySQL" Version="0.x.x" /&gt;
+&lt;PackageReference Include="Ddap.Data.Dapper.PostgreSQL" Version="0.x.x" /&gt;
+</code></pre>
+<p><strong>New packages (1.0+):</strong></p>
+<pre><code class="language-xml">&lt;!-- Single generic Dapper package --&gt;
+&lt;PackageReference Include="Ddap.Data.Dapper" Version="1.0.0" /&gt;
+
+&lt;!-- Plus your chosen database driver --&gt;
+&lt;PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" /&gt;
+&lt;!-- OR --&gt;
+&lt;PackageReference Include="MySqlConnector" Version="2.0.0" /&gt;
+&lt;!-- OR --&gt;
+&lt;PackageReference Include="Npgsql" Version="8.0.0" /&gt;
+</code></pre>
+<p><strong>Update your code:</strong></p>
+<pre><code class="language-csharp">// Old way
+using Ddap.Data.Dapper.SqlServer;
+builder.Services.AddDdap(...).AddSqlServerDapper(connectionString);
+
+// New way
+using Ddap.Data.Dapper;
+using Microsoft.Data.SqlClient;
+builder.Services.AddDdap(...).AddDapper(() =&gt; new SqlConnection(connectionString));
+</code></pre>
+<h3>Issue: WithGrpcIntegration() Not Found</h3>
+<p><strong>Problem:</strong> Old code references removed methods.</p>
+<p><strong>Solution:</strong></p>
+<p><strong>Old way:</strong></p>
+<pre><code class="language-csharp">builder.Services.AddDdap(...).WithGrpcIntegration();
+</code></pre>
+<p><strong>New way:</strong> gRPC is configured separately via <code>AddGrpc()</code>:</p>
+<pre><code class="language-csharp">builder.Services
+    .AddDdap(...)
+    .AddRest()
+    .AddGraphQL()
+    .AddGrpc();
+</code></pre>
+<h3>Issue: Forced Newtonsoft.Json Configuration</h3>
+<p><strong>Problem:</strong> Old code assumed Newtonsoft.Json was required.</p>
+<p><strong>Solution:</strong></p>
+<p>DDAP no longer forces any JSON serializer. You choose:</p>
+<p><strong>System.Text.Json (recommended for performance):</strong></p>
+<pre><code class="language-csharp">builder.Services.ConfigureHttpJsonOptions(options =&gt;
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
+</code></pre>
+<p><strong>Newtonsoft.Json (if you prefer):</strong></p>
+<pre><code class="language-csharp">builder.Services.AddControllers().AddNewtonsoftJson();
+</code></pre>
+<p><strong>No changes needed in DDAP configuration—it respects your choice.</strong></p>
+<h2>Deployment Issues</h2>
+<h3>Issue: Application Won't Start in Production</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Connection refused
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Check environment variables:</strong></p>
+<pre><code class="language-bash">export ConnectionStrings__DefaultConnection="..."
+</code></pre>
+</li>
+<li><p><strong>Verify connection string in production:</strong></p>
+<pre><code class="language-csharp">if (app.Environment.IsProduction())
+{
+    var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrEmpty(connStr))
+        throw new InvalidOperationException("Production connection string missing");
+}
+</code></pre>
+</li>
+<li><p><strong>Check application URL bindings:</strong></p>
+<pre><code class="language-csharp">var app = builder.Build();
+app.Urls.Add("http://0.0.0.0:5000");
+</code></pre>
+</li>
+</ol>
+<h3>Issue: Docker Container Fails to Connect</h3>
+<p><strong>Error:</strong></p>
+<pre><code>Cannot connect to host.docker.internal
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Use correct host:</strong></p>
+<pre><code># Instead of localhost, use:
+Server=host.docker.internal;...
+</code></pre>
+</li>
+<li><p><strong>Use Docker network:</strong></p>
+<pre><code class="language-yaml"># docker-compose.yml
+services:
+  api:
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;...
+</code></pre>
+</li>
+<li><p><strong>Check network connectivity:</strong></p>
+<pre><code class="language-bash">docker exec -it container_name ping sqlserver
+</code></pre>
+</li>
+</ol>
+<h3>Issue: SSL/TLS Errors</h3>
+<p><strong>Error:</strong></p>
+<pre><code>The certificate chain was issued by an authority that is not trusted
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Trust certificate:</strong></p>
+<pre><code class="language-csharp">// Development only!
+options.ConnectionString = "...;TrustServerCertificate=True;";
+</code></pre>
+</li>
+<li><p><strong>Install proper certificate:</strong></p>
+<pre><code class="language-bash">dotnet dev-certs https --trust
+</code></pre>
+</li>
+</ol>
+<h2>Getting Help</h2>
+<p>If you're still experiencing issues:</p>
+<ol>
+<li><strong>Check GitHub Issues:</strong> <a href="https://github.com/schivei/ddap/issues">https://github.com/schivei/ddap/issues</a></li>
+<li><strong>Review Examples:</strong> <a href="https://github.com/schivei/ddap/tree/main/examples">https://github.com/schivei/ddap/tree/main/examples</a></li>
+<li><strong>Enable logging:</strong><pre><code class="language-csharp">builder.Logging.SetMinimumLevel(LogLevel.Debug);
+</code></pre>
+</li>
+<li><strong>Open a new issue</strong> with:<ul>
+<li>DDAP version</li>
+<li>.NET version</li>
+<li>Database type and version</li>
+<li>Error message and stack trace</li>
+<li>Minimal reproduction code</li>
+</ul>
+</li>
+</ol>
+<h2>Common Error Messages</h2>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Likely Cause</th>
+<th>Quick Fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NullReferenceException</code> in EntityRepository</td>
+<td>Provider not registered</td>
+<td>Add <code>.AddDapper()</code> etc.</td>
+</tr>
+<tr>
+<td><code>InvalidOperationException: No service for type IDataProvider</code></td>
+<td>Missing provider</td>
+<td>Register data provider</td>
+</tr>
+<tr>
+<td><code>SqlException: Login failed</code></td>
+<td>Wrong credentials</td>
+<td>Check connection string</td>
+</tr>
+<tr>
+<td><code>TimeoutException</code></td>
+<td>Slow query or network</td>
+<td>Increase timeout</td>
+</tr>
+<tr>
+<td><code>ArgumentException: Connection string is invalid</code></td>
+<td>Malformed connection string</td>
+<td>Validate format</td>
+</tr>
+<tr>
+<td><code>FileNotFoundException: Could not load file or assembly</code></td>
+<td>Missing package</td>
+<td>Run <code>dotnet restore</code></td>
+</tr>
+</tbody></table>
+<h2>Debug Mode</h2>
+<p>Enable detailed error messages in development:</p>
+<pre><code class="language-csharp">if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    
+    builder.Services.AddDdap(options =&gt;
+    {
+        options.EnableDetailedErrors = true;
+        options.EnableSensitiveDataLogging = true;
+    });
+}
+</code></pre>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="./philosophy.md">Philosophy</a> - Developer in Control philosophy</li>
+<li><a href="./get-started.md">Get Started</a> - Basic setup and configuration</li>
+<li><a href="./templates.md">Templates</a> - Quick start with templates</li>
+<li><a href="./auto-reload.md">Auto-Reload</a> - Auto-reload configuration</li>
+<li><a href="./advanced.md">Advanced Usage</a> - Extensibility patterns</li>
+<li><a href="./database-providers.md">Database Providers</a> - Database-specific documentation</li>
+<li><a href="./api-providers.md">API Providers</a> - API protocol details</li>
+</ul>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'de');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
+</html>
