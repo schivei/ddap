@@ -56,26 +56,44 @@
       "type": "parameter",
       "datatype": "string",
       "defaultValue": "rest",
-      "description": "API protocols to enable (comma-separated: rest,graphql,grpc)",
+      "description": "DEPRECATED: Use --rest, --graphql, --grpc flags instead",
       "replaces": "API_PROVIDERS_PLACEHOLDER"
+    },
+    "rest": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Enable REST API"
+    },
+    "graphql": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Enable GraphQL"
+    },
+    "grpc": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Enable gRPC"
     },
     "EnableRest": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Enable REST API (alternative to api-providers)"
+      "description": "DEPRECATED: Use --rest instead"
     },
     "EnableGraphQL": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Enable GraphQL (alternative to api-providers)"
+      "description": "DEPRECATED: Use --graphql instead"
     },
     "EnableGrpc": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Enable gRPC (alternative to api-providers)"
+      "description": "DEPRECATED: Use --grpc instead"
     },
     "connection-string": {
       "type": "parameter",
@@ -128,15 +146,15 @@
     },
     "IncludeRest": {
       "type": "computed",
-      "value": "(EnableRest || api-providers == \"rest\" || api-providers.IndexOf(\"rest\") >= 0)"
+      "value": "(rest || EnableRest)"
     },
     "IncludeGraphQL": {
       "type": "computed",
-      "value": "(EnableGraphQL || api-providers.IndexOf(\"graphql\") >= 0)"
+      "value": "(graphql || EnableGraphQL)"
     },
     "IncludeGrpc": {
       "type": "computed",
-      "value": "(EnableGrpc || api-providers.IndexOf(\"grpc\") >= 0)"
+      "value": "(grpc || EnableGrpc)"
     }
   },
   "sources": [

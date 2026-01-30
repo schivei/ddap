@@ -4,46 +4,46 @@ This project was generated using the DDAP templates.
 
 ## Configuration
 
-<!--#if (UseDapper) -->
+#if (UseDapper)
 **Database Provider:** Dapper (lightweight, high-performance)
-<!--#endif -->
-<!--#if (UseEntityFramework) -->
+#endif
+#if (UseEntityFramework)
 **Database Provider:** Entity Framework Core (full ORM with LINQ support)
-<!--#endif -->
+#endif
 
-<!--#if (UseSqlServer) -->
+#if (UseSqlServer)
 **Database:** Microsoft SQL Server
-<!--#endif -->
-<!--#if (UseMySQL) -->
+#endif
+#if (UseMySQL)
 **Database:** MySQL
-<!--#endif -->
-<!--#if (UsePostgreSQL) -->
+#endif
+#if (UsePostgreSQL)
 **Database:** PostgreSQL
-<!--#endif -->
-<!--#if (UseSQLite) -->
+#endif
+#if (UseSQLite)
 **Database:** SQLite
-<!--#endif -->
+#endif
 
 **API Providers:**
-<!--#if (IncludeRest) -->
+#if (IncludeRest)
 - REST API (available at `/api/entity`)
-<!--#endif -->
-<!--#if (IncludeGraphQL) -->
+#endif
+#if (IncludeGraphQL)
 - GraphQL (available at `/graphql`)
-<!--#endif -->
-<!--#if (IncludeGrpc) -->
+#endif
+#if (IncludeGrpc)
 - gRPC services
-<!--#endif -->
+#endif
 
-<!--#if (include-auth) -->
+#if (include-auth)
 **Authentication:** JWT authentication enabled
-<!--#endif -->
-<!--#if (include-subscriptions) -->
+#endif
+#if (include-subscriptions)
 **Subscriptions:** Real-time subscriptions enabled
-<!--#endif -->
-<!--#if (use-aspire) -->
+#endif
+#if (use-aspire)
 **Aspire:** .NET Aspire orchestration enabled
-<!--#endif -->
+#endif
 
 ## Getting Started
 
@@ -56,29 +56,29 @@ dotnet user-secrets init
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "your-connection-string"
 ```
 
-<!--#if (UseSqlServer) -->
+#if (UseSqlServer)
 Example connection string for SQL Server:
 ```
 Server=localhost;Database=DdapDb;Integrated Security=true;TrustServerCertificate=true;
 ```
-<!--#endif -->
-<!--#if (UseMySQL) -->
+#endif
+#if (UseMySQL)
 Example connection string for MySQL:
 ```
 Server=localhost;Database=DdapDb;User=root;Password=secret;
 ```
-<!--#endif -->
-<!--#if (UsePostgreSQL) -->
+#endif
+#if (UsePostgreSQL)
 Example connection string for PostgreSQL:
 ```
 Host=localhost;Database=DdapDb;Username=postgres;Password=secret;
 ```
-<!--#endif -->
-<!--#if (UseSQLite) -->
+#endif
+#if (UseSQLite)
 The SQLite database will be created automatically at `ddap.db`.
-<!--#endif -->
+#endif
 
-<!--#if (include-auth) -->
+#if (include-auth)
 ### 2. Configure JWT Secret
 
 Set your JWT secret key using User Secrets:
@@ -87,10 +87,10 @@ Set your JWT secret key using User Secrets:
 dotnet user-secrets set "Jwt:SecretKey" "your-256-bit-secret-key-here-must-be-32-chars"
 ```
 
-<!--#endif -->
-### <!--#if (include-auth) -->3<!--#else -->2<!--#endif -->. Run the application
+#endif
+### #if (include-auth)3#else2#endif. Run the application
 
-<!--#if (use-aspire) -->
+#if (use-aspire)
 Run using the Aspire AppHost:
 
 ```bash
@@ -99,22 +99,22 @@ dotnet run
 ```
 
 The Aspire dashboard will open at `http://localhost:15888`.
-<!--#else -->
+#else
 ```bash
 dotnet run
 ```
-<!--#endif -->
+#endif
 
-### <!--#if (include-auth) -->4<!--#else -->3<!--#endif -->. Test the API
+### #if (include-auth)4#else3#endif. Test the API
 
-<!--#if (IncludeRest) -->
+#if (IncludeRest)
 **REST API:**
 ```bash
 curl http://localhost:5000/api/entity
 ```
-<!--#endif -->
+#endif
 
-<!--#if (IncludeGraphQL) -->
+#if (IncludeGraphQL)
 **GraphQL:**
 
 Open `http://localhost:5000/graphql` in your browser for the GraphQL playground, or use curl:
@@ -124,9 +124,9 @@ curl -X POST http://localhost:5000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ entities { name propertyCount } }"}'
 ```
-<!--#endif -->
+#endif
 
-<!--#if (include-auth) -->
+#if (include-auth)
 **Authentication:**
 
 Get a JWT token:
@@ -135,7 +135,7 @@ curl -X POST http://localhost:5000/auth/token \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "password"}'
 ```
-<!--#endif -->
+#endif
 
 ## Next Steps
 

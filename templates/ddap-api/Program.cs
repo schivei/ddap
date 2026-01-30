@@ -1,50 +1,50 @@
 using Ddap.Core;
-<!--#if (UseDapper && UseSqlServer) -->
+#if (UseDapper && UseSqlServer)
 using Ddap.Data.Dapper.SqlServer;
-<!--#endif -->
-<!--#if (UseDapper && UseMySQL) -->
+#endif
+#if (UseDapper && UseMySQL)
 using Ddap.Data.Dapper.MySQL;
-<!--#endif -->
-<!--#if (UseDapper && UsePostgreSQL) -->
+#endif
+#if (UseDapper && UsePostgreSQL)
 using Ddap.Data.Dapper.PostgreSQL;
-<!--#endif -->
-<!--#if (IncludeRest) -->
+#endif
+#if (IncludeRest)
 using Ddap.Rest;
-<!--#endif -->
-<!--#if (IncludeGraphQL) -->
+#endif
+#if (IncludeGraphQL)
 using Ddap.GraphQL;
-<!--#endif -->
-<!--#if (IncludeGrpc) -->
+#endif
+#if (IncludeGrpc)
 using Ddap.Grpc;
-<!--#endif -->
-<!--#if (include-auth) -->
+#endif
+#if (include-auth)
 using Ddap.Auth;
-<!--#endif -->
-<!--#if (include-subscriptions) -->
+#endif
+#if (include-subscriptions)
 using Ddap.Subscriptions;
-<!--#endif -->
+#endif
 
 var builder = WebApplication.CreateBuilder(args);
 
-<!--#if (use-aspire) -->
+#if (use-aspire)
 // Add service defaults & Aspire client integrations
 builder.AddServiceDefaults();
 
-<!--#endif -->
+#endif
 // Get connection string from configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-<!--#if (UseSqlServer) -->
+#if (UseSqlServer)
     ?? "Server=localhost;Database=DdapDb;Integrated Security=true;TrustServerCertificate=true;";
-<!--#endif -->
-<!--#if (UseMySQL) -->
+#endif
+#if (UseMySQL)
     ?? "Server=localhost;Database=DdapDb;User=root;Password=secret;";
-<!--#endif -->
-<!--#if (UsePostgreSQL) -->
+#endif
+#if (UsePostgreSQL)
     ?? "Host=localhost;Database=DdapDb;Username=postgres;Password=secret;";
-<!--#endif -->
-<!--#if (UseSQLite) -->
+#endif
+#if (UseSQLite)
     ?? "Data Source=ddap.db";
-<!--#endif -->
+#endif
 
 // Configure DDAP
 var ddapBuilder = builder.Services.AddDdap(options =>
@@ -53,43 +53,43 @@ var ddapBuilder = builder.Services.AddDdap(options =>
 });
 
 // Add database provider
-<!--#if (UseDapper && UseSqlServer) -->
+#if (UseDapper && UseSqlServer)
 ddapBuilder.AddSqlServerDapper();
-<!--#endif -->
-<!--#if (UseDapper && UseMySQL) -->
+#endif
+#if (UseDapper && UseMySQL)
 ddapBuilder.AddMySqlDapper();
-<!--#endif -->
-<!--#if (UseDapper && UsePostgreSQL) -->
+#endif
+#if (UseDapper && UsePostgreSQL)
 ddapBuilder.AddPostgreSqlDapper();
-<!--#endif -->
-<!--#if (UseDapper && UseSQLite) -->
+#endif
+#if (UseDapper && UseSQLite)
 ddapBuilder.AddDapper();
-<!--#endif -->
-<!--#if (UseEntityFramework && UseSqlServer) -->
+#endif
+#if (UseEntityFramework && UseSqlServer)
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.SqlServerDbContextOptionsBuilder>();
-<!--#endif -->
-<!--#if (UseEntityFramework && UseMySQL) -->
+#endif
+#if (UseEntityFramework && UseMySQL)
 ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
-<!--#endif -->
-<!--#if (UseEntityFramework && UsePostgreSQL) -->
+#endif
+#if (UseEntityFramework && UsePostgreSQL)
 ddapBuilder.AddEntityFramework<Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.NpgsqlDbContextOptionsBuilder>();
-<!--#endif -->
-<!--#if (UseEntityFramework && UseSQLite) -->
+#endif
+#if (UseEntityFramework && UseSQLite)
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.Sqlite.Infrastructure.SqliteDbContextOptionsBuilder>();
-<!--#endif -->
+#endif
 
 // Add API providers
-<!--#if (IncludeRest) -->
+#if (IncludeRest)
 ddapBuilder.AddRest();
-<!--#endif -->
-<!--#if (IncludeGraphQL) -->
+#endif
+#if (IncludeGraphQL)
 ddapBuilder.AddGraphQL();
-<!--#endif -->
-<!--#if (IncludeGrpc) -->
+#endif
+#if (IncludeGrpc)
 ddapBuilder.AddGrpc();
-<!--#endif -->
+#endif
 
-<!--#if (include-auth) -->
+#if (include-auth)
 // Add authentication
 ddapBuilder.AddAuthentication(options =>
 {
@@ -98,53 +98,53 @@ ddapBuilder.AddAuthentication(options =>
     options.JwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "DdapApi";
     options.JwtAudience = builder.Configuration["Jwt:Audience"] ?? "DdapApi";
 });
-<!--#endif -->
+#endif
 
-<!--#if (include-subscriptions) -->
+#if (include-subscriptions)
 // Add subscriptions
 ddapBuilder.AddSubscriptions();
-<!--#endif -->
+#endif
 
 var app = builder.Build();
 
-<!--#if (use-aspire) -->
+#if (use-aspire)
 // Configure Aspire defaults
 app.MapDefaultEndpoints();
 
-<!--#endif -->
+#endif
 // Configure middleware
 app.UseRouting();
 
-<!--#if (include-auth) -->
+#if (include-auth)
 app.UseAuthentication();
 app.UseAuthorization();
-<!--#endif -->
+#endif
 
-<!--#if (IncludeRest) -->
+#if (IncludeRest)
 // Map REST controllers
 app.MapControllers();
-<!--#endif -->
+#endif
 
-<!--#if (IncludeGraphQL) -->
+#if (IncludeGraphQL)
 // Map GraphQL endpoint
 app.MapGraphQL("/graphql");
-<!--#endif -->
+#endif
 
 app.MapGet("/", () => 
 {
     var endpoints = new List<string>();
-    <!--#if (IncludeRest) -->
+#if (IncludeRest)
     endpoints.Add("REST API: /api/entity");
-    <!--#endif -->
-    <!--#if (IncludeGraphQL) -->
+#endif
+#if (IncludeGraphQL)
     endpoints.Add("GraphQL: /graphql");
-    <!--#endif -->
-    <!--#if (IncludeGrpc) -->
+#endif
+#if (IncludeGrpc)
     endpoints.Add("gRPC services available");
-    <!--#endif -->
-    <!--#if (include-auth) -->
+#endif
+#if (include-auth)
     endpoints.Add("Authentication: /auth/login, /auth/token");
-    <!--#endif -->
+#endif
     
     return new 
     {

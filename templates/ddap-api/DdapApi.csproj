@@ -9,7 +9,6 @@
   <ItemGroup>
     <!-- Core DDAP package -->
     <PackageReference Include="Ddap.Core" Version="1.0.*" />
-
     <!--#if (UseDapper && UseSqlServer) -->
     <PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="1.0.*" />
     <!--#endif -->
@@ -23,7 +22,6 @@
     <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.*" />
     <!--#endif -->
-
     <!--#if (UseEntityFramework) -->
     <PackageReference Include="Ddap.Data.EntityFramework" Version="1.0.*" />
     <!--#if (UseSqlServer) -->
@@ -39,7 +37,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.*" />
     <!--#endif -->
     <!--#endif -->
-
     <!--#if (IncludeRest) -->
     <PackageReference Include="Ddap.Rest" Version="1.0.*" />
     <!--#endif -->
@@ -56,8 +53,8 @@
     <PackageReference Include="Ddap.Subscriptions" Version="1.0.*" />
     <!--#endif -->
   </ItemGroup>
-
   <!--#if (use-aspire) -->
+
   <ItemGroup>
     <ProjectReference Include="..\DdapApi.ServiceDefaults\DdapApi.ServiceDefaults.csproj" />
   </ItemGroup>
