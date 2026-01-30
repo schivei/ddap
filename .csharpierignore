@@ -1,0 +1,2 @@
+# Exclude template files from formatting
+templates/**/*
