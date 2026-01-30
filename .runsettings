@@ -30,7 +30,7 @@
             [Ddap.Grpc]Ddap.Grpc.RawQuery.SingleResult
             [Ddap.Grpc]Ddap.Grpc.RawQuery.VoidResult
             
-            <!-- Exclude source generators (auto-generate code, not testable) -->
+            <!-- Exclude source generators (auto-generated code, not testable) -->
             [Ddap.CodeGen]*
             
             <!-- Exclude E2E-only code (requires running servers, tested via integration/E2E tests) -->
