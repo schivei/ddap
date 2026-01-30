@@ -148,10 +148,10 @@ public static class QueryAnalyzer
     {
         var fromMatch = Regex.Match(
             query,
-            @"\bFROM\s+(\[?\w+\]?\.?\[?\w+\]?)",
+            @"\bFROM\s+([\w\.\[\]\s]+?)(?:\s+WHERE|\s+JOIN|\s+ORDER|\s+GROUP|\s+LIMIT|;|$)",
             RegexOptions.IgnoreCase
         );
-        return fromMatch.Success ? fromMatch.Groups[1].Value.Trim('[', ']') : null;
+        return fromMatch.Success ? fromMatch.Groups[1].Value.Trim().Trim('[', ']').Trim() : null;
     }
 
     private static string? ExtractTableFromInsert(string query)
