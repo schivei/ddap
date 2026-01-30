@@ -12,11 +12,14 @@ DDAP APIリファレンスドキュメントへようこそ。このセクショ
 - **Ddap.Rest** - REST APIプロバイダー
 - **Ddap.GraphQL** - GraphQLプロバイダー
 - **Ddap.Grpc** - gRPCプロバイダー
-- **Ddap.Memory** - インメモリエンティティ管理
 - **Ddap.CodeGen** - ソースコードジェネレーター
 - **Ddap.Aspire** - .NET Aspire統合
 - **Ddap.Auth** - 認証と認可
 - **Ddap.Subscriptions** - リアルタイムサブスクリプション
+- **Ddap.Client.Core** - クライアントコア抽象化
+- **Ddap.Client.Rest** - RESTクライアント
+- **Ddap.Client.GraphQL** - GraphQLクライアント
+- **Ddap.Client.Grpc** - gRPCクライアント
 
 ## 主要インターフェース
 

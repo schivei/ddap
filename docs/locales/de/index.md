@@ -12,11 +12,14 @@ Durchsuchen Sie die API-Dokumentation nach Namespace:
 - **Ddap.Rest** - REST-API-Provider
 - **Ddap.GraphQL** - GraphQL-Provider
 - **Ddap.Grpc** - gRPC-Provider
-- **Ddap.Memory** - In-Memory-Entity-Management
 - **Ddap.CodeGen** - Quellcode-Generatoren
 - **Ddap.Aspire** - .NET Aspire-Integration
 - **Ddap.Auth** - Authentifizierung und Autorisierung
 - **Ddap.Subscriptions** - Echtzeit-Abonnements
+- **Ddap.Client.Core** - Client-Kern-Abstraktionen
+- **Ddap.Client.Rest** - REST-Client
+- **Ddap.Client.GraphQL** - GraphQL-Client
+- **Ddap.Client.Grpc** - gRPC-Client
 
 ## Hauptschnittstellen
 

@@ -12,11 +12,14 @@
 - **Ddap.Rest** - REST API提供程序
 - **Ddap.GraphQL** - GraphQL提供程序
 - **Ddap.Grpc** - gRPC提供程序
-- **Ddap.Memory** - 内存实体管理
 - **Ddap.CodeGen** - 源代码生成器
 - **Ddap.Aspire** - .NET Aspire集成
 - **Ddap.Auth** - 身份验证和授权
 - **Ddap.Subscriptions** - 实时订阅
+- **Ddap.Client.Core** - 客户端核心抽象
+- **Ddap.Client.Rest** - REST客户端
+- **Ddap.Client.GraphQL** - GraphQL客户端
+- **Ddap.Client.Grpc** - gRPC客户端
 
 ## 主要接口
 

@@ -12,11 +12,14 @@ Browse the API documentation by namespace:
 - **Ddap.Rest** - REST API provider
 - **Ddap.GraphQL** - GraphQL provider
 - **Ddap.Grpc** - gRPC provider
-- **Ddap.Memory** - In-memory entity management
 - **Ddap.CodeGen** - Source generators
 - **Ddap.Aspire** - .NET Aspire integration
 - **Ddap.Auth** - Authentication and authorization
 - **Ddap.Subscriptions** - Real-time subscriptions
+- **Ddap.Client.Core** - Core client abstractions
+- **Ddap.Client.Rest** - REST client
+- **Ddap.Client.GraphQL** - GraphQL client
+- **Ddap.Client.Grpc** - gRPC client
 
 ## Key Interfaces
 
