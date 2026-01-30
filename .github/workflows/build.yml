@@ -184,6 +184,8 @@ jobs:
   check-changes:
     name: Check for Package Code Changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       should-publish: ${{ steps.check.outputs.should-publish }}
     steps:
