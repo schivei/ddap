@@ -120,7 +120,7 @@ public class ExtendedTypesTests
         // Assert
         valueNode.Should().NotBeNull();
         valueNode.Should().BeOfType<DateTimeValueNode>();
-        ((string)valueNode.Value!).Should().StartWith("14:30:00");
+        ((DateTimeValueNode)valueNode).Value.Should().StartWith("14:30:00");
     }
 
     [Fact]
