@@ -84,13 +84,14 @@ get_package_versions() {
     local package_id=$1
     local url="https://api.nuget.org/v3-flatcontainer/${package_id,,}/index.json"
     
-    echo -e "${BLUE}Fetching versions for ${package_id}...${NC}"
+    # Log to stderr so it doesn't interfere with the return value
+    echo -e "${BLUE}Fetching versions for ${package_id}...${NC}" >&2
     
     # Fetch package versions
     local response=$(curl -s "$url")
     
     if [ $? -ne 0 ] || [ -z "$response" ]; then
-        echo -e "${YELLOW}  Package ${package_id} not found on NuGet.org or error fetching${NC}"
+        echo -e "${YELLOW}  Package ${package_id} not found on NuGet.org or error fetching${NC}" >&2
         return 1
     fi
     
@@ -98,7 +99,7 @@ get_package_versions() {
     local versions=$(echo "$response" | jq -r '.versions[]?' 2>/dev/null)
     
     if [ -z "$versions" ]; then
-        echo -e "${YELLOW}  No versions found for ${package_id}${NC}"
+        echo -e "${YELLOW}  No versions found for ${package_id}${NC}" >&2
         return 1
     fi
     
@@ -149,6 +150,7 @@ unlist_all_versions() {
     echo -e "${BLUE}========================================${NC}"
     echo -e "${BLUE}Processing package: ${package_id}${NC}"
     echo -e "${BLUE}========================================${NC}"
+    echo
     
     # Get all versions
     local versions=$(get_package_versions "$package_id")
@@ -170,9 +172,9 @@ unlist_all_versions() {
     
     while IFS= read -r version; do
         if unlist_package_version "$package_id" "$version" "$dry_run"; then
-            ((success_count++))
+            success_count=$((success_count + 1))
         else
-            ((fail_count++))
+            fail_count=$((fail_count + 1))
         fi
     done <<< "$versions"
     
@@ -206,7 +208,7 @@ fi
 TOTAL_PROCESSED=0
 for package in "${DEPRECATED_PACKAGES[@]}"; do
     unlist_all_versions "$package" "$DRY_RUN"
-    ((TOTAL_PROCESSED++))
+    TOTAL_PROCESSED=$((TOTAL_PROCESSED + 1))
 done
 
 echo -e "${BLUE}========================================${NC}"
