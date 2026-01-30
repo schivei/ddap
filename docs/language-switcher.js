@@ -22,10 +22,19 @@
     
     /**
      * Get the user's preferred language
-     * Priority: localStorage > navigator.language > default (en)
+     * Priority: URL path > localStorage > navigator.language > default (en)
      */
     function getPreferredLanguage() {
-        // Check localStorage first
+        // Check URL path first (e.g., /pt-br/get-started.html)
+        const pathParts = window.location.pathname.split('/').filter(p => p);
+        if (pathParts.length > 0) {
+            const firstPart = pathParts[0];
+            if (SUPPORTED_LANGUAGES[firstPart]) {
+                return firstPart;
+            }
+        }
+        
+        // Check localStorage
         const savedLanguage = localStorage.getItem(STORAGE_KEY);
         if (savedLanguage && SUPPORTED_LANGUAGES[savedLanguage]) {
             return savedLanguage;
@@ -58,19 +67,45 @@
      */
     function getCurrentPagePath() {
         const path = window.location.pathname;
-        const filename = path.split('/').pop() || 'index.html';
-        return filename;
+        const pathParts = path.split('/').filter(p => p);
+        
+        // Check if we're in a locale directory
+        const locales = Object.keys(SUPPORTED_LANGUAGES);
+        if (pathParts.length > 0 && locales.includes(pathParts[0])) {
+            // Remove locale from path
+            return pathParts.slice(1).join('/') || 'index.html';
+        }
+        
+        return pathParts.join('/') || 'index.html';
     }
     
     /**
      * Build URL for a specific language
      */
     function buildLanguageUrl(language, pagePath) {
-        // For now, we'll use the same page structure
-        // In production, this would route to locale-specific URLs
-        const params = new URLSearchParams(window.location.search);
-        params.set('lang', language);
-        return `${pagePath}?${params.toString()}`;
+        // Get current path without leading slash
+        const currentPath = window.location.pathname;
+        const pathParts = currentPath.split('/').filter(p => p);
+        
+        // Check if we're already in a locale directory
+        const locales = Object.keys(SUPPORTED_LANGUAGES);
+        let currentLocale = null;
+        let actualPath = pagePath;
+        
+        // Remove any existing locale from path
+        if (pathParts.length > 0 && locales.includes(pathParts[0])) {
+            currentLocale = pathParts[0];
+            actualPath = pathParts.slice(1).join('/') || 'index.html';
+        } else {
+            actualPath = pathParts.join('/') || 'index.html';
+        }
+        
+        // For English, use root path; for others, use /locale/ prefix
+        if (language === 'en' || language === DEFAULT_LANGUAGE) {
+            return `/${actualPath}`;
+        } else {
+            return `/${language}/${actualPath}`;
+        }
     }
     
     /**
