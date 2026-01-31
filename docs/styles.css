@@ -966,9 +966,67 @@ section {
     }
 }
 
+/* Also disable for data-reduced-motion attribute (set by theme-toggle.js) */
+:root[data-reduced-motion="true"] *,
+:root[data-reduced-motion="true"] *::before,
+:root[data-reduced-motion="true"] *::after,
+:root[data-high-contrast="true"] *,
+:root[data-high-contrast="true"] *::before,
+:root[data-high-contrast="true"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
 /* ===================================
    High Contrast Mode Enhancements
    =================================== */
+
+/* Enhanced focus indicators for high contrast */
+:root[data-high-contrast="true"] *:focus {
+    outline: 3px solid var(--color-primary) !important;
+    outline-offset: 3px !important;
+}
+
+/* Simplified shadows for high contrast */
+:root[data-high-contrast="true"] {
+    --shadow-sm: 0 0 0 1px var(--border-color);
+    --shadow-md: 0 0 0 2px var(--border-color);
+    --shadow-lg: 0 0 0 3px var(--border-color);
+    --shadow-xl: 0 0 0 4px var(--border-color);
+}
+
+/* Remove complex backgrounds in high contrast */
+:root[data-high-contrast="true"] .hero {
+    background: var(--bg-secondary) !important;
+}
+
+/* Ensure all text has maximum contrast in high contrast mode */
+:root[data-high-contrast="true"] {
+    --text-secondary: #ffffff !important;
+    --text-tertiary: #ffffff !important;
+}
+
+/* Enhanced link visibility in high contrast */
+:root[data-high-contrast="true"] a {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+}
+
+/* Remove hover effects in high contrast (clearer for screen readers) */
+:root[data-high-contrast="true"] a:hover,
+:root[data-high-contrast="true"] button:hover {
+    transform: none !important;
+}
+
+/* Enhanced button borders in high contrast */
+:root[data-high-contrast="true"] button,
+:root[data-high-contrast="true"] .btn {
+    border: 2px solid var(--color-primary) !important;
+}
+
+/* Existing high contrast styles */
 
 :root[data-theme="high-contrast"] .btn-primary {
     background: var(--text-on-primary);

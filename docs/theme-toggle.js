@@ -2,6 +2,7 @@
  * DDAP Theme Toggle
  * 3-way theme switcher: Light → Dark → High Contrast → Light
  * WCAG AA/AAA compliant with localStorage persistence
+ * Auto-detects accessibility preferences (prefers-contrast, prefers-reduced-motion)
  */
 
 (function() {
@@ -9,6 +10,7 @@
     
     const THEMES = ['light', 'dark', 'high-contrast'];
     const STORAGE_KEY = 'ddap-theme';
+    const AUTO_DETECT_KEY = 'ddap-theme-auto-detect';
     const THEME_ICONS = {
         'light': '🌙',
         'dark': '⚡',
@@ -21,24 +23,56 @@
     };
     
     /**
+     * Check if reduced motion is preferred
+     */
+    function prefersReducedMotion() {
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    
+    /**
+     * Check if high contrast is preferred
+     */
+    function prefersHighContrast() {
+        if (!window.matchMedia) return false;
+        
+        // Check for explicit high contrast preference
+        if (window.matchMedia('(prefers-contrast: more)').matches) {
+            return true;
+        }
+        
+        // Check for forced-colors (Windows High Contrast Mode)
+        if (window.matchMedia('(forced-colors: active)').matches) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Get the user's preferred theme
-     * Priority: localStorage > prefers-color-scheme > default (light)
+     * Priority: localStorage (manual) > accessibility preferences > prefers-color-scheme > default (light)
      */
     function getPreferredTheme() {
-        // Check localStorage first
+        // Check if auto-detection is enabled (default: yes)
+        const autoDetect = localStorage.getItem(AUTO_DETECT_KEY) !== 'false';
+        
+        // Check localStorage first (manual selection)
         const savedTheme = localStorage.getItem(STORAGE_KEY);
         if (savedTheme && THEMES.includes(savedTheme)) {
+            // If user manually set a theme, respect it
             return savedTheme;
         }
         
-        // Check system preference
-        if (window.matchMedia) {
+        // Auto-detect if enabled
+        if (autoDetect && window.matchMedia) {
+            // Priority 1: High contrast preference (accessibility)
+            if (prefersHighContrast()) {
+                return 'high-contrast';
+            }
+            
+            // Priority 2: Dark mode preference
             if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 return 'dark';
-            }
-            // Check for high contrast preference
-            if (window.matchMedia('(prefers-contrast: more)').matches) {
-                return 'high-contrast';
             }
         }
         
@@ -48,6 +82,7 @@
     
     /**
      * Apply theme to document
+     * Also handles reduced motion and high contrast specific behaviors
      */
     function applyTheme(theme) {
         if (!THEMES.includes(theme)) {
@@ -57,6 +92,23 @@
         
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(STORAGE_KEY, theme);
+        
+        // Apply reduced motion class if needed
+        if (prefersReducedMotion()) {
+            document.documentElement.setAttribute('data-reduced-motion', 'true');
+        } else {
+            document.documentElement.removeAttribute('data-reduced-motion');
+        }
+        
+        // Apply high contrast enhancements
+        if (theme === 'high-contrast') {
+            // Ensure reduced motion for high contrast (accessibility best practice)
+            document.documentElement.setAttribute('data-reduced-motion', 'true');
+            // Add high contrast specific class for additional CSS targeting
+            document.documentElement.setAttribute('data-high-contrast', 'true');
+        } else {
+            document.documentElement.removeAttribute('data-high-contrast');
+        }
         
         // Update toggle button
         updateThemeToggle(theme);
@@ -169,7 +221,7 @@
     }
     
     /**
-     * Listen for system theme changes
+     * Listen for system theme and accessibility preference changes
      */
     function watchSystemTheme() {
         if (!window.matchMedia) return;
@@ -177,8 +229,9 @@
         // Watch for dark mode changes
         const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
         darkModeQuery.addEventListener('change', function(e) {
-            // Only respond if user hasn't set a preference
-            if (!localStorage.getItem(STORAGE_KEY)) {
+            // Only respond if user hasn't manually set a preference
+            const autoDetect = localStorage.getItem(AUTO_DETECT_KEY) !== 'false';
+            if (autoDetect && !localStorage.getItem(STORAGE_KEY)) {
                 applyTheme(e.matches ? 'dark' : 'light');
             }
         });
@@ -186,10 +239,39 @@
         // Watch for high contrast changes
         const highContrastQuery = window.matchMedia('(prefers-contrast: more)');
         highContrastQuery.addEventListener('change', function(e) {
-            // Only respond if user hasn't set a preference
-            if (!localStorage.getItem(STORAGE_KEY)) {
+            const autoDetect = localStorage.getItem(AUTO_DETECT_KEY) !== 'false';
+            if (autoDetect && !localStorage.getItem(STORAGE_KEY)) {
                 if (e.matches) {
                     applyTheme('high-contrast');
+                } else {
+                    applyTheme(getPreferredTheme());
+                }
+            }
+        });
+        
+        // Watch for forced colors (Windows High Contrast Mode)
+        const forcedColorsQuery = window.matchMedia('(forced-colors: active)');
+        forcedColorsQuery.addEventListener('change', function(e) {
+            const autoDetect = localStorage.getItem(AUTO_DETECT_KEY) !== 'false';
+            if (autoDetect && !localStorage.getItem(STORAGE_KEY)) {
+                if (e.matches) {
+                    applyTheme('high-contrast');
+                } else {
+                    applyTheme(getPreferredTheme());
+                }
+            }
+        });
+        
+        // Watch for reduced motion changes
+        const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        reducedMotionQuery.addEventListener('change', function(e) {
+            if (e.matches) {
+                document.documentElement.setAttribute('data-reduced-motion', 'true');
+            } else {
+                // Don't remove if in high contrast mode
+                const theme = document.documentElement.getAttribute('data-theme');
+                if (theme !== 'high-contrast') {
+                    document.documentElement.removeAttribute('data-reduced-motion');
                 }
             }
         });
@@ -224,6 +306,15 @@
         reset: function() {
             localStorage.removeItem(STORAGE_KEY);
             applyTheme(getPreferredTheme());
-        }
+        },
+        enableAutoDetect: function() {
+            localStorage.setItem(AUTO_DETECT_KEY, 'true');
+            applyTheme(getPreferredTheme());
+        },
+        disableAutoDetect: function() {
+            localStorage.setItem(AUTO_DETECT_KEY, 'false');
+        },
+        prefersReducedMotion: prefersReducedMotion,
+        prefersHighContrast: prefersHighContrast
     };
 })();

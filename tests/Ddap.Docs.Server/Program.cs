@@ -1,9 +1,45 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add response compression services
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+    {
+        "text/html",
+        "text/css",
+        "application/javascript",
+        "text/javascript",
+        "application/json",
+        "text/xml",
+        "application/xml",
+        "image/svg+xml"
+    });
+});
+
+// Configure compression levels
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Optimal;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Optimal;
+});
+
 var app = builder.Build();
+
+// Enable response compression (must be before static files)
+app.UseResponseCompression();
 
 // Find the repository root and docs directories
 var repoRoot = Path.GetFullPath(
