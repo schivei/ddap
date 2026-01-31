@@ -5,9 +5,16 @@
   
   > Dynamic Data API Provider. You control everything. We handle the boilerplate.
   
-  [![NuGet](https://img.shields.io/nuget/v/Ddap.Core)](https://www.nuget.org/packages/Ddap.Core)
-  [![License](https://img.shields.io/github/license/schivei/ddap)](LICENSE)
-  [![Build](https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml)](https://github.com/schivei/ddap/actions)
+  [![NuGet Version](https://img.shields.io/nuget/v/Ddap.Core?logo=nuget&label=NuGet)](https://www.nuget.org/packages/Ddap.Core)
+  [![NuGet Downloads](https://img.shields.io/nuget/dt/Ddap.Core?logo=nuget&label=Downloads)](https://www.nuget.org/packages/Ddap.Core)
+  [![GitHub Release](https://img.shields.io/github/v/release/schivei/ddap?logo=github&label=Release)](https://github.com/schivei/ddap/releases)
+  [![License](https://img.shields.io/github/license/schivei/ddap?logo=opensourceinitiative&logoColor=white)](LICENSE)
+  
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml?branch=main&logo=github&label=Build)](https://github.com/schivei/ddap/actions/workflows/build.yml)
+  [![CodeQL](https://img.shields.io/github/actions/workflow/status/schivei/ddap/codeql.yml?branch=main&logo=github&label=CodeQL)](https://github.com/schivei/ddap/actions/workflows/codeql.yml)
+  [![Docs](https://img.shields.io/github/actions/workflow/status/schivei/ddap/docs.yml?branch=main&logo=github&label=Docs)](https://github.com/schivei/ddap/actions/workflows/docs.yml)
+  [![GitHub Stars](https://img.shields.io/github/stars/schivei/ddap?style=social)](https://github.com/schivei/ddap/stargazers)
+  [![GitHub Forks](https://img.shields.io/github/forks/schivei/ddap?style=social)](https://github.com/schivei/ddap/network/members)
   
   > ⚠️ **Migrating from v0.x?** Package names have changed. See [Known Issues](docs/known-issues.md) for migration guide.
 </div>

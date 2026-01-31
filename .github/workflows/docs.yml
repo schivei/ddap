@@ -10,6 +10,12 @@ name: Documentation
       - 'CONTRIBUTING.md'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
+    inputs:
+      deploy_to_pages:
+        description: 'Deploy to GitHub Pages'
+        required: false
+        default: 'true'
+        type: boolean
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -147,14 +153,18 @@ jobs:
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: |
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_pages == 'true')
         with:
           path: docs/_site
         continue-on-error: true
 
       - name: Deploy to GitHub Pages
         id: deployment
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: |
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_pages == 'true')
         uses: actions/deploy-pages@v4
         continue-on-error: true
 
@@ -166,7 +176,9 @@ jobs:
           echo "**Build Information:**" >> $GITHUB_STEP_SUMMARY
           echo "- Version: v${{ env.VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- Build: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- Commit: [${{ github.sha }}](https://github.com/schivei/ddap/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
+          echo "- Trigger: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ Documentation files created" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -186,6 +198,10 @@ jobs:
             echo "🚀 **Deployed successfully!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "View at: https://schivei.github.io/ddap" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.deploy_to_pages }}" != "true" ]; then
+            echo "ℹ️ **Build completed without deployment**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Deployment was skipped (manual build on branch: ${{ github.ref_name }})" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Deployment skipped or failed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY

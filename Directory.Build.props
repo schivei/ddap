@@ -34,6 +34,7 @@
     <!-- Package Information -->
     <PackageTags>ddap;dynamic;api;data;provider;rest;grpc;graphql;efcore;dapper</PackageTags>
     <Description>Dynamic Data API Provider - Automatically generate REST, gRPC, and GraphQL APIs from your database schema</Description>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +43,12 @@
       Pack="true"
       PackagePath="\"
       Condition="Exists('$(MSBuildThisFileDirectory)README.md')"
+    />
+    <None
+      Include="$(MSBuildThisFileDirectory)icon.png"
+      Pack="true"
+      PackagePath="\"
+      Condition="Exists('$(MSBuildThisFileDirectory)icon.png')"
     />
   </ItemGroup>
 
