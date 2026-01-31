@@ -147,6 +147,7 @@ jobs:
         fi
         chmod +x check-coverage.sh
         ./check-coverage.sh
+      continue-on-error: false
 
     - name: Create Coverage Summary
       if: always()
@@ -174,6 +175,12 @@ jobs:
         path: coverage/report/SummaryGithub.md
       continue-on-error: true
 
+    - name: Validate Documentation
+      run: |
+        chmod +x validate-docs.sh
+        ./validate-docs.sh
+      continue-on-error: false
+    
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
       with:
@@ -276,10 +283,10 @@ jobs:
       run: dotnet restore ${{ env.SOLUTION_FILE }}
 
     - name: Build
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
+      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release /p:TreatWarningsAsErrors=true
 
     - name: Pack
-      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ./artifacts
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --no-build --configuration Release --output ./artifacts /p:TreatWarningsAsErrors=true
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4

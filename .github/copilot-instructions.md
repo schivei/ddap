@@ -25,7 +25,18 @@
 
 ## Code Quality Standards
 
-### Before Every Commit
+### Critical Pre-Commit Checklist
+
+**MANDATORY**: Before every commit, ALL of the following must pass:
+
+1. **✅ Code Formatting** - CSharpier must be run
+2. **✅ Build Without Warnings** - Zero warnings allowed (TreatWarningsAsErrors=true)
+3. **✅ All Tests Pass** - 100% test success rate
+4. **✅ Coverage Threshold** - 80% line AND 80% branch coverage per file
+5. **✅ Philosophy Compliance** - Follows "Developer in Control" principles
+6. **✅ Documentation Valid** - All languages updated and HTML well-formed
+
+### 1. Code Formatting (CSharpier)
 
 **CRITICAL**: Always run CSharpier before committing:
 
@@ -44,6 +55,98 @@ git commit -m "your message"  # Hook runs automatically
 1. Format code with CSharpier
 2. Run unit tests
 3. Abort if tests fail
+
+### 2. Build Without Warnings
+
+**REQUIREMENT**: Code must build with ZERO warnings.
+
+```bash
+# Build must pass without any warnings
+dotnet build --configuration Release
+
+# This is enforced via TreatWarningsAsErrors=true in Directory.Build.props
+```
+
+**Common warnings to avoid:**
+- CS0168: Variable declared but never used
+- CS0219: Variable assigned but never used  
+- CS0414: Field assigned but never used
+- CS8600-CS8629: Nullable reference type warnings
+- CS1998: Async method lacks 'await' operators
+
+**If you see a warning**: FIX IT. Don't suppress it unless absolutely necessary.
+
+### 3. Test Execution and Coverage
+
+**REQUIREMENT**: All tests must pass AND meet coverage thresholds.
+
+```bash
+# Run tests locally
+dotnet test --configuration Release
+
+# Check coverage (after running tests)
+./check-coverage.sh
+```
+
+**Coverage Requirements (STRICT):**
+- **80% line coverage** per file (no exceptions)
+- **80% branch coverage** per file (no exceptions)
+- Files in `.coverage-ignore` are exempt (protobuf, E2E tests)
+
+**When coverage fails:**
+1. Add more unit tests to cover the missing lines/branches
+2. Use AAA pattern (Arrange, Act, Assert)
+3. Test happy path AND edge cases
+4. Don't add files to `.coverage-ignore` without approval
+
+### 4. Documentation Validation
+
+**REQUIREMENT**: Documentation must be valid in ALL 7 languages.
+
+```bash
+# Validate documentation
+./validate-docs.sh
+```
+
+**When adding/updating documentation:**
+1. Update the English version first
+2. Run `generate-locales.js` to update translations
+3. Verify all HTML files are well-formed
+4. Check for broken internal links
+5. Ensure UTF-8 encoding
+
+**Languages that must be maintained:**
+- English (en) - base language
+- Portuguese Brazil (pt-br)
+- Spanish (es)
+- French (fr)
+- German (de)
+- Japanese (ja)
+- Chinese (zh)
+
+### 5. Philosophy Compliance Check
+
+**REQUIREMENT**: Code must follow "Developer in Control" principles.
+
+```bash
+# Validate philosophy compliance
+./validate-philosophy.sh
+```
+
+**What this checks:**
+- ❌ No forced dependencies (e.g., Pomelo without choice)
+- ❌ No hardcoded connection strings
+- ❌ No direct database connection instantiation (use DI)
+- ❌ No synchronous I/O operations
+- ❌ No .Result or .Wait() calls (deadlock risk)
+- ❌ No empty catch blocks (hiding errors)
+
+**Before making changes, ask yourself:**
+- Does this respect "Developer in Control"?
+- Am I forcing a specific implementation?
+- Is configuration explicit and overridable?
+- Am I using official packages?
+- Am I imposing architectural decisions?
 
 ### Code Formatting Rules
 
@@ -337,17 +440,159 @@ ddap/
 └── templates/            # .NET templates
 ```
 
+## Validation Scripts
+
+### Quality Enforcement Scripts
+
+DDAP includes several validation scripts to ensure code quality. These are run automatically in CI/CD but should also be run locally before committing.
+
+#### 1. check-coverage.sh - Coverage Validation
+
+**Purpose**: Ensures every file meets 80% line AND 80% branch coverage.
+
+```bash
+# Run after executing tests with coverage
+./check-coverage.sh
+```
+
+**What it checks:**
+- ✅ 80% line coverage per file (strict, no exceptions)
+- ✅ 80% branch coverage per file (strict, no exceptions)  
+- ✅ Overall coverage statistics
+- ❌ Fails build if ANY file is below threshold
+
+**Files exempt** (in `.coverage-ignore`):
+- Protobuf generated files
+- E2E test files that require browser automation
+
+**When it fails:**
+1. Add more unit tests to cover missing lines/branches
+2. Test both happy path AND edge cases
+3. Use AAA pattern (Arrange, Act, Assert)
+4. Don't request exemptions - meet the threshold
+
+#### 2. validate-docs.sh - Documentation Validation
+
+**Purpose**: Ensures documentation is complete and valid in all 7 languages.
+
+```bash
+# Run to validate all documentation
+./validate-docs.sh
+```
+
+**What it checks:**
+- ✅ All required pages exist in English (base language)
+- ✅ All translations complete for 7 languages (en, pt-br, es, fr, de, ja, zh)
+- ✅ HTML structure is well-formed (html, head, body tags)
+- ✅ UTF-8 charset declared
+- ⚠️ Internal links are not broken (warning only)
+
+**Languages validated:**
+- English (en) - base documentation
+- Portuguese Brazil (pt-br)
+- Spanish (es)
+- French (fr)
+- German (de)
+- Japanese (ja)
+- Chinese (zh)
+
+**When it fails:**
+1. Complete missing translations
+2. Fix HTML structural issues
+3. Run `generate-locales.js` to update translations
+4. Verify UTF-8 encoding
+
+#### 3. validate-philosophy.sh - Philosophy Compliance
+
+**Purpose**: Ensures code follows "Developer in Control" principles.
+
+```bash
+# Run to check philosophy compliance
+./validate-philosophy.sh
+```
+
+**What it checks:**
+- ❌ No forced dependencies (e.g., Pomelo without choice)
+- ❌ No hardcoded connection strings
+- ❌ No direct database connection instantiation
+- ❌ No synchronous I/O operations  
+- ❌ No .Result or .Wait() calls (deadlock risk)
+- ❌ No empty catch blocks (hiding errors)
+- ✅ Dependency injection used properly
+- ✅ All I/O operations are async
+
+**When it fails:**
+1. Review the specific violations reported
+2. Refactor code to follow philosophy principles
+3. Use dependency injection instead of direct instantiation
+4. Convert synchronous I/O to async/await
+5. Remove blocking calls (.Result, .Wait())
+
+**Philosophy principles enforced:**
+- **No Forced Dependencies**: Let developers choose implementations
+- **Explicit Over Implicit**: Make configuration transparent
+- **Async/Await**: All I/O operations must be async
+- **Official Packages**: Prefer vendor-supported packages
+
+### Running All Validations Locally
+
+Before pushing code, run all validations:
+
+```bash
+# 1. Format code
+dotnet csharpier .
+
+# 2. Build without warnings
+dotnet build --configuration Release
+
+# 3. Run tests with coverage
+dotnet test --configuration Release --settings .runsettings --collect:"XPlat Code Coverage"
+
+# 4. Check coverage thresholds
+./check-coverage.sh
+
+# 5. Validate documentation
+./validate-docs.sh
+
+# 6. Validate philosophy compliance
+./validate-philosophy.sh
+
+# If all pass, commit!
+git add .
+git commit -m "feat: your feature description"
+```
+
+### CI/CD Integration
+
+These scripts are automatically run in GitHub Actions:
+
+- **Build Workflow** (`.github/workflows/build.yml`):
+  - ✅ Code formatting check
+  - ✅ Build with TreatWarningsAsErrors
+  - ✅ Test execution
+  - ✅ Coverage validation (`check-coverage.sh`)
+  - ✅ Documentation validation (`validate-docs.sh`)
+
+- **Copilot Review Workflow** (`.github/workflows/copilot-review.yml`):
+  - ✅ Philosophy compliance check (`validate-philosophy.sh`)
+  - ✅ Automated review comment on PRs
+
+**All checks must pass for PR merge.**
+
 ## Quick Reference
 
 ### Before Committing Checklist
 
-- [ ] Code formatted with CSharpier (`dotnet csharpier .`)
-- [ ] All tests pass (`dotnet test`)
-- [ ] Documentation updated
-- [ ] Commit message follows conventions
-- [ ] No orphan files left behind
-- [ ] Evidence included (if applicable)
-- [ ] Philosophy respected (Developer in Control)
+- [ ] ✅ **Code formatted** with CSharpier (`dotnet csharpier .`)
+- [ ] ✅ **Build passes** without warnings (`dotnet build --configuration Release`)
+- [ ] ✅ **All tests pass** (`dotnet test --configuration Release`)
+- [ ] ✅ **Coverage thresholds met** (`./check-coverage.sh` - 80% line & branch per file)
+- [ ] ✅ **Documentation validated** (`./validate-docs.sh` - all 7 languages)
+- [ ] ✅ **Philosophy compliance** (`./validate-philosophy.sh` - "Developer in Control")
+- [ ] ✅ **Commit message** follows Conventional Commits format
+- [ ] ✅ **No orphan files** left behind (TEMP_*, WIP_*, analysis docs moved to docs/)
+- [ ] ✅ **Evidence included** (if feature change: screenshots, tests, examples)
+- [ ] ✅ **Documentation updated** (if user-facing change)
 
 ### Common Commands
 
