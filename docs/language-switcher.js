@@ -159,10 +159,24 @@
     }
     
     /**
+     * Check if a page exists before navigating to it
+     */
+    async function checkPageExists(url) {
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            return response.ok;
+        } catch (error) {
+            console.warn(`Failed to check page existence: ${url}`, error);
+            return false;
+        }
+    }
+    
+    /**
      * Switch to a different language
      * Navigates to the static HTML page in the correct locale folder
+     * Falls back to index.html if the current page doesn't exist in the target language
      */
-    function switchLanguage(language) {
+    async function switchLanguage(language) {
         if (!SUPPORTED_LANGUAGES[language]) {
             console.warn(`Invalid language: ${language}`);
             return;
@@ -171,9 +185,20 @@
         applyLanguage(language);
         
         const currentPage = getCurrentPagePath();
+        const targetUrl = buildLanguageUrl(language, currentPage);
         
-        // Navigate to the static HTML page in the correct locale folder
-        window.location.href = buildLanguageUrl(language, currentPage);
+        // Check if the target page exists
+        const exists = await checkPageExists(targetUrl);
+        
+        if (exists) {
+            // Navigate to the target page
+            window.location.href = targetUrl;
+        } else {
+            // Fallback to index.html of the target language
+            console.warn(`Page not found: ${targetUrl}. Redirecting to ${language} index.`);
+            const fallbackUrl = buildLanguageUrl(language, 'index.html');
+            window.location.href = fallbackUrl;
+        }
     }
     
     /**
@@ -302,10 +327,10 @@
         
         // Language option clicks
         dropdown.querySelectorAll('.language-option').forEach(option => {
-            option.addEventListener('click', () => {
+            option.addEventListener('click', async () => {
                 const language = option.getAttribute('data-language');
                 if (language) {
-                    switchLanguage(language);
+                    await switchLanguage(language);
                 }
             });
         });
@@ -376,7 +401,9 @@
     
     // Expose API globally for testing/debugging
     window.ddapLanguage = {
-        switch: switchLanguage,
+        switch: async function(language) {
+            await switchLanguage(language);
+        },
         current: function() {
             return localStorage.getItem(STORAGE_KEY) || DEFAULT_LANGUAGE;
         },
@@ -388,6 +415,9 @@
             // Note: This updates the UI without reloading the page
             localStorage.removeItem(STORAGE_KEY);
             applyLanguage(getPreferredLanguage(), false);
+        },
+        checkUrl: async function(url) {
+            return await checkPageExists(url);
         }
     };
 })();
