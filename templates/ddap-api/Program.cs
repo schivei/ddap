@@ -95,7 +95,7 @@ ddapBuilder.AddDdapAuthentication(jwtIssuer, jwtAudience, jwtSecretKey);
 
 #if (include-subscriptions)
 // Add subscriptions
-ddapBuilder.AddSubscriptions();
+ddapBuilder.AddDdapSubscriptions();
 #endif
 
 var app = builder.Build();
