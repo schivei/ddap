@@ -28,4 +28,14 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Validate static files (Markdown, JSON, YAML, XML)
+echo "Validating static files..."
+./validate-static-files.sh
+
+# Check validation result
+if [ $? -ne 0 ]; then
+  echo "Static file validation failed. Commit aborted."
+  exit 1
+fi
+
 echo "All checks passed!"

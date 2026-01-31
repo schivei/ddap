@@ -713,7 +713,325 @@ dotnet tool restore
 
 # Install git hooks
 dotnet husky install
+
+# Validate static files
+./validate-static-files.sh
 ```
+
+## Static File Validation
+
+### Overview
+
+All static files (Markdown, JSON, YAML, XML) must be valid and well-formatted. The `validate-static-files.sh` script checks these files automatically in the pre-commit hook.
+
+### Why Validate Static Files?
+
+- ✅ Prevent syntax errors in configuration files
+- ✅ Maintain consistent documentation formatting
+- ✅ Catch issues before they reach CI/CD
+- ✅ Professional code quality standards
+- ✅ Better readability and maintainability
+
+### Validated File Types
+
+1. **Markdown** (.md) - Documentation files
+2. **JSON** (.json) - Configuration and package files
+3. **YAML** (.yml, .yaml) - GitHub Actions, Docker, configs
+4. **XML** (.xml, .csproj, .props, .targets) - Project files
+
+### Markdown Best Practices
+
+**Standards**:
+- No trailing whitespace
+- Maximum line length: 120 characters (warning)
+- Consistent line endings (LF)
+- No multiple consecutive blank lines
+- Proper heading hierarchy
+- Code blocks properly fenced
+
+**Good Example**:
+```markdown
+# Main Heading
+
+Brief introduction paragraph that doesn't exceed 120 characters.
+
+## Subheading
+
+- Bullet point one
+- Bullet point two
+
+```csharp
+// Code block with proper fencing
+public class Example { }
+```
+
+## Another Section
+
+Content here.
+```
+
+**Bad Example**:
+```markdown
+#Main Heading      <- trailing spaces, no space after #
+
+This is a very long line that exceeds 120 characters and should be broken into multiple lines for better readability and maintenance.
+
+
+<- multiple blank lines
+
+## Subheading
+- Bullet one
+  -  Inconsistent indentation
+```
+
+### JSON Best Practices
+
+**Standards**:
+- Valid JSON syntax (use linter/validator)
+- 2-space indentation
+- No trailing commas
+- Double quotes only (not single quotes)
+- Proper escaping
+- UTF-8 encoding
+
+**Good Example**:
+```json
+{
+  "name": "ddap",
+  "version": "1.0.0",
+  "dependencies": {
+    "package1": "1.0.0",
+    "package2": "2.0.0"
+  },
+  "scripts": {
+    "build": "dotnet build"
+  }
+}
+```
+
+**Bad Example**:
+```json
+{
+  'name': 'ddap',  // ❌ Single quotes not allowed
+  "version": "1.0.0",
+  "dependencies": {
+    "package1": "1.0.0",  // ❌ Trailing comma
+  },
+  "scripts": {
+    "build": "dotnet build",  // ❌ Trailing comma
+  },  // ❌ Trailing comma
+}
+```
+
+### YAML Best Practices
+
+**Standards**:
+- Valid YAML syntax
+- 2-space indentation (no tabs!)
+- Consistent quoting
+- Proper list formatting
+- No trailing whitespace
+
+**Good Example**:
+```yaml
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: dotnet build
+```
+
+**Bad Example**:
+```yaml
+name: Build
+on:
+  push:
+→ branches:  # ❌ Tab character instead of spaces
+      - main
+ pull_request:  # ❌ Inconsistent indentation
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3  # ❌ Inconsistent indentation
+      - name: Build
+        run: dotnet build      # ❌ Trailing spaces
+```
+
+### XML Best Practices
+
+**Standards**:
+- Well-formed XML
+- Proper tag closure
+- Valid structure
+- 2-space indentation
+- Proper encoding declaration
+
+**Good Example**:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Package" Version="1.0.*" />
+  </ItemGroup>
+</Project>
+```
+
+**Bad Example**:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable  # ❌ Missing closing tag
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Package" Version="1.0.*">  # ❌ Self-closing tag not closed
+  </ItemGroup>
+# ❌ Missing closing Project tag
+```
+
+### Running Static File Validation
+
+**Automatic (Pre-Commit Hook)**:
+```bash
+git add .
+git commit -m "Your message"
+# Automatically runs:
+# 1. CSharpier formatting
+# 2. Unit tests
+# 3. Static file validation ✅
+```
+
+**Manual Validation**:
+```bash
+# Validate all static files
+./validate-static-files.sh
+
+# Output shows:
+# ✅ Passed files
+# ⚠️  Files with warnings (non-blocking)
+# ❌ Files with errors (blocking)
+```
+
+### Common Issues and Fixes
+
+#### Markdown Issues
+
+**Issue 1: Trailing Whitespace**
+```bash
+# Find files with trailing whitespace
+grep -r ' $' *.md
+
+# Fix: Remove trailing spaces (most editors can do this)
+# VS Code: Search for " $" with regex enabled, replace with ""
+```
+
+**Issue 2: Long Lines**
+```markdown
+<!-- Break long lines into multiple lines -->
+This is a very long line that should be broken.
+
+<!-- Becomes: -->
+This is a very long line
+that should be broken.
+```
+
+#### JSON Issues
+
+**Issue 1: Trailing Commas**
+```json
+// Remove trailing comma before closing brace/bracket
+{
+  "key": "value",  // ❌ Remove comma
+}
+
+// Correct:
+{
+  "key": "value"
+}
+```
+
+**Issue 2: Single Quotes**
+```json
+// Replace single quotes with double quotes
+{ 'key': 'value' }  // ❌
+
+// Correct:
+{ "key": "value" }  // ✅
+```
+
+#### YAML Issues
+
+**Issue 1: Tabs Instead of Spaces**
+```bash
+# Find tabs in YAML
+grep -P '\t' *.yml
+
+# Fix: Replace tabs with 2 spaces
+```
+
+**Issue 2: Inconsistent Indentation**
+```yaml
+# Use consistent 2-space indentation
+list:
+  - item1
+  - item2  # ✅ Consistent
+
+# Not:
+list:
+  - item1
+   - item2  # ❌ Wrong indentation
+```
+
+### Integration with CI/CD
+
+The static file validation is integrated into:
+
+1. **Pre-Commit Hook** (.husky/pre-commit)
+   - Runs automatically on `git commit`
+   - Blocks commit if validation fails
+   - Fast feedback loop
+
+2. **CI/CD Pipeline** (.github/workflows/build.yml)
+   - Runs on every pull request
+   - Ensures all files pass validation
+   - Maintains code quality standards
+
+### No npm Dependencies
+
+The validation script uses only:
+- ✅ Python 3 (standard on most systems)
+- ✅ Bash (Unix/Linux/macOS standard)
+- ✅ Git (required for repository)
+
+**No npm required!** This keeps the toolchain simple and dependencies minimal.
+
+### Quick Checklist for Static Files
+
+Before committing:
+- [ ] Markdown: No trailing spaces, reasonable line length
+- [ ] JSON: Valid syntax, proper formatting
+- [ ] YAML: Valid syntax, spaces (not tabs), consistent indentation
+- [ ] XML: Well-formed, proper structure
+- [ ] Run `./validate-static-files.sh` to verify
 
 ## Resources
 
