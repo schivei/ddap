@@ -18,3 +18,6 @@ Ddap.Grpc.RawQuery.VoidResult
 # E2E-only implementations (require running servers - tested via integration tests)
 Ddap.Grpc.RawQueryServiceExtensions
 Ddap.Grpc.Services.RawQueryServiceImpl
+
+# Test infrastructure (test server for documentation tests)
+Ddap.Docs.Server
