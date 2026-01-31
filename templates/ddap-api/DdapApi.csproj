@@ -10,13 +10,16 @@
     <!-- Core DDAP package -->
     <PackageReference Include="Ddap.Core" Version="1.0.*" />
     <!--#if (UseDapper && UseSqlServer) -->
-    <PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="1.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.*" />
     <!--#endif -->
     <!--#if (UseDapper && UseMySQL) -->
-    <PackageReference Include="Ddap.Data.Dapper.MySQL" Version="1.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
+    <PackageReference Include="MySqlConnector" Version="2.0.*" />
     <!--#endif -->
     <!--#if (UseDapper && UsePostgreSQL) -->
-    <PackageReference Include="Ddap.Data.Dapper.PostgreSQL" Version="1.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
+    <PackageReference Include="Npgsql" Version="10.0.*" />
     <!--#endif -->
     <!--#if (UseDapper && UseSQLite) -->
     <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
@@ -28,7 +31,18 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.*" />
     <!--#endif -->
     <!--#if (UseMySQL) -->
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.*" />
+    <!-- 
+      MySQL Entity Framework Provider Choice:
+      Add ONE of the following packages based on your preference:
+      
+      Option 1 - Pomelo (Community, Popular):
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.*" />
+      
+      Option 2 - Official (Oracle):
+      <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.*" />
+      
+      See README.md for more details.
+    -->
     <!--#endif -->
     <!--#if (UsePostgreSQL) -->
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.*" />

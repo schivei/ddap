@@ -16,6 +16,43 @@ This project was generated using the DDAP templates.
 #endif
 #if (UseMySQL)
 **Database:** MySQL
+
+### MySQL Provider Setup
+
+#if (UseEntityFramework)
+**IMPORTANT:** You need to add a MySQL Entity Framework provider package to use MySQL with EF Core.
+
+Choose ONE of the following:
+
+#### Option 1: Pomelo (Community, Popular)
+```bash
+dotnet add package Pomelo.EntityFrameworkCore.MySql
+```
+
+Then in `Program.cs`, uncomment the Pomelo line:
+```csharp
+ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
+```
+
+#### Option 2: Official Oracle Provider
+```bash
+dotnet add package MySql.EntityFrameworkCore
+```
+
+Then in `Program.cs`, uncomment the Oracle line:
+```csharp
+ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
+```
+
+**Comparison:**
+- **Pomelo**: More popular in the community, actively maintained, wider compatibility
+- **Oracle**: Official provider from MySQL team, may have better Oracle support
+
+See [DDAP Philosophy](https://schivei.github.io/ddap/philosophy.html) - we don't force dependencies, **you choose**.
+#endif
+#if (UseDapper)
+**MySQL Driver:** Using `MySqlConnector` (already included) - high performance ADO.NET driver.
+#endif
 #endif
 #if (UsePostgreSQL)
 **Database:** PostgreSQL
