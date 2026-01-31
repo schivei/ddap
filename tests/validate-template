@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Cross-platform template validation wrapper
+
+# Detect OS and run appropriate script
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+    # Windows (Git Bash or similar)
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    if command -v pwsh &> /dev/null; then
+        echo "Detected Windows with PowerShell - running PowerShell script..."
+        pwsh -File "$SCRIPT_DIR/validate-template.ps1"
+    elif command -v powershell &> /dev/null; then
+        echo "Detected Windows with PowerShell - running PowerShell script..."
+        powershell -File "$SCRIPT_DIR/validate-template.ps1"
+    else
+        echo "Detected Windows - running batch script..."
+        cmd /c "$SCRIPT_DIR/validate-template.cmd"
+    fi
+else
+    # Linux or Mac
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    echo "Detected Unix-like system - running bash script..."
+    bash "$SCRIPT_DIR/validate-template.sh"
+fi

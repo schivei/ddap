@@ -103,12 +103,16 @@ jobs:
     # - name: Install Playwright Browsers
     #   run: pwsh tests/Ddap.Docs.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
-    - name: Run tests
+    - name: Run tests (excluding templates and docs)
       run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests&FullyQualifiedName!~Ddap.Docs.Tests"
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
         POSTGRES_CONNECTION: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres_password;"
+
+    - name: Run template tests
+      run: dotnet test tests/Ddap.Templates.Tests/ --configuration Release --verbosity normal
+      continue-on-error: true
 
     # - name: Stop Documentation Server
     #   if: always()
