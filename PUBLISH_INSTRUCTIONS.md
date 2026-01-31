@@ -25,23 +25,32 @@ O site está configurado para ser publicado automaticamente via GitHub Pages atr
 4. **Acesse o Site Publicado**:
    - URL: https://schivei.github.io/ddap
 
-### Opção 2: Executar Workflow Manualmente
+### Opção 2: Executar Workflow Manualmente em Qualquer Branch ⚡
 
-Se preferir executar o workflow sem fazer merge:
+O workflow agora pode ser executado manualmente em **qualquer branch**:
 
 1. **Acesse a página de Actions**:
    - URL: https://github.com/schivei/ddap/actions/workflows/docs.yml
 
-2. **Clique em "Run workflow"**:
-   - Selecione o branch `copilot/move-language-theme-selector`
-   - Clique em "Run workflow" (botão verde)
+2. **Clique em "Run workflow"** (botão no canto superior direito):
+   - Selecione o branch desejado (pode ser qualquer branch!)
+   - Escolha se deseja fazer deploy para GitHub Pages:
+     - ✅ `Deploy to GitHub Pages: true` - Faz build E deploy
+     - ⬜ `Deploy to GitHub Pages: false` - Apenas build (para testes)
 
-3. **Aguarde a execução**:
-   - O workflow irá build e deploy o site
+3. **Clique no botão verde "Run workflow"**
+
+4. **Aguarde a execução**:
+   - O workflow irá build a documentação do branch selecionado
    - Tempo estimado: 2-5 minutos
 
-4. **Acesse o Site Publicado**:
+5. **Se fez deploy, acesse o Site Publicado**:
    - URL: https://schivei.github.io/ddap
+
+**Novo!** 🎉 Agora você pode:
+- Testar o build da documentação em branches de feature
+- Fazer deploy de qualquer branch (não apenas main)
+- Executar apenas o build sem deploy para validação
 
 ### Opção 3: Via Command Line (Se você tem permissões)
 
