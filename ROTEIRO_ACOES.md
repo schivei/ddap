@@ -1,7 +1,25 @@
 # Roteiro de Ações - DDAP Project
 
 **Data de Criação**: 30 de Janeiro de 2026  
+**Última Atualização**: 31 de Janeiro de 2026  
 **Objetivo**: Guia passo a passo para correção dos problemas identificados, sem perder o foco
+
+---
+
+## ⏱️ NOTA SOBRE ESTIMATIVAS DE TEMPO
+
+**Estimativas revisadas** para serem mais realistas baseadas na complexidade das tarefas:
+- **Original**: 13-17 horas total
+- **Revisado**: 25-39 horas total (ver ANALISE_TEMPO_PRODUTIVIDADE.md)
+
+As estimativas consideram:
+- Debugging e iterações
+- Testes extensivos (64+ cenários)
+- Code review e refinamentos
+- Documentação
+- Imprevistos (~20-30% buffer)
+
+**Recomendação**: Trabalhe em **sprints pequenos** (1-2 ações por vez) com PRs separados.
 
 ---
 
@@ -23,7 +41,7 @@ Estes problemas impedem o uso básico do DDAP e devem ser corrigidos **imediatam
 ### ✅ Ação 1.1: Corrigir Template - API Provider Flags
 
 **Prioridade**: 🔴 **CRÍTICO**  
-**Tempo Estimado**: 2-4 horas  
+**Tempo Estimado**: 4-6 horas (revisado de 2-4h)  
 **Status**: [ ] Não iniciado
 
 **Problema**:
@@ -94,7 +112,7 @@ Estes problemas impedem o uso básico do DDAP e devem ser corrigidos **imediatam
 ### ✅ Ação 1.2: Resolver Referências a Pacotes Inexistentes
 
 **Prioridade**: 🔴 **CRÍTICO**  
-**Tempo Estimado**: 2-3 horas  
+**Tempo Estimado**: 4-8 horas (revisado de 2-3h)  
 **Status**: [ ] Não iniciado
 
 **Problema**:
@@ -168,7 +186,7 @@ Passos:
 ### ✅ Ação 1.3: Remover/Documentar Dependência Forçada do Pomelo
 
 **Prioridade**: 🔴 **CRÍTICO** (Violação de Filosofia)  
-**Tempo Estimado**: 1-2 horas  
+**Tempo Estimado**: 2-3 horas (revisado de 1-2h)  
 **Status**: [ ] Não iniciado
 
 **Problema**:
@@ -249,7 +267,7 @@ Melhorias importantes para experiência do usuário e marketing do projeto.
 ### ✅ Ação 2.1: Adicionar Aviso sobre Issues Conhecidos
 
 **Prioridade**: 🟡 **IMPORTANTE**  
-**Tempo Estimado**: 30 minutos  
+**Tempo Estimado**: 1-2 horas (revisado de 30min)  
 **Status**: [ ] Não iniciado
 
 **Objetivo**: Avisar usuários sobre problemas conhecidos enquanto correções não estão prontas
@@ -287,7 +305,7 @@ Melhorias importantes para experiência do usuário e marketing do projeto.
 ### ✅ Ação 2.2: Integrar Ícone no Website
 
 **Prioridade**: 🟡 **IMPORTANTE**  
-**Tempo Estimado**: 1 hora  
+**Tempo Estimado**: 1-2 horas (revisado de 1h)  
 **Status**: [ ] Não iniciado
 
 **Objetivo**: Adicionar ícone profissional criado ao site de documentação
@@ -334,7 +352,7 @@ Melhorias importantes para experiência do usuário e marketing do projeto.
 ### ✅ Ação 2.3: Criar Página "Why DDAP?" no Site
 
 **Prioridade**: 🟡 **IMPORTANTE**  
-**Tempo Estimado**: 2 horas  
+**Tempo Estimado**: 2-3 horas (revisado de 2h)  
 **Status**: [ ] Não iniciado
 
 **Objetivo**: Transformar seção do README em página dedicada no site
@@ -384,7 +402,7 @@ Melhorias importantes para experiência do usuário e marketing do projeto.
 ### ✅ Ação 2.4: Publicar Website no GitHub Pages
 
 **Prioridade**: 🟡 **IMPORTANTE**  
-**Tempo Estimado**: 30 minutos  
+**Tempo Estimado**: 1-2 horas (revisado de 30min)  
 **Status**: [ ] Não iniciado
 
 **Objetivo**: Tornar documentação acessível em https://schivei.github.io/ddap
@@ -434,7 +452,7 @@ Prevenir regressões futuras.
 ### ✅ Ação 3.1: Adicionar Testes Automatizados de Template
 
 **Prioridade**: 🟢 **MELHORIA**  
-**Tempo Estimado**: 4 horas  
+**Tempo Estimado**: 8-12 horas (revisado de 4h)  
 **Status**: [ ] Não iniciado
 
 **Objetivo**: Garantir que template sempre gera projetos corretos
@@ -536,35 +554,45 @@ Implementação do plano de longo prazo.
 
 ### Ordem de Execução Recomendada
 
-**Semana 1 - Críticos** (prioridade máxima):
-1. ✅ Ação 1.1: Corrigir template API provider flags (2-4h)
-2. ✅ Ação 1.3: Remover Pomelo forçado (1-2h)
-3. ✅ Ação 1.2: Resolver pacotes inexistentes (2-3h)
-4. ✅ Ação 2.1: Adicionar avisos sobre issues (30min)
+**Sprint 1 - Ação 1.1 APENAS** (recomendado):
+1. ✅ Ação 1.1: Corrigir template API provider flags (4-6h)
+   - **PR separado**, mais fácil de revisar
+   - Validar antes de continuar
 
-**Semana 2 - Documentação**:
-5. ✅ Ação 2.2: Integrar ícone no site (1h)
-6. ✅ Ação 2.3: Criar página "Why DDAP?" (2h)
-7. ✅ Ação 2.4: Publicar website (30min)
+**Sprint 2 - Pacotes e Filosofia**:
+2. ✅ Ação 1.2: Resolver pacotes inexistentes (4-8h)
+3. ✅ Ação 1.3: Remover Pomelo forçado (2-3h)
+   - **PR separado**, mudanças relacionadas
 
-**Semana 3 - Testes**:
-8. ✅ Ação 3.1: Testes automatizados de template (4h)
+**Sprint 3 - Documentação**:
+4. ✅ Ação 2.1: Adicionar avisos sobre issues (1-2h)
+5. ✅ Ação 2.2: Integrar ícone no site (1-2h)
+6. ✅ Ação 2.3: Criar página "Why DDAP?" (2-3h)
+7. ✅ Ação 2.4: Publicar website (1-2h)
+   - **PR separado**, pode ser mais rápido
+
+**Sprint 4 - Testes**:
+8. ✅ Ação 3.1: Testes automatizados de template (8-12h)
+   - **PR separado**, investimento importante
 
 **Futuro - Melhorias**:
 9. ✅ Ação 4.1: Refatorar pacotes (discussão + implementação)
 10. ✅ Ação 5.1: LINQ Support Fase 1 (3-4 meses)
 11. ✅ Ação 5.2: Cliente TypeScript (4-5 meses)
 
-### Tempo Total Estimado
+### Tempo Total Estimado (REVISADO)
 
-| Fase | Tempo |
-|------|-------|
-| Fase 1 - Críticos | 5-9 horas |
-| Fase 2 - Documentação | 4 horas |
-| Fase 3 - Testes | 4 horas |
-| **Total Sprint 1** | **13-17 horas (2-3 dias)** |
-| Fase 4 - Arquitetura | 1-2 semanas |
-| Fase 5 - Roadmap | 7-9 meses |
+| Fase | Tempo Original | Tempo Revisado | Diferença |
+|------|----------------|----------------|-----------|
+| Fase 1 - Críticos | 5-9h | 12-20h | +7-11h |
+| Fase 2 - Documentação | 4h | 5-7h | +1-3h |
+| Fase 3 - Testes | 4h | 8-12h | +4-8h |
+| **Total Sprint 1-4** | **13-17h** | **25-39h** | **+12-22h** |
+| | **(2-3 dias)** | **(5-7 dias)** | **(1-2 semanas)** |
+| Fase 4 - Arquitetura | 1-2 semanas | 1-2 semanas | - |
+| Fase 5 - Roadmap | 7-9 meses | 7-9 meses | - |
+
+**Nota**: Estimativas revisadas consideram complexidade real, debugging, testes extensivos, e buffer para imprevistos (~20-30%).
 
 ---
 
