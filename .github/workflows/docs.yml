@@ -106,8 +106,8 @@ jobs:
       - name: Install Playwright browsers
         run: |
           cd tests/Ddap.Docs.Tests
-          dotnet build
-          pwsh -Command "npx playwright install chromium"
+          dotnet build --configuration Release
+          pwsh bin/Release/net10.0/playwright.ps1 install --with-deps
 
       - name: Start local server for testing
         run: |
@@ -120,7 +120,7 @@ jobs:
       - name: Run Playwright accessibility tests
         run: |
           cd tests/Ddap.Docs.Tests
-          dotnet test --no-build --verbosity normal --logger "console;verbosity=detailed"
+          dotnet test --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
         continue-on-error: true
         id: accessibility_tests
 
