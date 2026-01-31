@@ -31,25 +31,12 @@ builder.AddServiceDefaults();
 // Get connection string from configuration
 // IMPORTANT: Configure connection string in appsettings.json or user secrets
 // Never hardcode connection strings with credentials in code
+// Connection string must be configured in appsettings.json or user secrets
+// NEVER hardcode connection strings with credentials in source code
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
-#if (UseSqlServer)
-        "Connection string 'DefaultConnection' not found. " +
-        "Add it to appsettings.json: \"Server=localhost;Database=DdapDb;Integrated Security=true;TrustServerCertificate=true;\""
-#endif
-#if (UseMySQL)
-        "Connection string 'DefaultConnection' not found. " +
-        "Add it to appsettings.json: \"Server=localhost;Database=DdapDb;User=youruser;Password=yourpassword;\""
-#endif
-#if (UsePostgreSQL)
-        "Connection string 'DefaultConnection' not found. " +
-        "Add it to appsettings.json: \"Host=localhost;Database=DdapDb;Username=youruser;Password=yourpassword;\""
-#endif
-#if (UseSQLite)
-        "Connection string 'DefaultConnection' not found. " +
-        "Add it to appsettings.json: \"Data Source=ddap.db\""
-#endif
-    );
+        "Connection string 'DefaultConnection' not found in configuration. " +
+        "Add it to appsettings.json under 'ConnectionStrings' section or use User Secrets for development.");
 
 // Configure DDAP
 var ddapBuilder = builder.Services.AddDdap(options =>
@@ -65,9 +52,8 @@ ddapBuilder.AddDapper();
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.SqlServerDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UseMySQL)
-// Using official Oracle provider. You can replace with Pomelo if you prefer:
-// 1. Change package reference in .csproj
-// 2. Change this line to: Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder
+// Using official Oracle MySQL provider (MySql.EntityFrameworkCore)
+// Alternative: Community Pomelo provider (see README.md for instructions)
 ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UsePostgreSQL)
