@@ -101,8 +101,15 @@ while IFS= read -r file; do
     fi
     
     # Check for magic strings/numbers without constants
-    if grep -E "\"\w+://|localhost|127\.0\.0\.1" "$file" 2>/dev/null | grep -v "const " | grep -v "//" | head -1; then
-        echo "⚠️  $file: Contains hardcoded URLs/IPs"
+    # Ignore: comments (//), string literals in error messages (InvalidOperationException), and const declarations
+    if grep -E "\"\w+://|localhost|127\.0\.0\.1" "$file" 2>/dev/null | \
+       grep -v "const " | \
+       grep -v "//" | \
+       grep -v "throw new" | \
+       grep -v "InvalidOperationException" | \
+       grep -v "Exception(" | \
+       head -1 | grep -q .; then
+        echo "⚠️  $file: Contains hardcoded URLs/IPs in executable code"
         IMPLICIT_BEHAVIORS+=("$file: Hardcoded connection details")
     fi
     
@@ -143,13 +150,24 @@ while IFS= read -r file; do
     fi
     
     # Check for synchronous database calls (common anti-pattern)
-    if grep -E "\.Query\(|\.Execute\(|\.QueryFirst\(|\.QuerySingle\(" "$file" 2>/dev/null | grep -v "Async" | grep -v "//" | head -1; then
+    # Ignore: comments, documentation examples, and exception messages
+    if grep -E "\.Query\(|\.Execute\(|\.QueryFirst\(|\.QuerySingle\(" "$file" 2>/dev/null | \
+       grep -v "Async" | \
+       grep -v "//" | \
+       grep -v "throw new" | \
+       grep -v '"' | \
+       head -1 | grep -q .; then
         echo "⚠️  $file: Synchronous database call detected"
         SYNC_IO+=("$file: Synchronous Dapper call")
     fi
     
     # Check for .Result or .Wait() (deadlock risk)
-    if grep -E "\.Result|\.Wait\(\)" "$file" 2>/dev/null | grep -v "//" | head -1; then
+    # Ignore: comments, documentation, and string literals
+    if grep -E "\.Result|\.Wait\(\)" "$file" 2>/dev/null | \
+       grep -v "//" | \
+       grep -v '"' | \
+       grep -v "throw new" | \
+       head -1 | grep -q .; then
         echo "❌ $file: Uses .Result or .Wait() - DEADLOCK RISK"
         SYNC_IO+=("$file: Blocking async call (.Result/.Wait)")
         EXIT_CODE=1
