@@ -114,13 +114,24 @@ jobs:
           dotnet build --configuration Release
           pwsh bin/Release/net10.0/playwright.ps1 install --with-deps
 
-      - name: Start local server for testing
+      - name: Build documentation server
         run: |
-          cd docs/_site
-          python3 -m http.server 8000 &
-          echo $! > server.pid
-          sleep 3
-          echo "✅ Local server started on port 8000"
+          cd tests/Ddap.Docs.Server
+          dotnet build --configuration Release
+          echo "✅ Documentation server built"
+
+      - name: Start documentation server for testing
+        run: |
+          cd tests/Ddap.Docs.Server/bin/Release/net10.0
+          ./Ddap.Docs.Server > /tmp/docs-server.log 2>&1 &
+          SERVER_PID=$!
+          echo $SERVER_PID > /tmp/docs-server.pid
+          echo "Server PID: $SERVER_PID"
+          sleep 10
+          echo "✅ Documentation server started on http://localhost:8000/ddap/"
+          
+          # Verify server is responding
+          curl -f http://localhost:8000/ddap/index.html || (echo "❌ Server failed to start" && cat /tmp/docs-server.log && exit 1)
 
       - name: Run Playwright accessibility tests
         run: |
@@ -128,12 +139,13 @@ jobs:
           dotnet test --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
         id: accessibility_tests
 
-      - name: Stop local server
+      - name: Stop documentation server
         if: always()
         run: |
-          if [ -f "docs/_site/server.pid" ]; then
-            kill $(cat docs/_site/server.pid) || true
-            rm docs/_site/server.pid
+          if [ -f "/tmp/docs-server.pid" ]; then
+            kill $(cat /tmp/docs-server.pid) || true
+            rm /tmp/docs-server.pid
+            echo "✅ Documentation server stopped"
           fi
 
       - name: Accessibility Test Summary
