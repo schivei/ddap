@@ -1,64 +1,64 @@
-# ✅ Bibliotecas Agora Hospedadas Localmente
+# ✅ 库现已在本地托管
 
-**ATUALIZAÇÃO:** As bibliotecas CDN agora estão hospedadas localmente no projeto. Não é mais necessário liberar domínios no firewall!
+**更新：** CDN库现在托管在项目本地。不再需要在防火墙中放行域名！
 
-Este documento é mantido para referência histórica sobre os domínios CDN que eram necessários anteriormente.
+本文档保留用于历史参考，记录以前需要的CDN域名。
 
-## Domínios Necessários
+## 所需域名
 
 ### 1. cdnjs.cloudflare.com
-**Usado para:** GitHub Markdown CSS  
-**Recurso:** `https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css`  
-**Propósito:** Estilização do conteúdo markdown nas páginas de documentação
+**用途：** GitHub Markdown CSS  
+**资源：** `https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css`  
+**目的：** 文档页面markdown内容的样式
 
 ### 2. cdn.jsdelivr.net
-**Usado para:** Bibliotecas JavaScript (marked.js e DOMPurify)  
-**Recursos:**
-- `https://cdn.jsdelivr.net/npm/marked/marked.min.js` - Parser de Markdown para JavaScript
-- `https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js` - Sanitização de HTML (segurança XSS)  
-**Propósito:** Renderização de arquivos markdown (.md) em HTML nas páginas de documentação
+**用途：** JavaScript库（marked.js和DOMPurify）  
+**资源：**
+- `https://cdn.jsdelivr.net/npm/marked/marked.min.js` - JavaScript Markdown解析器
+- `https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js` - HTML清理（XSS安全防护）  
+**目的：** 在文档页面中将markdown文件（.md）渲染为HTML
 
-### 3. img.shields.io (Opcional)
-**Usado para:** Badges/shields no index.html  
-**Recursos:**
-- `https://img.shields.io/nuget/v/Ddap.Core` - Badge da versão NuGet
-- `https://img.shields.io/github/license/schivei/ddap` - Badge da licença
-- `https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml` - Badge do status do build  
-**Propósito:** Exibir badges informativos na página inicial (não crítico para funcionalidade)
+### 3. img.shields.io（可选）
+**用途：** index.html中的徽章  
+**资源：**
+- `https://img.shields.io/nuget/v/Ddap.Core` - NuGet版本徽章
+- `https://img.shields.io/github/license/schivei/ddap` - 许可证徽章
+- `https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml` - 构建状态徽章  
+**目的：** 在首页显示信息徽章（对功能不关键）
 
-## ✅ Solução Implementada: Hospedagem Local
+## ✅ 已实施解决方案：本地托管
 
-As bibliotecas agora estão em `/docs/lib/`:
-- **marked.min.js** (39KB) - Parser de Markdown
-- **purify.min.js** (21KB) - Sanitizador HTML (proteção XSS)
-- **github-markdown.min.css** (25KB) - Estilização do markdown
+库现在位于 `/docs/lib/` 中：
+- **marked.min.js**（39KB）- Markdown解析器
+- **purify.min.js**（21KB）- HTML清理器（XSS保护）
+- **github-markdown.min.css**（25KB）- markdown样式
 
-**Total:** ~85KB hospedados localmente
+**总计：** 约85KB本地托管
 
-### Benefícios:
-- ✅ Funciona offline
-- ✅ Não requer liberação de firewall
-- ✅ Mais rápido (sem requisições externas)
-- ✅ Melhor controle de segurança
+### 优势：
+- ✅ 离线工作
+- ✅ 不需要防火墙放行
+- ✅ 更快（无外部请求）
+- ✅ 更好的安全控制
 
-## Domínios CDN (NÃO MAIS NECESSÁRIOS)
+## CDN域名（不再需要）
 
-### ~~Domínios CRÍTICOS (obrigatórios)~~:
+### ~~关键域名（必需）~~：
 ```
-cdnjs.cloudflare.com  ❌ NÃO MAIS NECESSÁRIO
-cdn.jsdelivr.net      ❌ NÃO MAIS NECESSÁRIO
-```
-
-### Domínios OPCIONAIS (apenas para badges no index.html):
-```
-img.shields.io  ⚠️ Opcional (apenas badges visuais)
+cdnjs.cloudflare.com  ❌ 不再需要
+cdn.jsdelivr.net      ❌ 不再需要
 ```
 
-## ~~Arquivos Afetados~~ ✅ RESOLVIDO
+### 可选域名（仅用于index.html中的徽章）：
+```
+img.shields.io  ⚠️ 可选（仅视觉徽章）
+```
 
-**ATUALIZAÇÃO:** Todas as páginas agora usam bibliotecas locais e funcionam perfeitamente!
+## ~~受影响的文件~~ ✅ 已解决
 
-Páginas de documentação que agora funcionam com bibliotecas locais:
+**更新：** 所有页面现在使用本地库，运行完美！
+
+现在使用本地库运行的文档页面：
 - get-started.html
 - philosophy.html
 - database-providers.html
@@ -75,22 +75,22 @@ Páginas de documentação que agora funcionam com bibliotecas locais:
 - extended-types.html
 - raw-queries.html
 
-**Nota:** A página index.html sempre funcionou pois usa HTML estático. As outras páginas agora também funcionam com as bibliotecas locais.
+**注意：** index.html页面一直正常工作，因为它使用静态HTML。其他页面现在也可以使用本地库正常工作。
 
-## ~~Testando Após Liberação~~ ✅ NÃO MAIS NECESSÁRIO
+## ~~放行后测试~~ ✅ 不再需要
 
-As bibliotecas estão hospedadas localmente. Basta acessar qualquer página de documentação:
+库已在本地托管。只需访问任何文档页面：
 - http://localhost:8080/get-started.html
 - http://localhost:8080/philosophy.html
-- etc.
+- 等等
 
-O conteúdo markdown será renderizado perfeitamente!
+markdown内容将完美渲染！
 
-## ~~Alternativa (Hospedar Localmente)~~ ✅ JÁ IMPLEMENTADO
+## ~~替代方案（本地托管）~~ ✅ 已实施
 
-**CONCLUÍDO!** As bibliotecas já estão hospedadas localmente em `/docs/lib/`:
-1. ✅ marked.min.js - Parser de Markdown
-2. ✅ purify.min.js - Sanitizador HTML
-3. ✅ github-markdown.min.css - Estilização
+**完成！** 库已在 `/docs/lib/` 中本地托管：
+1. ✅ marked.min.js - Markdown解析器
+2. ✅ purify.min.js - HTML清理器
+3. ✅ github-markdown.min.css - 样式
 
-Todas as páginas HTML foram atualizadas para usar as referências locais.
+所有HTML页面已更新为使用本地引用。

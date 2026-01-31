@@ -1,138 +1,138 @@
-# Known Issues
+# Problemas Conhecidos
 
-This document lists current known limitations and issues with DDAP that users should be aware of.
+Este documento lista as limitações e problemas conhecidos do DDAP que os usuários devem estar cientes.
 
-## Current Limitations
+## Limitações Atuais
 
-### 1. .NET 10 Requirement
+### 1. Requisito do .NET 10
 
-**Issue:** DDAP requires .NET 10 SDK.
+**Problema:** DDAP requer o SDK do .NET 10.
 
-**Status:** By design - DDAP uses latest .NET features for performance and developer experience.
+**Status:** Por design - DDAP usa os recursos mais recentes do .NET para desempenho e experiência do desenvolvedor.
 
-**Workaround:** Install .NET 10 SDK from https://dotnet.microsoft.com/download
+**Solução alternativa:** Instale o SDK do .NET 10 de https://dotnet.microsoft.com/download
 
 ---
 
-### 2. Primary Keys Required
+### 2. Chaves Primárias Obrigatórias
 
-**Issue:** Tables without primary keys are not discoverable by DDAP.
+**Problema:** Tabelas sem chaves primárias não são descobríveis pelo DDAP.
 
-**Status:** By design - DDAP requires primary keys for entity identification.
+**Status:** Por design - DDAP requer chaves primárias para identificação de entidades.
 
-**Workaround:** Add primary keys to all tables you want exposed via the API.
+**Solução alternativa:** Adicione chaves primárias a todas as tabelas que você deseja expor via API.
 
 ```sql
--- Add primary key to existing table
-ALTER TABLE MyTable ADD CONSTRAINT PK_MyTable PRIMARY KEY (Id);
+-- Adicionar chave primária a tabela existente
+ALTER TABLE MinhaTabela ADD CONSTRAINT PK_MinhaTabela PRIMARY KEY (Id);
 ```
 
 ---
 
-### 3. Package Migration (v0.x to v1.0+)
+### 3. Migração de Pacotes (v0.x para v1.0+)
 
-**Issue:** Database-specific Dapper packages (`Ddap.Data.Dapper.SqlServer`, etc.) no longer exist.
+**Problema:** Pacotes Dapper específicos de banco de dados (`Ddap.Data.Dapper.SqlServer`, etc.) não existem mais.
 
-**Status:** Intentional architecture change - Following "Developer in Control" philosophy.
+**Status:** Mudança arquitetural intencional - Seguindo a filosofia "Desenvolvedor no Controle".
 
-**Migration:**
+**Migração:**
 
-**Old** (v0.x):
+**Antigo** (v0.x):
 ```xml
 <PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="0.x" />
 ```
 
-**New** (v1.0+):
+**Novo** (v1.0+):
 ```xml
 <PackageReference Include="Ddap.Data.Dapper" Version="1.*" />
 <PackageReference Include="Microsoft.Data.SqlClient" Version="5.*" />
 ```
 
-See [Troubleshooting - Migration from Old API](troubleshooting.md#migration-from-old-api) for complete migration guide.
+Consulte [Solução de Problemas - Migração da API Antiga](troubleshooting.md#migration-from-old-api) para guia completo de migração.
 
 ---
 
-### 4. Auto-Reload Performance
+### 4. Desempenho do Auto-Reload
 
-**Issue:** Schema reload may cause brief service disruption or increased memory usage.
+**Problema:** O recarregamento do esquema pode causar breve interrupção do serviço ou aumento do uso de memória.
 
-**Status:** Known - Trade-off between zero-downtime and resource usage.
+**Status:** Conhecido - Compromisso entre zero downtime e uso de recursos.
 
-**Workarounds:**
+**Soluções alternativas:**
 
-1. **For zero downtime:**
+1. **Para zero downtime:**
    ```csharp
    options.AutoReload.Behavior = ReloadBehavior.ServeOldSchema;
    ```
 
-2. **For minimal memory:**
+2. **Para memória mínima:**
    ```csharp
    options.AutoReload.Strategy = ReloadStrategy.HotReload;
    ```
 
-3. **Increase idle timeout to reduce reload frequency:**
+3. **Aumentar timeout de inatividade para reduzir frequência de recarga:**
    ```csharp
    options.AutoReload.IdleTimeout = TimeSpan.FromMinutes(15);
    ```
 
-See [Auto-Reload Documentation](auto-reload.md) for details.
+Consulte [Documentação de Auto-Reload](auto-reload.md) para detalhes.
 
 ---
 
-### 5. Template Generation - Aspire Support
+### 5. Geração de Templates - Suporte ao Aspire
 
-**Issue:** Templates with Aspire integration may require additional manual configuration.
+**Problema:** Templates com integração Aspire podem requerer configuração manual adicional.
 
-**Status:** Known - Aspire integration is complex and may need customization.
+**Status:** Conhecido - Integração Aspire é complexa e pode precisar de customização.
 
-**Workaround:** Follow [Templates Documentation](templates.md) for Aspire-specific setup instructions.
-
----
-
-## Reporting Issues
-
-Found a bug or limitation not listed here?
-
-1. **Check:** [GitHub Issues](https://github.com/schivei/ddap/issues)
-2. **Search:** [Troubleshooting Guide](troubleshooting.md)
-3. **Report:** [Open a new issue](https://github.com/schivei/ddap/issues/new)
-
-When reporting, include:
-- DDAP version (`Ddap.Core` package version)
-- .NET version (`dotnet --version`)
-- Database type and version
-- Error message and stack trace
-- Minimal reproduction code
+**Solução alternativa:** Siga a [Documentação de Templates](templates.md) para instruções específicas de configuração do Aspire.
 
 ---
 
-## Fixed Issues
+## Reportando Problemas
 
-Issues that have been resolved in recent versions:
+Encontrou um bug ou limitação não listada aqui?
 
-### ✅ MySQL Provider Choice (Fixed in 1.0.0)
+1. **Verifique:** [GitHub Issues](https://github.com/schivei/ddap/issues)
+2. **Busque:** [Guia de Solução de Problemas](troubleshooting.md)
+3. **Reporte:** [Abra uma nova issue](https://github.com/schivei/ddap/issues/new)
 
-**Was:** Template forced `Pomelo.EntityFrameworkCore.MySql`.
-
-**Now:** Uses official `MySql.EntityFrameworkCore` by default, with Pomelo as documented alternative.
-
-User maintains full control over MySQL provider choice.
-
----
-
-### ✅ Non-Existent Packages (Fixed in 1.0.0)
-
-**Was:** Templates referenced non-existent packages like `Ddap.Data.Dapper.SqlServer`.
-
-**Now:** Uses base `Ddap.Data.Dapper` package with official database drivers.
-
-All templates generate correctly with proper package references.
+Ao reportar, inclua:
+- Versão do DDAP (versão do pacote `Ddap.Core`)
+- Versão do .NET (`dotnet --version`)
+- Tipo e versão do banco de dados
+- Mensagem de erro e stack trace
+- Código mínimo de reprodução
 
 ---
 
-## Next Steps
+## Problemas Corrigidos
 
-- [Troubleshooting](troubleshooting.md) - Detailed solutions for common issues
-- [Get Started](get-started.md) - Begin using DDAP
-- [Philosophy](philosophy.md) - Understanding DDAP's "Developer in Control" approach
-- [GitHub Issues](https://github.com/schivei/ddap/issues) - Report bugs and request features
+Problemas que foram resolvidos em versões recentes:
+
+### ✅ Escolha do Provedor MySQL (Corrigido na 1.0.0)
+
+**Era:** Template forçava `Pomelo.EntityFrameworkCore.MySql`.
+
+**Agora:** Usa o `MySql.EntityFrameworkCore` oficial por padrão, com Pomelo como alternativa documentada.
+
+Usuário mantém controle total sobre a escolha do provedor MySQL.
+
+---
+
+### ✅ Pacotes Inexistentes (Corrigido na 1.0.0)
+
+**Era:** Templates referenciavam pacotes inexistentes como `Ddap.Data.Dapper.SqlServer`.
+
+**Agora:** Usa o pacote base `Ddap.Data.Dapper` com drivers oficiais de banco de dados.
+
+Todos os templates geram corretamente com referências de pacotes adequadas.
+
+---
+
+## Próximos Passos
+
+- [Solução de Problemas](troubleshooting.md) - Soluções detalhadas para problemas comuns
+- [Primeiros Passos](get-started.md) - Comece a usar o DDAP
+- [Filosofia](philosophy.md) - Entendendo a abordagem "Desenvolvedor no Controle" do DDAP
+- [GitHub Issues](https://github.com/schivei/ddap/issues) - Reporte bugs e solicite recursos
