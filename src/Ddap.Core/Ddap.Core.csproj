@@ -18,4 +18,19 @@
     <InternalsVisibleTo Include="Ddap.Data.Dapper" />
     <InternalsVisibleTo Include="Ddap.Data.EntityFramework" />
   </ItemGroup>
+
+  <!-- Automatically restore .NET tools and install Husky on package restore -->
+  <Target Name="RestoreToolsAndHusky" AfterTargets="Restore">
+    <Exec
+      Command="dotnet tool restore"
+      WorkingDirectory="$(MSBuildProjectDirectory)/../.."
+      ContinueOnError="true"
+    />
+    <Exec
+      Command="dotnet husky install"
+      WorkingDirectory="$(MSBuildProjectDirectory)/../.."
+      ContinueOnError="true"
+      Condition="Exists('$(MSBuildProjectDirectory)/../../.husky')"
+    />
+  </Target>
 </Project>
