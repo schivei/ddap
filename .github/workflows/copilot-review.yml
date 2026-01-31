@@ -1,0 +1,146 @@
+name: Copilot Philosophy Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  philosophy-check:
+    name: Validate DDAP Philosophy Compliance
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Get changed files
+      id: changed-files
+      run: |
+        # Get list of changed C# files
+        git fetch origin ${{ github.base_ref }}
+        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.cs$' || true)
+        echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "Changed C# files:"
+          echo "$CHANGED_FILES"
+        fi
+    
+    - name: Run Philosophy Compliance Check
+      if: steps.changed-files.outputs.has_changes == 'true'
+      run: |
+        chmod +x validate-philosophy.sh
+        ./validate-philosophy.sh
+      continue-on-error: false
+    
+    - name: Comment Philosophy Check Results
+      if: always() && steps.changed-files.outputs.has_changes == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          // Read the philosophy check results
+          let comment = '## 🎯 DDAP Philosophy Compliance Check\n\n';
+          
+          try {
+            if (fs.existsSync('philosophy-report.md')) {
+              const report = fs.readFileSync('philosophy-report.md', 'utf8');
+              comment += report;
+            } else {
+              comment += '✅ All changed files comply with DDAP philosophy!\n\n';
+              comment += '**Key Principles Validated:**\n';
+              comment += '- ✅ No forced dependencies\n';
+              comment += '- ✅ Explicit over implicit\n';
+              comment += '- ✅ Minimal abstractions\n';
+              comment += '- ✅ Official packages preferred\n';
+              comment += '- ✅ Zero opinions imposed\n';
+            }
+          } catch (error) {
+            comment += '⚠️ Could not read philosophy check results.\n';
+          }
+          
+          comment += '\n---\n';
+          comment += '_Automated philosophy compliance check. See `.github/copilot-instructions.md` for details._\n';
+          
+          // Post comment
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  copilot-review-request:
+    name: Request Copilot Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Add Copilot Review Comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const body = `## 🤖 Copilot Review Requested
+          
+          This PR has been flagged for Copilot review to ensure compliance with DDAP's **"Developer in Control"** philosophy.
+          
+          ### Review Checklist
+          
+          Please verify the changes against these principles:
+          
+          - [ ] **No Forced Dependencies**: Does this change force specific implementations?
+          - [ ] **Explicit Over Implicit**: Is configuration transparent and controllable?
+          - [ ] **Minimal Abstractions**: Are abstractions necessary and minimal?
+          - [ ] **Official Packages**: Are we using official vendor packages?
+          - [ ] **Zero Opinions**: Does this impose architectural decisions?
+          
+          ### Code Quality
+          
+          - [ ] CSharpier formatting applied (automatic via pre-commit hook)
+          - [ ] All tests passing
+          - [ ] No warnings in build (TreatWarningsAsErrors enabled)
+          - [ ] Coverage thresholds met (80% line & branch)
+          - [ ] Async/await used for all I/O operations
+          - [ ] ConfigureAwait(false) in library code
+          
+          ### Documentation
+          
+          - [ ] XML documentation comments for public APIs
+          - [ ] Evidence included (if feature change): screenshots, test results, examples
+          - [ ] README updated (if user-facing change)
+          
+          ---
+          
+          @${{ github.event.pull_request.user.login }} - Please review these items. A maintainer will perform the final Copilot-assisted review.
+          
+          _See [.github/copilot-instructions.md](.github/copilot-instructions.md) for detailed guidelines._`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });

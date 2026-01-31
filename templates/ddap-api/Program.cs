@@ -1,12 +1,9 @@
 using Ddap.Core;
-#if (UseDapper && UseSqlServer)
-using Ddap.Data.Dapper.SqlServer;
+#if (UseDapper)
+using Ddap.Data.Dapper;
 #endif
-#if (UseDapper && UseMySQL)
-using Ddap.Data.Dapper.MySQL;
-#endif
-#if (UseDapper && UsePostgreSQL)
-using Ddap.Data.Dapper.PostgreSQL;
+#if (UseEntityFramework)
+using Ddap.Data.EntityFramework;
 #endif
 #if (IncludeRest)
 using Ddap.Rest;
@@ -53,23 +50,17 @@ var ddapBuilder = builder.Services.AddDdap(options =>
 });
 
 // Add database provider
-#if (UseDapper && UseSqlServer)
-ddapBuilder.AddSqlServerDapper();
-#endif
-#if (UseDapper && UseMySQL)
-ddapBuilder.AddMySqlDapper();
-#endif
-#if (UseDapper && UsePostgreSQL)
-ddapBuilder.AddPostgreSqlDapper();
-#endif
-#if (UseDapper && UseSQLite)
+#if (UseDapper)
 ddapBuilder.AddDapper();
 #endif
 #if (UseEntityFramework && UseSqlServer)
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.SqlServerDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UseMySQL)
-ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
+// Using official Oracle provider. You can replace with Pomelo if you prefer:
+// 1. Change package reference in .csproj
+// 2. Change this line to: Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder
+ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UsePostgreSQL)
 ddapBuilder.AddEntityFramework<Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.NpgsqlDbContextOptionsBuilder>();

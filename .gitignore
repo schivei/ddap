@@ -427,3 +427,17 @@ docs/obj/
 .agent-workspace/
 .validation-results/
 .playwright-cache/
+
+# Temporary analysis and planning markdown files (move to docs/ folders)
+# Keep organized docs, but ignore temporary/work-in-progress files
+TEMP_*.md
+WIP_*.md
+DRAFT_*.md
+EVIDENCE_*.md
+*_TEMP.md
+*_WIP.md
+*_DRAFT.md
+
+# Coverage reports (keep metadata)
+coverage2/
+coverage3/
