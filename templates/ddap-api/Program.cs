@@ -29,19 +29,27 @@ builder.AddServiceDefaults();
 
 #endif
 // Get connection string from configuration
+// IMPORTANT: Configure connection string in appsettings.json or user secrets
+// Never hardcode connection strings with credentials in code
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
 #if (UseSqlServer)
-    ?? "Server=localhost;Database=DdapDb;Integrated Security=true;TrustServerCertificate=true;";
+        "Connection string 'DefaultConnection' not found. " +
+        "Add it to appsettings.json: \"Server=localhost;Database=DdapDb;Integrated Security=true;TrustServerCertificate=true;\""
 #endif
 #if (UseMySQL)
-    ?? "Server=localhost;Database=DdapDb;User=root;Password=secret;";
+        "Connection string 'DefaultConnection' not found. " +
+        "Add it to appsettings.json: \"Server=localhost;Database=DdapDb;User=youruser;Password=yourpassword;\""
 #endif
 #if (UsePostgreSQL)
-    ?? "Host=localhost;Database=DdapDb;Username=postgres;Password=secret;";
+        "Connection string 'DefaultConnection' not found. " +
+        "Add it to appsettings.json: \"Host=localhost;Database=DdapDb;Username=youruser;Password=yourpassword;\""
 #endif
 #if (UseSQLite)
-    ?? "Data Source=ddap.db";
+        "Connection string 'DefaultConnection' not found. " +
+        "Add it to appsettings.json: \"Data Source=ddap.db\""
 #endif
+    );
 
 // Configure DDAP
 var ddapBuilder = builder.Services.AddDdap(options =>
@@ -82,11 +90,21 @@ ddapBuilder.AddGrpc();
 
 #if (include-auth)
 // Add authentication
-ddapBuilder.AddDdapAuthentication(
-    builder.Configuration["Jwt:Issuer"] ?? "DdapApi",
-    builder.Configuration["Jwt:Audience"] ?? "DdapApi",
-    builder.Configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured. Use user secrets or appsettings.json.")
-);
+// JWT configuration should be in appsettings.json or user secrets
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] 
+    ?? throw new InvalidOperationException(
+        "JWT Issuer is not configured. Add 'Jwt:Issuer' to appsettings.json or user secrets.");
+
+var jwtAudience = builder.Configuration["Jwt:Audience"] 
+    ?? throw new InvalidOperationException(
+        "JWT Audience is not configured. Add 'Jwt:Audience' to appsettings.json or user secrets.");
+
+var jwtSecretKey = builder.Configuration["Jwt:SecretKey"] 
+    ?? throw new InvalidOperationException(
+        "JWT SecretKey is not configured. Add 'Jwt:SecretKey' to appsettings.json or user secrets. " +
+        "NEVER hardcode secrets in code!");
+
+ddapBuilder.AddDdapAuthentication(jwtIssuer, jwtAudience, jwtSecretKey);
 #endif
 
 #if (include-subscriptions)
@@ -121,18 +139,24 @@ app.MapGraphQL("/graphql");
 
 app.MapGet("/", () => 
 {
+    // Endpoint paths - configure in appsettings.json if customization needed
+    const string RestApiPath = "/api/entity";
+    const string GraphQLPath = "/graphql";
+    const string AuthLoginPath = "/auth/login";
+    const string AuthTokenPath = "/auth/token";
+    
     var endpoints = new List<string>();
 #if (IncludeRest)
-    endpoints.Add("REST API: /api/entity");
+    endpoints.Add($"REST API: {RestApiPath}");
 #endif
 #if (IncludeGraphQL)
-    endpoints.Add("GraphQL: /graphql");
+    endpoints.Add($"GraphQL: {GraphQLPath}");
 #endif
 #if (IncludeGrpc)
     endpoints.Add("gRPC services available");
 #endif
 #if (include-auth)
-    endpoints.Add("Authentication: /auth/login, /auth/token");
+    endpoints.Add($"Authentication: {AuthLoginPath}, {AuthTokenPath}");
 #endif
     
     return new 
