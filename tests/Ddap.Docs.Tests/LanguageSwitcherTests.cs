@@ -344,6 +344,9 @@ public class LanguageSwitcherTests : PageTest
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await Page.WaitForTimeoutAsync(500);
 
+        // Wait for language toggle to be present
+        await Page.WaitForSelectorAsync("#language-toggle", new() { Timeout = 5000 });
+
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
         Assert.That(languageToggle, Is.Not.Null, "Language toggle not found");
