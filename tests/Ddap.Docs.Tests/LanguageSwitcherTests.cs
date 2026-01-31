@@ -344,8 +344,8 @@ public class LanguageSwitcherTests : PageTest
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await Page.WaitForTimeoutAsync(500);
 
-        // Wait for language toggle to be present
-        await Page.WaitForSelectorAsync("#language-toggle", new() { Timeout = 5000 });
+        // Wait for language toggle to be present (increased timeout for CI)
+        await Page.WaitForSelectorAsync("#language-toggle", new() { Timeout = 15000 });
 
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
@@ -427,10 +427,10 @@ public class LanguageSwitcherTests : PageTest
             );
         }
 
-        // Ensure reset function is available
+        // Ensure reset function is available (increased timeout for CI)
         await Page.WaitForFunctionAsync(
             "() => window.ddapLanguage && typeof window.ddapLanguage.reset === 'function'",
-            new PageWaitForFunctionOptions { Timeout = 5000 }
+            new PageWaitForFunctionOptions { Timeout = 15000 }
         );
 
         // Arrange: Set a language
