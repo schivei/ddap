@@ -52,13 +52,6 @@
       ],
       "description": "Target database system"
     },
-    "api-providers": {
-      "type": "parameter",
-      "datatype": "string",
-      "defaultValue": "",
-      "description": "DEPRECATED: This parameter no longer controls API providers. Use --rest, --graphql, and --grpc boolean flags instead.",
-      "replaces": "API_PROVIDERS_PLACEHOLDER"
-    },
     "rest": {
       "type": "parameter",
       "datatype": "bool",
