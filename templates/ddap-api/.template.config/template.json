@@ -77,28 +77,7 @@
       "defaultValue": "false",
       "description": "Enable gRPC"
     },
-    "EnableRest": {
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "false",
-      "description": "DEPRECATED: Use --rest instead"
-    },
-    "EnableGraphQL": {
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "false",
-      "description": "DEPRECATED: Use --graphql instead"
-    },
-    "EnableGrpc": {
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "false",
-      "description": "DEPRECATED: Use --grpc instead"
-    },
-    "HasApiProvidersParam": {
-      "type": "computed",
-      "value": "(api-providers != \"\")"
-    },
+
     "connection-string": {
       "type": "parameter",
       "datatype": "string",
@@ -150,15 +129,15 @@
     },
     "IncludeRest": {
       "type": "computed",
-      "value": "(rest || EnableRest || (HasApiProvidersParam && (api-providers == \"rest\" || api-providers.Contains(\"rest\"))))"
+      "value": "(rest)"
     },
     "IncludeGraphQL": {
       "type": "computed",
-      "value": "(graphql || EnableGraphQL || (HasApiProvidersParam && api-providers.Contains(\"graphql\")))"
+      "value": "(graphql)"
     },
     "IncludeGrpc": {
       "type": "computed",
-      "value": "(grpc || EnableGrpc || (HasApiProvidersParam && api-providers.Contains(\"grpc\")))"
+      "value": "(grpc)"
     }
   },
   "sources": [
