@@ -305,6 +305,14 @@
             const nav = document.querySelector('.nav-links');
             if (nav) {
                 nav.insertAdjacentHTML('beforeend', switcherHTML);
+            } else {
+                // Final fallback: insert into body if no nav structure found
+                const header = document.querySelector('header, .site-header');
+                if (header) {
+                    header.insertAdjacentHTML('beforeend', switcherHTML);
+                } else {
+                    document.body.insertAdjacentHTML('afterbegin', switcherHTML);
+                }
             }
         }
     }

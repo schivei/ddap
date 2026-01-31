@@ -140,7 +140,7 @@ public class LanguageSwitcherTests : PageTest
         Assert.That(languageToggle, Is.Not.Null);
 
         await languageToggle!.ClickAsync();
-        await Page.WaitForTimeoutAsync(300);
+        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
 
         // Act: Click on Portuguese option - this will navigate
         var ptOption = await Page.QuerySelectorAsync("[data-language='pt-br']");
@@ -162,7 +162,7 @@ public class LanguageSwitcherTests : PageTest
         Assert.That(languageToggle, Is.Not.Null);
 
         await languageToggle!.ClickAsync();
-        await Page.WaitForTimeoutAsync(300);
+        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
 
         // Act: Click on Spanish option - this will navigate
         var esOption = await Page.QuerySelectorAsync("[data-language='es']");
@@ -238,10 +238,12 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Click the toggle button
         await languageToggle!.ClickAsync();
-        await Page.WaitForTimeoutAsync(300);
+        
+        // Wait for dropdown to appear with transition
+        var dropdown = await Page.QuerySelectorAsync("#language-dropdown");
+        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
 
         // Assert: Dropdown should be visible
-        var dropdown = await Page.QuerySelectorAsync("#language-dropdown");
         var isVisible = await dropdown!.IsVisibleAsync();
         Assert.That(isVisible, Is.True, "Language dropdown did not open");
 
@@ -315,10 +317,12 @@ public class LanguageSwitcherTests : PageTest
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
         await languageToggle!.ClickAsync();
-        await Page.WaitForTimeoutAsync(300);
+        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
 
         // Assert: French option should have active class
         var frOption = await Page.QuerySelectorAsync("[data-language='fr']");
+        Assert.That(frOption, Is.Not.Null, "French option not found");
+        
         var hasActiveClass = await frOption!.EvaluateAsync<bool>(
             "el => el.classList.contains('active')"
         );
