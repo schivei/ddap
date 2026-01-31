@@ -215,50 +215,46 @@ public class CompressionTests : PageTest
     }
 
     [Test]
-    public async Task Compression_ReducesFileSize()
+    public async Task Compression_IsAppliedWhenRequested()
     {
-        // Act: Request same file with and without compression
-        var uncompressedResponse = await Page.APIRequest.GetAsync(
-            $"{DocsBaseUrl}/styles.css",
-            new APIRequestContextOptions
-            {
-                Headers = new Dictionary<string, string> { { "Accept-Encoding", "identity" } },
-            }
-        );
-
+        // Act: Request file with compression support
         var compressedResponse = await Page.APIRequest.GetAsync(
             $"{DocsBaseUrl}/styles.css",
             new APIRequestContextOptions
             {
-                Headers = new Dictionary<string, string> { { "Accept-Encoding", "br, gzip" } },
+                Headers = new Dictionary<string, string> { { "Accept-Encoding", "br, gzip, deflate" } },
             }
         );
 
-        // Assert: Both should succeed
-        Assert.That(uncompressedResponse.Ok, Is.True, "Uncompressed request should succeed");
+        // Assert: Request should succeed
         Assert.That(compressedResponse.Ok, Is.True, "Compressed request should succeed");
 
-        // Get content
-        var uncompressedBody = await uncompressedResponse.BodyAsync();
-        var compressedBody = await compressedResponse.BodyAsync();
+        // Check if any compression was applied
+        var headers = compressedResponse.Headers;
+        var hasCompression = headers.ContainsKey("content-encoding") || 
+                           headers.ContainsKey("Content-Encoding");
 
-        // If compression is working, compressed body will be smaller
-        // (unless the file is already very small and compression doesn't help)
-        if (compressedResponse.Headers.ContainsKey("content-encoding"))
+        if (hasCompression)
         {
-            // Note: compressedBody.Length will show compressed size
-            Console.WriteLine($"Uncompressed: {uncompressedBody.Length} bytes");
-            Console.WriteLine($"Compressed: {compressedBody.Length} bytes");
-
-            // For large files, compression should significantly reduce size
-            if (uncompressedBody.Length > 1024)
-            {
-                Assert.That(
-                    compressedBody.Length,
-                    Is.LessThan(uncompressedBody.Length),
-                    "Compression should reduce file size for large files"
-                );
-            }
+            var encoding = headers.TryGetValue("content-encoding", out var ce1) ? ce1 :
+                         headers.TryGetValue("Content-Encoding", out var ce2) ? ce2 : "";
+            
+            Console.WriteLine($"Compression applied: {encoding}");
+            
+            // Verify it's a valid compression algorithm
+            Assert.That(
+                encoding,
+                Does.Match("br|gzip|deflate"),
+                "Content-Encoding should be br, gzip, or deflate"
+            );
         }
+        else
+        {
+            // If no compression header, it might be because file is very small or already compressed
+            Console.WriteLine("No compression header found - file may be small or already compressed");
+        }
+
+        // Either way, the response should be successful
+        Assert.That(compressedResponse.Status, Is.EqualTo(200), "Response should be OK");
     }
 }

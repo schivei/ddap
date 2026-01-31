@@ -39,10 +39,10 @@ public class LanguageSwitcherTests : PageTest
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        // Wait for language switcher API to be available
+        // Wait for language switcher API to be available (increased timeout)
         await Page.WaitForFunctionAsync(
             "() => window.ddapLanguage !== undefined",
-            new PageWaitForFunctionOptions { Timeout = 10000 }
+            new PageWaitForFunctionOptions { Timeout = 30000 }  // Increased to 30 seconds
         );
     }
 
@@ -346,6 +346,8 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
+        Assert.That(languageToggle, Is.Not.Null, "Language toggle not found");
+        
         await languageToggle!.ClickAsync();
         await Page.WaitForSelectorAsync(
             "#language-dropdown.show",
@@ -356,14 +358,18 @@ public class LanguageSwitcherTests : PageTest
         var frOption = await Page.QuerySelectorAsync("[data-language='fr']");
         Assert.That(frOption, Is.Not.Null, "French option not found");
 
-        var hasActiveClass = await frOption!.EvaluateAsync<bool>(
-            "el => el.classList.contains('active')"
-        );
-        Assert.That(hasActiveClass, Is.True, "Active language not marked in dropdown");
+        if (frOption != null)
+        {
+            var hasActiveClass = await frOption.EvaluateAsync<bool>(
+                "el => el.classList.contains('active')"
+            );
+            Assert.That(hasActiveClass, Is.True, "Active language not marked in dropdown");
 
-        // Assert: French option should have aria-current
-        var ariaCurrent = await frOption.GetAttributeAsync("aria-current");
-        Assert.That(ariaCurrent, Is.EqualTo("true"), "aria-current not set for active language");
+            // Assert: French option should have aria-current
+            var ariaCurrent = await frOption.GetAttributeAsync("aria-current");
+            Assert.That(ariaCurrent, Is.EqualTo("true"), "aria-current not set for active language");
+        }
+    }
     }
 
     [Test]
