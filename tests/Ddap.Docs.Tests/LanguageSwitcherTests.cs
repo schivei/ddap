@@ -331,21 +331,32 @@ public class LanguageSwitcherTests : PageTest
     [Test]
     public async Task ActiveLanguage_IsMarked_InDropdown()
     {
-        // Arrange: Switch to French
-        await Page.EvaluateAsync(
-            @"
-            window.ddapLanguage.switch('fr');
-        "
-        );
-        await Page.WaitForTimeoutAsync(500);
+        // Arrange: Set French as the language preference in localStorage
+        // (Don't use switch() as it navigates to DocFX-generated locale pages without custom scripts)
+        await Page.EvaluateAsync("localStorage.setItem('ddap-language', 'fr')");
 
-        // Reload to ensure UI is updated
+        // Reload to apply the language change
         await Page.ReloadAsync();
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(1000);
 
-        // Wait for language toggle to be present (increased timeout for CI)
-        await Page.WaitForSelectorAsync("#language-toggle", new() { Timeout = 15000 });
+        // Wait for language-switcher container to be created
+        await Page.WaitForSelectorAsync(
+            "#language-switcher",
+            new() { State = WaitForSelectorState.Attached, Timeout = 20000 }
+        );
+
+        // Wait for language toggle button to be present (increased timeout for CI)
+        await Page.WaitForSelectorAsync(
+            "#language-toggle",
+            new() { State = WaitForSelectorState.Attached, Timeout = 20000 }
+        );
+
+        // Ensure it's visible
+        await Page.WaitForSelectorAsync(
+            "#language-toggle",
+            new() { State = WaitForSelectorState.Visible, Timeout = 5000 }
+        );
 
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
@@ -432,22 +443,40 @@ public class LanguageSwitcherTests : PageTest
         }
 
         // Ensure reset function is available (increased timeout for CI)
-        await Page.WaitForFunctionAsync(
-            "() => window.ddapLanguage && typeof window.ddapLanguage.reset === 'function'",
-            new PageWaitForFunctionOptions { Timeout = 15000 }
+        // Wait for the API object and all its methods to be fully initialized
+        var apiReady = await Page.WaitForFunctionAsync(
+            @"() => {
+                try {
+                    return window.ddapLanguage 
+                        && typeof window.ddapLanguage === 'object'
+                        && typeof window.ddapLanguage.reset === 'function'
+                        && typeof window.ddapLanguage.switch === 'function'
+                        && typeof window.ddapLanguage.current === 'function';
+                } catch (e) {
+                    return false;
+                }
+            }",
+            new PageWaitForFunctionOptions { Timeout = 30000 }
         );
 
-        // Arrange: Set a language
-        await Page.EvaluateAsync(
-            @"
-            window.ddapLanguage.switch('de');
-        "
-        );
+        Assert.That(apiReady, Is.Not.Null, "Language API did not become ready within timeout");
+
+        // Additional stabilization wait for CI environment
+        await Page.WaitForTimeoutAsync(2000);
+
+        // Arrange: Directly set localStorage (don't use switch() as it navigates away)
+        await Page.EvaluateAsync("localStorage.setItem('ddap-language', 'de')");
         await Page.WaitForTimeoutAsync(500);
 
-        // Act: Reset language
+        // Verify it was set
+        var beforeReset = await Page.EvaluateAsync<string?>(
+            "localStorage.getItem('ddap-language')"
+        );
+        Assert.That(beforeReset, Is.EqualTo("de"), "localStorage was not set");
+
+        // Act: Reset language (this should clear localStorage)
         await Page.EvaluateAsync("window.ddapLanguage.reset()");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(1000);
 
         // Assert: localStorage should be cleared
         var storedLanguage = await Page.EvaluateAsync<string?>(
