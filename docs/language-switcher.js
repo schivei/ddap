@@ -114,12 +114,21 @@
         // pagePath should already be relative to the base (without base path or locale)
         // e.g., "index.html" or "get-started.html"
         
-        // For English, use base path + page path; for others, use base path + /locale/ + page path
+        // Normalize pagePath (remove leading slash if present)
+        pagePath = pagePath.replace(/^\/+/, '');
+        
+        // Build the path based on language
+        let fullPath;
         if (language === 'en' || language === DEFAULT_LANGUAGE) {
-            return `${BASE_PATH}/${pagePath}`;
+            // English: BASE_PATH/page.html or just /page.html
+            fullPath = BASE_PATH ? `${BASE_PATH}/${pagePath}` : `/${pagePath}`;
         } else {
-            return `${BASE_PATH}/${language}/${pagePath}`;
+            // Other languages: BASE_PATH/locale/page.html or just /locale/page.html
+            fullPath = BASE_PATH ? `${BASE_PATH}/${language}/${pagePath}` : `/${language}/${pagePath}`;
         }
+        
+        // Clean up double slashes (but keep the protocol slashes)
+        return fullPath.replace(/([^:])\/\//g, '$1/');
     }
     
     /**
