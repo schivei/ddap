@@ -8,53 +8,53 @@
 
   <ItemGroup>
     <!-- Core DDAP package -->
-    <PackageReference Include="Ddap.Core" Version="1.0.*" />
+    <PackageReference Include="Ddap.Core" Version="1.*" />
     <!--#if (UseDapper && UseSqlServer) -->
-    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.*" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.*" />
     <!--#endif -->
     <!--#if (UseDapper && UseMySQL) -->
-    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
-    <PackageReference Include="MySqlConnector" Version="2.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.*" />
+    <PackageReference Include="MySqlConnector" Version="2.*" />
     <!--#endif -->
     <!--#if (UseDapper && UsePostgreSQL) -->
-    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
-    <PackageReference Include="Npgsql" Version="10.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.*" />
+    <PackageReference Include="Npgsql" Version="8.*" />
     <!--#endif -->
     <!--#if (UseDapper && UseSQLite) -->
-    <PackageReference Include="Ddap.Data.Dapper" Version="1.0.*" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.*" />
+    <PackageReference Include="Ddap.Data.Dapper" Version="1.*" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.*" />
     <!--#endif -->
     <!--#if (UseEntityFramework) -->
-    <PackageReference Include="Ddap.Data.EntityFramework" Version="1.0.*" />
+    <PackageReference Include="Ddap.Data.EntityFramework" Version="1.*" />
     <!--#if (UseSqlServer) -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.*" />
     <!--#endif -->
     <!--#if (UseMySQL) -->
     <!-- Using official Oracle provider. You can replace with Pomelo if preferred. -->
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.*" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="9.*" />
     <!--#endif -->
     <!--#if (UsePostgreSQL) -->
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.*" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.*" />
     <!--#endif -->
     <!--#if (UseSQLite) -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" />
     <!--#endif -->
     <!--#endif -->
     <!--#if (IncludeRest) -->
-    <PackageReference Include="Ddap.Rest" Version="1.0.*" />
+    <PackageReference Include="Ddap.Rest" Version="1.*" />
     <!--#endif -->
     <!--#if (IncludeGraphQL) -->
-    <PackageReference Include="Ddap.GraphQL" Version="1.0.*" />
+    <PackageReference Include="Ddap.GraphQL" Version="1.*" />
     <!--#endif -->
     <!--#if (IncludeGrpc) -->
-    <PackageReference Include="Ddap.Grpc" Version="1.0.*" />
+    <PackageReference Include="Ddap.Grpc" Version="1.*" />
     <!--#endif -->
     <!--#if (include-auth) -->
-    <PackageReference Include="Ddap.Auth" Version="1.0.*" />
+    <PackageReference Include="Ddap.Auth" Version="1.*" />
     <!--#endif -->
     <!--#if (include-subscriptions) -->
-    <PackageReference Include="Ddap.Subscriptions" Version="1.0.*" />
+    <PackageReference Include="Ddap.Subscriptions" Version="1.*" />
     <!--#endif -->
   </ItemGroup>
   <!--#if (use-aspire) -->
