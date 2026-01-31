@@ -266,13 +266,19 @@
             </div>
         `;
         
-        // Insert into nav
-        const nav = document.querySelector('.nav-links');
-        if (nav) {
+        // Insert into nav-controls (next to theme toggle)
+        const navControls = document.querySelector('.nav-controls');
+        if (navControls) {
             const themeToggle = document.getElementById('theme-toggle');
             if (themeToggle) {
-                themeToggle.insertAdjacentHTML('beforebegin', switcherHTML);
+                themeToggle.insertAdjacentHTML('afterend', switcherHTML);
             } else {
+                navControls.insertAdjacentHTML('beforeend', switcherHTML);
+            }
+        } else {
+            // Fallback: insert into nav-links if nav-controls doesn't exist
+            const nav = document.querySelector('.nav-links');
+            if (nav) {
                 nav.insertAdjacentHTML('beforeend', switcherHTML);
             }
         }

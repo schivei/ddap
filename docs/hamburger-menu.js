@@ -31,8 +31,15 @@
         
         if (!nav || !navLinks) return;
         
-        // Insert hamburger button before nav-links
-        navLinks.insertAdjacentHTML('beforebegin', createHamburgerButton());
+        // Insert hamburger button after nav-controls or before nav-links
+        const navControls = document.querySelector('.nav-controls');
+        if (navControls && navControls.parentElement) {
+            // Insert after the nav-controls container
+            navControls.parentElement.insertAdjacentHTML('beforeend', createHamburgerButton());
+        } else {
+            // Fallback: insert before nav-links
+            navLinks.insertAdjacentHTML('beforebegin', createHamburgerButton());
+        }
         
         const hamburger = document.querySelector('.hamburger-menu');
         
@@ -60,11 +67,13 @@
             const themeToggle = document.getElementById('theme-toggle');
             const langSwitcher = document.getElementById('language-switcher');
             const langDropdown = document.getElementById('language-dropdown');
+            const navControls = document.querySelector('.nav-controls');
             
             // Don't close if clicking theme or language controls
             if (themeToggle && themeToggle.contains(e.target)) return;
             if (langSwitcher && langSwitcher.contains(e.target)) return;
             if (langDropdown && langDropdown.contains(e.target)) return;
+            if (navControls && navControls.contains(e.target)) return;
             
             if (document.body.classList.contains('menu-open') && 
                 !navLinks.contains(e.target) && 
