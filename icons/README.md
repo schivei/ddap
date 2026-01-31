@@ -16,13 +16,13 @@ The DDAP icon represents the core philosophy of "Developer in Control":
 ### Vector Format
 - `icon.svg` - Scalable Vector Graphics, suitable for all sizes and uses
 
-### Raster Formats (To be generated)
-The following PNG sizes should be generated from the SVG:
-- `icon-16.png` - 16×16 pixels (favicon, small UI elements)
+### Raster Formats (PNG)
+The following PNG sizes have been generated from the SVG:
 - `icon-32.png` - 32×32 pixels (browser tabs, taskbar)
 - `icon-64.png` - 64×64 pixels (medium icons)
-- `icon-128.png` - 128×128 pixels (app icons, high-DPI displays)
+- `icon-128.png` - 128×128 pixels (app icons, high-DPI displays) **[NuGet Package Default]**
 - `icon-256.png` - 256×256 pixels (large displays, package icons)
+- `icon.png` - 128×128 pixels (default/alias for NuGet packages)
 
 ## Usage
 
@@ -39,17 +39,33 @@ The icon can be used in:
 - GitHub repository social preview
 
 ### NuGet Package Icon
-The icon should be configured in the .csproj files:
+The icon is configured in `Directory.Build.props`:
 ```xml
 <PackageIcon>icon.png</PackageIcon>
 <ItemGroup>
-  <None Include="..\..\icons\icon-128.png" Pack="true" PackagePath="\" />
+  <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="\" />
 </ItemGroup>
 ```
 
+This includes the 128×128 PNG version (`icon.png`) in all NuGet packages.
+
 ## Generating PNG Files
 
-To generate PNG files from the SVG, use one of these tools:
+PNG files have been generated using Python with cairosvg. To regenerate them:
+
+### Using Python (cairosvg)
+```python
+import cairosvg
+
+sizes = [32, 64, 128, 256]
+for size in sizes:
+    cairosvg.svg2png(
+        url='icon.svg',
+        write_to=f'icon-{size}.png',
+        output_width=size,
+        output_height=size
+    )
+```
 
 ### Using Inkscape
 ```bash
