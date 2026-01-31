@@ -3,7 +3,12 @@ name: Documentation
 
 'on':
   push:
-    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - '.github/workflows/docs.yml'
+  pull_request:
     paths:
       - 'docs/**'
       - 'README.md'
@@ -121,7 +126,6 @@ jobs:
         run: |
           cd tests/Ddap.Docs.Tests
           dotnet test --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
-        continue-on-error: true
         id: accessibility_tests
 
       - name: Stop local server
@@ -153,20 +157,14 @@ jobs:
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
-        if: |
-          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-          (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_pages == 'true')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           path: docs/_site
-        continue-on-error: true
 
       - name: Deploy to GitHub Pages
         id: deployment
-        if: |
-          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-          (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_pages == 'true')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/deploy-pages@v4
-        continue-on-error: true
 
       - name: Build Summary
         if: always()

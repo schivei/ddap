@@ -1,5 +1,7 @@
 - name: Home
   href: index.md
+- name: Why DDAP?
+  href: why-ddap.md
 - name: Philosophy
   href: philosophy.md
 - name: Getting Started
@@ -16,8 +18,24 @@
   href: auto-reload.md
 - name: Templates
   href: templates.md
+- name: Client Libraries
+  items:
+    - name: Getting Started
+      href: client-getting-started.md
+    - name: REST Client
+      href: client-rest.md
+    - name: GraphQL Client
+      href: client-graphql.md
+    - name: gRPC Client
+      href: client-grpc.md
+- name: Raw Queries
+  href: raw-queries.md
+- name: Extended Types
+  href: extended-types.md
 - name: Troubleshooting
   href: troubleshooting.md
+- name: Known Issues
+  href: known-issues.md
 - name: API Reference
   href: api/
 - name: Contributing
