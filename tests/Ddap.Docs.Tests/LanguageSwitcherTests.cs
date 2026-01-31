@@ -370,7 +370,6 @@ public class LanguageSwitcherTests : PageTest
             Assert.That(ariaCurrent, Is.EqualTo("true"), "aria-current not set for active language");
         }
     }
-    }
 
     [Test]
     public async Task LanguageAPI_IsAccessible_Globally()
