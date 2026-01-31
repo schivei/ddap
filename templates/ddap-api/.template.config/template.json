@@ -56,7 +56,7 @@
       "type": "parameter",
       "datatype": "string",
       "defaultValue": "",
-      "description": "API protocols to enable (comma-separated: rest,graphql,grpc). Prefer using --rest, --graphql, --grpc flags instead.",
+      "description": "DEPRECATED: This parameter no longer controls API providers. Use --rest, --graphql, and --grpc boolean flags instead.",
       "replaces": "API_PROVIDERS_PLACEHOLDER"
     },
     "rest": {

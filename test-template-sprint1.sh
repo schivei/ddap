@@ -25,6 +25,10 @@ cleanup() {
 # Trap to ensure cleanup happens
 trap cleanup EXIT
 
+# Dynamically determine repository root before changing directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${SCRIPT_DIR}"
+
 # Create temp directory
 mkdir -p "$TEMP_DIR"
 cd "$TEMP_DIR"
@@ -88,7 +92,8 @@ run_test() {
 
 # Install template
 echo -e "${YELLOW}Installing template from source...${NC}"
-cd /home/runner/work/ddap/ddap
+
+cd "${REPO_ROOT}"
 if dotnet new install ./templates/ddap-api --force > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC} Template installed successfully"
 else
