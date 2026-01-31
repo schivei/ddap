@@ -1120,22 +1120,31 @@ html {
 
 /* Mobile language switcher adjustments */
 @media (max-width: 768px) {
-    .language-toggle .language-name {
-        display: none;
+    .language-switcher {
+        width: auto;
     }
     
     .language-toggle {
-        padding: 0.5rem;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .language-toggle .language-name,
+    .language-name {
+        display: none; /* Hide language name on mobile to save space */
     }
     
     .language-dropdown {
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%) translateY(-10px);
+        position: absolute;
+        right: 0;
+        top: calc(100% + 0.5rem);
+        min-width: 180px;
+        max-height: 300px;
+        overflow-y: auto;
     }
     
     .language-dropdown.show {
-        transform: translateX(-50%) translateY(0);
+        display: block;
     }
 }
 
@@ -1427,33 +1436,4 @@ html {
 
 .language-option.active:hover {
     background: var(--color-primary-hover);
-}
-
-@media (max-width: 768px) {
-    /* Language switcher on mobile - keep it compact */
-    .language-switcher {
-        width: auto;
-    }
-    
-    .language-toggle {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.75rem;
-    }
-    
-    .language-name {
-        display: none; /* Hide language name on mobile to save space */
-    }
-    
-    .language-dropdown {
-        position: absolute;
-        right: 0;
-        top: calc(100% + 0.5rem);
-        min-width: 180px;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    
-    .language-dropdown.show {
-        display: block;
-    }
 }
