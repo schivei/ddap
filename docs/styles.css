@@ -1256,6 +1256,27 @@ html {
         display: flex;
     }
     
+    /* Create a controls wrapper for theme and language on mobile */
+    .nav-container {
+        position: relative;
+    }
+    
+    /* Keep theme toggle and language switcher visible on mobile */
+    .theme-toggle,
+    .language-switcher {
+        position: fixed;
+        top: 1rem;
+        z-index: 1002;
+    }
+    
+    .theme-toggle {
+        right: 4.5rem;
+    }
+    
+    .language-switcher {
+        right: 8rem;
+    }
+    
     .nav-links {
         position: fixed;
         top: 0;
@@ -1282,10 +1303,6 @@ html {
         width: 100%;
         padding: 0.75rem 0;
         border-bottom: 1px solid var(--border-color);
-    }
-    
-    .theme-toggle {
-        margin-top: 1rem;
     }
     
     /* Overlay when menu is open */
@@ -1413,20 +1430,30 @@ html {
 }
 
 @media (max-width: 768px) {
+    /* Language switcher on mobile - keep it compact */
     .language-switcher {
-        width: 100%;
+        width: auto;
     }
     
     .language-toggle {
-        width: 100%;
-        justify-content: space-between;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .language-name {
+        display: none; /* Hide language name on mobile to save space */
     }
     
     .language-dropdown {
-        position: static;
-        width: 100%;
-        margin-top: 0.5rem;
-        box-shadow: none;
-        border: 1px solid var(--border-color);
+        position: absolute;
+        right: 0;
+        top: calc(100% + 0.5rem);
+        min-width: 180px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .language-dropdown.show {
+        display: block;
     }
 }

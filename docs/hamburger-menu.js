@@ -44,7 +44,7 @@
             document.body.classList.toggle('menu-open', isOpen);
         });
         
-        // Close menu when clicking on a link
+        // Close menu when clicking on a link (but not on theme/language controls)
         const links = navLinks.querySelectorAll('a');
         links.forEach(link => {
             link.addEventListener('click', function() {
@@ -55,8 +55,17 @@
             });
         });
         
-        // Close menu when clicking overlay (outside menu)
+        // Close menu when clicking overlay (outside menu, theme, and language controls)
         document.addEventListener('click', function(e) {
+            const themeToggle = document.getElementById('theme-toggle');
+            const langSwitcher = document.getElementById('language-switcher');
+            const langDropdown = document.getElementById('language-dropdown');
+            
+            // Don't close if clicking theme or language controls
+            if (themeToggle && themeToggle.contains(e.target)) return;
+            if (langSwitcher && langSwitcher.contains(e.target)) return;
+            if (langDropdown && langDropdown.contains(e.target)) return;
+            
             if (document.body.classList.contains('menu-open') && 
                 !navLinks.contains(e.target) && 
                 !hamburger.contains(e.target)) {
