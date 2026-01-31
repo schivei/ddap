@@ -427,6 +427,12 @@ public class LanguageSwitcherTests : PageTest
             );
         }
 
+        // Ensure reset function is available
+        await Page.WaitForFunctionAsync(
+            "() => window.ddapLanguage && typeof window.ddapLanguage.reset === 'function'",
+            new PageWaitForFunctionOptions { Timeout = 5000 }
+        );
+
         // Arrange: Set a language
         await Page.EvaluateAsync(
             @"
