@@ -105,7 +105,7 @@ try {
     
     # Uninstall any existing template
     Write-Host "Uninstalling existing template..."
-    & dotnet new uninstall Ddap.Templates 2>&1 | Out-Null
+    & dotnet new uninstall "$REPO_ROOT\$TEMPLATE_PATH" 2>&1 | Out-Null
     
     # Install template
     Write-Host "Installing template from: $TEMPLATE_PATH"
@@ -155,7 +155,7 @@ try {
     # Uninstall template
     Write-Host ""
     Write-Host "Uninstalling template..."
-    & dotnet new uninstall Ddap.Templates 2>&1 | Out-Null
+    & dotnet new uninstall "$REPO_ROOT\$TEMPLATE_PATH" 2>&1 | Out-Null
     
     Write-Host ""
     Write-Color "✅ All template tests passed!" -Color Green

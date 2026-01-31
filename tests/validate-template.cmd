@@ -18,7 +18,7 @@ cd /d "%REPO_ROOT%"
 
 REM Uninstall any existing template
 echo Uninstalling existing template...
-dotnet new uninstall Ddap.Templates 2>nul
+dotnet new uninstall %REPO_ROOT%\%TEMPLATE_PATH% 2>nul
 
 REM Install template
 echo Installing template from: %TEMPLATE_PATH%
@@ -88,7 +88,7 @@ if errorlevel 1 goto :error
 
 echo.
 echo Uninstalling template...
-dotnet new uninstall Ddap.Templates
+dotnet new uninstall %REPO_ROOT%\%TEMPLATE_PATH%
 
 echo.
 echo ✅ All template tests passed!

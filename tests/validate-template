@@ -14,7 +14,7 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; t
         powershell -File "$SCRIPT_DIR/validate-template.ps1"
     else
         echo "Detected Windows - running batch script..."
-        cmd //c "$SCRIPT_DIR\\validate-template.cmd"
+        cmd /c "$SCRIPT_DIR/validate-template.cmd"
     fi
 else
     # Linux or Mac
