@@ -12,7 +12,7 @@ namespace Ddap.Docs.Tests;
 [TestFixture]
 public class LanguageSwitcherTests : PageTest
 {
-    private const string DocsBaseUrl = "http://localhost:8000";
+    private const string DocsBaseUrl = "http://localhost:8000/ddap";
 
     [SetUp]
     public async Task Setup()
@@ -149,7 +149,7 @@ public class LanguageSwitcherTests : PageTest
         // Assert: Verify the option exists and is clickable (navigation would happen in real usage)
         var isVisible = await ptOption!.IsVisibleAsync();
         Assert.That(isVisible, Is.True, "Portuguese option is not visible");
-        
+
         var dataLang = await ptOption.GetAttributeAsync("data-language");
         Assert.That(dataLang, Is.EqualTo("pt-br"), "Portuguese option data-language incorrect");
     }
@@ -171,7 +171,7 @@ public class LanguageSwitcherTests : PageTest
         // Assert: Verify the option exists and is clickable (navigation would happen in real usage)
         var isVisible = await esOption!.IsVisibleAsync();
         Assert.That(isVisible, Is.True, "Spanish option is not visible");
-        
+
         var dataLang = await esOption.GetAttributeAsync("data-language");
         Assert.That(dataLang, Is.EqualTo("es"), "Spanish option data-language incorrect");
     }
@@ -401,7 +401,7 @@ public class LanguageSwitcherTests : PageTest
         // Note: The announcer is created when applyLanguage is called during switchLanguage
         // Since switchLanguage causes navigation, we test the reset function instead
         // which also uses applyLanguage internally
-        
+
         // Assert: Verify language switcher still works
         var currentLang = await Page.EvaluateAsync<string>("window.ddapLanguage.current()");
         Assert.That(currentLang, Is.Not.Null, "Language API should return current language");

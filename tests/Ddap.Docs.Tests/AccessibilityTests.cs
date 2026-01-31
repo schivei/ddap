@@ -12,7 +12,7 @@ namespace Ddap.Docs.Tests;
 [TestFixture]
 public class AccessibilityTests : PageTest
 {
-    private const string DocsBaseUrl = "http://localhost:8000";
+    private const string DocsBaseUrl = "http://localhost:8000/ddap";
 
     [SetUp]
     public async Task Setup()
