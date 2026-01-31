@@ -257,9 +257,73 @@ Closes #123
 5. **Update Documentation**: Keep docs in sync with code
 6. **Provide Evidence**: Include test results, screenshots, or examples
 
-### Including Evidence
+### Including Evidence (IMPORTANT)
 
-When working on features (not meta-tasks like this documentation):
+**Evidence Location Rules**:
+
+#### When PR Exists
+- ✅ **Include evidence directly in the PR description**
+- ✅ Use markdown formatting for screenshots, code samples, test results
+- ✅ Evidence becomes part of the permanent PR record
+- ✅ No temporary files needed
+
+#### When PR Does NOT Exist Yet
+- ✅ **Create a temporary evidence file**: `EVIDENCE_<feature-name>.md`
+- ✅ Store all evidence (screenshots, test results, examples) in this file
+- ✅ Commit this file with your changes
+- ✅ **When creating PR**: Copy evidence content to PR description
+- ✅ **After PR is created**: Delete the temporary file in a follow-up commit
+
+**Example Workflow**:
+
+```bash
+# 1. Working on feature (no PR yet)
+# Create evidence file
+cat > EVIDENCE_custom-routes.md << 'EOF'
+## Evidence for Custom Routes Feature
+
+### Before
+[Screenshot showing limitation]
+
+### After
+[Screenshot showing new feature]
+
+### Test Results
+```
+dotnet test --filter "CustomRoutes"
+# All tests passing
+```
+
+### Example Usage
+```csharp
+app.MapDdapRoutes("/api/v2");
+```
+EOF
+
+# 2. Commit with evidence file
+git add .
+git commit -m "feat(rest): add custom route prefix support"
+
+# 3. Push and create PR
+git push origin feature/custom-routes
+# Create PR on GitHub
+
+# 4. Copy evidence from EVIDENCE_custom-routes.md to PR description
+# Then delete the evidence file
+
+git rm EVIDENCE_custom-routes.md
+git commit -m "chore: remove evidence file after PR creation"
+git push
+```
+
+**Evidence File Naming Convention**:
+- Format: `EVIDENCE_<brief-description>.md`
+- Examples:
+  - `EVIDENCE_mysql-support.md`
+  - `EVIDENCE_graphql-mutations.md`
+  - `EVIDENCE_auth-improvements.md`
+
+**What to Include in Evidence**:
 
 ```markdown
 ## Evidence
@@ -280,7 +344,25 @@ dotnet test
 ```csharp
 // Code example demonstrating the feature
 ```
+
+### Performance Impact (if applicable)
+- Before: X ms
+- After: Y ms
+- Improvement: Z%
 ```
+
+**When to Skip Evidence**:
+- Meta-tasks (documentation updates, refactoring without behavior change)
+- Internal tooling changes
+- Dependency updates
+- Configuration changes
+
+**When Evidence is REQUIRED**:
+- New features (user-facing or API changes)
+- Bug fixes (show before/after)
+- Performance improvements
+- UI/UX changes
+- Breaking changes
 
 ### Package Version Strategy
 
@@ -367,9 +449,25 @@ mv ANALYSIS_*.md docs/analysis/ 2>/dev/null || true
 mv SPRINT*_*.md docs/sprints/ 2>/dev/null || true
 mv TEST_*.md docs/testing/ 2>/dev/null || true
 
-# Or delete truly temporary files
-rm -f TEMP_*.md WIP_*.md
+# Delete temporary files (including evidence files after PR creation)
+rm -f TEMP_*.md WIP_*.md DRAFT_*.md EVIDENCE_*.md
 ```
+
+### Evidence File Lifecycle
+
+**IMPORTANT**: Evidence files are temporary!
+
+1. **Create**: `EVIDENCE_feature-name.md` when working without PR
+2. **Use**: Copy content to PR description when creating PR
+3. **Delete**: Remove evidence file after PR is created
+
+```bash
+# After copying evidence to PR description
+git rm EVIDENCE_*.md
+git commit -m "chore: remove evidence file after PR creation"
+```
+
+**Never keep evidence files after PR creation** - they should only exist temporarily while work is in progress without a PR.
 
 ### What to Keep
 
@@ -386,6 +484,7 @@ rm -f TEMP_*.md WIP_*.md
 - Sprint/planning documents (move to `docs/sprints/`)
 - Test reports (move to `docs/testing/`)
 - Temporary notes/WIP documents (delete)
+- **Evidence files (delete after PR creation)** ⚠️
 
 ## Security Considerations
 

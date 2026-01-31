@@ -433,6 +433,7 @@ docs/obj/
 TEMP_*.md
 WIP_*.md
 DRAFT_*.md
+EVIDENCE_*.md
 *_TEMP.md
 *_WIP.md
 *_DRAFT.md
