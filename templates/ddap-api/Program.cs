@@ -1,12 +1,9 @@
 using Ddap.Core;
-#if (UseDapper && UseSqlServer)
-using Ddap.Data.Dapper.SqlServer;
+#if (UseDapper)
+using Ddap.Data.Dapper;
 #endif
-#if (UseDapper && UseMySQL)
-using Ddap.Data.Dapper.MySQL;
-#endif
-#if (UseDapper && UsePostgreSQL)
-using Ddap.Data.Dapper.PostgreSQL;
+#if (UseEntityFramework)
+using Ddap.Data.EntityFramework;
 #endif
 #if (IncludeRest)
 using Ddap.Rest;
@@ -32,19 +29,14 @@ builder.AddServiceDefaults();
 
 #endif
 // Get connection string from configuration
+// IMPORTANT: Configure connection string in appsettings.json or user secrets
+// Never hardcode connection strings with credentials in code
+// Connection string must be configured in appsettings.json or user secrets
+// NEVER hardcode connection strings with credentials in source code
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-#if (UseSqlServer)
-    ?? "Server=localhost;Database=DdapDb;Integrated Security=true;TrustServerCertificate=true;";
-#endif
-#if (UseMySQL)
-    ?? "Server=localhost;Database=DdapDb;User=root;Password=secret;";
-#endif
-#if (UsePostgreSQL)
-    ?? "Host=localhost;Database=DdapDb;Username=postgres;Password=secret;";
-#endif
-#if (UseSQLite)
-    ?? "Data Source=ddap.db";
-#endif
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' not found in configuration. " +
+        "Add it to appsettings.json under 'ConnectionStrings' section or use User Secrets for development.");
 
 // Configure DDAP
 var ddapBuilder = builder.Services.AddDdap(options =>
@@ -53,23 +45,16 @@ var ddapBuilder = builder.Services.AddDdap(options =>
 });
 
 // Add database provider
-#if (UseDapper && UseSqlServer)
-ddapBuilder.AddSqlServerDapper();
-#endif
-#if (UseDapper && UseMySQL)
-ddapBuilder.AddMySqlDapper();
-#endif
-#if (UseDapper && UsePostgreSQL)
-ddapBuilder.AddPostgreSqlDapper();
-#endif
-#if (UseDapper && UseSQLite)
+#if (UseDapper)
 ddapBuilder.AddDapper();
 #endif
 #if (UseEntityFramework && UseSqlServer)
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.SqlServerDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UseMySQL)
-ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
+// Using official Oracle MySQL provider (MySql.EntityFrameworkCore)
+// Alternative: Community Pomelo provider (see README.md for instructions)
+ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UsePostgreSQL)
 ddapBuilder.AddEntityFramework<Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.NpgsqlDbContextOptionsBuilder>();
@@ -91,11 +76,21 @@ ddapBuilder.AddGrpc();
 
 #if (include-auth)
 // Add authentication
-ddapBuilder.AddDdapAuthentication(
-    builder.Configuration["Jwt:Issuer"] ?? "DdapApi",
-    builder.Configuration["Jwt:Audience"] ?? "DdapApi",
-    builder.Configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured. Use user secrets or appsettings.json.")
-);
+// JWT configuration should be in appsettings.json or user secrets
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] 
+    ?? throw new InvalidOperationException(
+        "JWT Issuer is not configured. Add 'Jwt:Issuer' to appsettings.json or user secrets.");
+
+var jwtAudience = builder.Configuration["Jwt:Audience"] 
+    ?? throw new InvalidOperationException(
+        "JWT Audience is not configured. Add 'Jwt:Audience' to appsettings.json or user secrets.");
+
+var jwtSecretKey = builder.Configuration["Jwt:SecretKey"] 
+    ?? throw new InvalidOperationException(
+        "JWT SecretKey is not configured. Add 'Jwt:SecretKey' to appsettings.json or user secrets. " +
+        "NEVER hardcode secrets in code!");
+
+ddapBuilder.AddDdapAuthentication(jwtIssuer, jwtAudience, jwtSecretKey);
 #endif
 
 #if (include-subscriptions)
@@ -130,18 +125,24 @@ app.MapGraphQL("/graphql");
 
 app.MapGet("/", () => 
 {
+    // Endpoint paths - configure in appsettings.json if customization needed
+    const string RestApiPath = "/api/entity";
+    const string GraphQLPath = "/graphql";
+    const string AuthLoginPath = "/auth/login";
+    const string AuthTokenPath = "/auth/token";
+    
     var endpoints = new List<string>();
 #if (IncludeRest)
-    endpoints.Add("REST API: /api/entity");
+    endpoints.Add($"REST API: {RestApiPath}");
 #endif
 #if (IncludeGraphQL)
-    endpoints.Add("GraphQL: /graphql");
+    endpoints.Add($"GraphQL: {GraphQLPath}");
 #endif
 #if (IncludeGrpc)
     endpoints.Add("gRPC services available");
 #endif
 #if (include-auth)
-    endpoints.Add("Authentication: /auth/login, /auth/token");
+    endpoints.Add($"Authentication: {AuthLoginPath}, {AuthTokenPath}");
 #endif
     
     return new 

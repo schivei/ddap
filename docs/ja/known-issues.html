@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>Known Issues - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="../icon.svg">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../ja/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="why-ddap.html">Why DDAP?</a>
+                <a href="known-issues.html">Known Issues</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Known Issues</h1>
+<p>This document lists current known limitations and issues with DDAP that users should be aware of.</p>
+<h2>Current Limitations</h2>
+<h3>1. .NET 10 Requirement</h3>
+<p><strong>Issue:</strong> DDAP requires .NET 10 SDK.</p>
+<p><strong>Status:</strong> By design - DDAP uses latest .NET features for performance and developer experience.</p>
+<p><strong>Workaround:</strong> Install .NET 10 SDK from <a href="https://dotnet.microsoft.com/download">https://dotnet.microsoft.com/download</a></p>
+<hr>
+<h3>2. Primary Keys Required</h3>
+<p><strong>Issue:</strong> Tables without primary keys are not discoverable by DDAP.</p>
+<p><strong>Status:</strong> By design - DDAP requires primary keys for entity identification.</p>
+<p><strong>Workaround:</strong> Add primary keys to all tables you want exposed via the API.</p>
+<pre><code class="language-sql">-- Add primary key to existing table
+ALTER TABLE MyTable ADD CONSTRAINT PK_MyTable PRIMARY KEY (Id);
+</code></pre>
+<hr>
+<h3>3. Package Migration (v0.x to v1.0+)</h3>
+<p><strong>Issue:</strong> Database-specific Dapper packages (<code>Ddap.Data.Dapper.SqlServer</code>, etc.) no longer exist.</p>
+<p><strong>Status:</strong> Intentional architecture change - Following "Developer in Control" philosophy.</p>
+<p><strong>Migration:</strong></p>
+<p><strong>Old</strong> (v0.x):</p>
+<pre><code class="language-xml">&lt;PackageReference Include="Ddap.Data.Dapper.SqlServer" Version="0.x" /&gt;
+</code></pre>
+<p><strong>New</strong> (v1.0+):</p>
+<pre><code class="language-xml">&lt;PackageReference Include="Ddap.Data.Dapper" Version="1.*" /&gt;
+&lt;PackageReference Include="Microsoft.Data.SqlClient" Version="5.*" /&gt;
+</code></pre>
+<p>See <a href="troubleshooting.md#migration-from-old-api">Troubleshooting - Migration from Old API</a> for complete migration guide.</p>
+<hr>
+<h3>4. Auto-Reload Performance</h3>
+<p><strong>Issue:</strong> Schema reload may cause brief service disruption or increased memory usage.</p>
+<p><strong>Status:</strong> Known - Trade-off between zero-downtime and resource usage.</p>
+<p><strong>Workarounds:</strong></p>
+<ol>
+<li><p><strong>For zero downtime:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Behavior = ReloadBehavior.ServeOldSchema;
+</code></pre>
+</li>
+<li><p><strong>For minimal memory:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.Strategy = ReloadStrategy.HotReload;
+</code></pre>
+</li>
+<li><p><strong>Increase idle timeout to reduce reload frequency:</strong></p>
+<pre><code class="language-csharp">options.AutoReload.IdleTimeout = TimeSpan.FromMinutes(15);
+</code></pre>
+</li>
+</ol>
+<p>See <a href="auto-reload.md">Auto-Reload Documentation</a> for details.</p>
+<hr>
+<h3>5. Template Generation - Aspire Support</h3>
+<p><strong>Issue:</strong> Templates with Aspire integration may require additional manual configuration.</p>
+<p><strong>Status:</strong> Known - Aspire integration is complex and may need customization.</p>
+<p><strong>Workaround:</strong> Follow <a href="templates.md">Templates Documentation</a> for Aspire-specific setup instructions.</p>
+<hr>
+<h2>Reporting Issues</h2>
+<p>Found a bug or limitation not listed here?</p>
+<ol>
+<li><strong>Check:</strong> <a href="https://github.com/schivei/ddap/issues">GitHub Issues</a></li>
+<li><strong>Search:</strong> <a href="troubleshooting.md">Troubleshooting Guide</a></li>
+<li><strong>Report:</strong> <a href="https://github.com/schivei/ddap/issues/new">Open a new issue</a></li>
+</ol>
+<p>When reporting, include:</p>
+<ul>
+<li>DDAP version (<code>Ddap.Core</code> package version)</li>
+<li>.NET version (<code>dotnet --version</code>)</li>
+<li>Database type and version</li>
+<li>Error message and stack trace</li>
+<li>Minimal reproduction code</li>
+</ul>
+<hr>
+<h2>Fixed Issues</h2>
+<p>Issues that have been resolved in recent versions:</p>
+<h3>✅ MySQL Provider Choice (Fixed in 1.0.0)</h3>
+<p><strong>Was:</strong> Template forced <code>Pomelo.EntityFrameworkCore.MySql</code>.</p>
+<p><strong>Now:</strong> Uses official <code>MySql.EntityFrameworkCore</code> by default, with Pomelo as documented alternative.</p>
+<p>User maintains full control over MySQL provider choice.</p>
+<hr>
+<h3>✅ Non-Existent Packages (Fixed in 1.0.0)</h3>
+<p><strong>Was:</strong> Templates referenced non-existent packages like <code>Ddap.Data.Dapper.SqlServer</code>.</p>
+<p><strong>Now:</strong> Uses base <code>Ddap.Data.Dapper</code> package with official database drivers.</p>
+<p>All templates generate correctly with proper package references.</p>
+<hr>
+<h2>Next Steps</h2>
+<ul>
+<li><a href="troubleshooting.md">Troubleshooting</a> - Detailed solutions for common issues</li>
+<li><a href="get-started.md">Get Started</a> - Begin using DDAP</li>
+<li><a href="philosophy.md">Philosophy</a> - Understanding DDAP's "Developer in Control" approach</li>
+<li><a href="https://github.com/schivei/ddap/issues">GitHub Issues</a> - Report bugs and request features</li>
+</ul>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'ja');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+        <script src="../hamburger-menu.js"></script>
+</body>
+</html>

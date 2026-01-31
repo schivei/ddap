@@ -27,6 +27,8 @@ const LOCALE_NAMES = {
 const DOC_PAGES = [
     'get-started',
     'philosophy',
+    'why-ddap',
+    'known-issues',
     'database-providers',
     'api-providers',
     'architecture',

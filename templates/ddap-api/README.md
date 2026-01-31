@@ -14,9 +14,44 @@ This project was generated using the DDAP templates.
 #if (UseSqlServer)
 **Database:** Microsoft SQL Server
 #endif
-#if (UseMySQL)
+<!--#if (UseMySQL) -->
 **Database:** MySQL
-#endif
+
+<!--#if (UseEntityFramework) -->
+### MySQL Entity Framework Provider
+
+**Default**: Using `MySql.EntityFrameworkCore` (official Oracle provider).
+
+This is the **official provider** maintained by the MySQL team at Oracle. It works out of the box with the generated project.
+
+#### Alternative: Pomelo (Community Provider)
+
+If you prefer the community-maintained Pomelo provider instead:
+
+1. Replace the package in your `.csproj`:
+   ```xml
+   <!-- Remove -->
+   <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.*" />
+   
+   <!-- Add -->
+   <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.*" />
+   ```
+
+2. Update `Program.cs`:
+   ```csharp
+   // Change from:
+   ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
+   
+   // To:
+   ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
+   ```
+
+**Why official by default?** Following DDAP philosophy: use official packages from database vendors, give you control to change if needed.
+<!--#endif -->
+<!--#if (UseDapper) -->
+**MySQL Driver:** Using `MySqlConnector` (high performance, widely adopted ADO.NET driver).
+<!--#endif -->
+<!--#endif -->
 #if (UsePostgreSQL)
 **Database:** PostgreSQL
 #endif
