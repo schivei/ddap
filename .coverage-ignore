@@ -21,3 +21,6 @@ Ddap.Grpc.Services.RawQueryServiceImpl
 
 # Test infrastructure (test server for documentation tests)
 Ddap.Docs.Server
+
+# Aspire test orchestration (if added in future)
+Ddap.Docs.AppHost
