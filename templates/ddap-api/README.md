@@ -14,12 +14,12 @@ This project was generated using the DDAP templates.
 #if (UseSqlServer)
 **Database:** Microsoft SQL Server
 #endif
-#if (UseMySQL)
+<!--#if (UseMySQL) -->
 **Database:** MySQL
 
 ### MySQL Provider Setup
 
-#if (UseEntityFramework)
+<!--#if (UseEntityFramework) -->
 **IMPORTANT:** You need to add a MySQL Entity Framework provider package to use MySQL with EF Core.
 
 Choose ONE of the following:
@@ -49,11 +49,11 @@ ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbC
 - **Oracle**: Official provider from MySQL team, may have better Oracle support
 
 See [DDAP Philosophy](https://schivei.github.io/ddap/philosophy.html) - we don't force dependencies, **you choose**.
-#endif
-#if (UseDapper)
+<!--#endif -->
+<!--#if (UseDapper) -->
 **MySQL Driver:** Using `MySqlConnector` (already included) - high performance ADO.NET driver.
-#endif
-#endif
+<!--#endif -->
+<!--#endif -->
 #if (UsePostgreSQL)
 **Database:** PostgreSQL
 #endif
