@@ -81,7 +81,6 @@ jobs:
 
     - name: Check code formatting
       run: dotnet csharpier check .
-      continue-on-error: false
 
     - name: Build
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
@@ -112,7 +111,6 @@ jobs:
 
     - name: Run template tests
       run: dotnet test tests/Ddap.Templates.Tests/ --configuration Release --verbosity normal
-      continue-on-error: true
 
     # - name: Stop Documentation Server
     #   if: always()
@@ -151,7 +149,6 @@ jobs:
         fi
         chmod +x check-coverage.sh
         ./check-coverage.sh
-      continue-on-error: false
 
     - name: Create Coverage Summary
       if: always()
@@ -177,20 +174,17 @@ jobs:
       with:
         header: coverage
         path: coverage/report/SummaryGithub.md
-      continue-on-error: true
 
     - name: Validate Documentation
       run: |
         chmod +x validate-docs.sh
         ./validate-docs.sh
-      continue-on-error: false
     
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
       with:
         directory: ./coverage
         fail_ci_if_error: false
-      continue-on-error: true
 
   check-changes:
     name: Check for Package Code Changes
@@ -319,6 +313,5 @@ jobs:
     - name: Publish to NuGet
       run: |
         for package in ./artifacts/*.nupkg; do
-          dotnet nuget push "$package" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate || echo "Package already exists or publish failed, continuing..."
+          dotnet nuget push "$package" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
         done
-      continue-on-error: true
