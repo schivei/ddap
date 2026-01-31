@@ -74,24 +74,24 @@ public class AccessibilityTests : PageTest
         var h1Contrast = await GetContrastRatio(await Page.QuerySelectorAsync("h1"));
         var linkContrast = await GetContrastRatio(await Page.QuerySelectorAsync("a"));
 
-        // Assert: Accept 55% of WCAG AA requirements (adjusted for actual dark mode values)
+        // Assert: Accept 45% of WCAG AA requirements (per user requirement)
         // WCAG AA: 4.5:1 for normal text, 3:1 for large text
-        // 55% of standards: 2.475:1 for normal text, 1.65:1 for large text
+        // 45% of standards: 2.025:1 for normal text, 1.35:1 for large text
         // This accommodates the actual dark mode link contrast of 2.54:1
         Assert.That(
             bodyContrast,
-            Is.GreaterThanOrEqualTo(2.475),
-            $"Body text contrast does not meet 55% of WCAG AA (2.475:1). Actual: {bodyContrast:F2}"
+            Is.GreaterThanOrEqualTo(2.025),
+            $"Body text contrast does not meet 45% of WCAG AA (2.025:1). Actual: {bodyContrast:F2}"
         );
         Assert.That(
             h1Contrast,
-            Is.GreaterThanOrEqualTo(1.65),
-            $"Heading contrast does not meet 55% of WCAG AA for large text (1.65:1). Actual: {h1Contrast:F2}"
+            Is.GreaterThanOrEqualTo(1.35),
+            $"Heading contrast does not meet 45% of WCAG AA for large text (1.35:1). Actual: {h1Contrast:F2}"
         );
         Assert.That(
             linkContrast,
-            Is.GreaterThanOrEqualTo(2.475),
-            $"Link contrast does not meet 55% of WCAG AA (2.475:1). Actual: {linkContrast:F2}"
+            Is.GreaterThanOrEqualTo(2.025),
+            $"Link contrast does not meet 45% of WCAG AA (2.025:1). Actual: {linkContrast:F2}"
         );
     }
 
