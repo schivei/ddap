@@ -17,41 +17,39 @@ This project was generated using the DDAP templates.
 <!--#if (UseMySQL) -->
 **Database:** MySQL
 
-### MySQL Provider Setup
-
 <!--#if (UseEntityFramework) -->
-**IMPORTANT:** You need to add a MySQL Entity Framework provider package to use MySQL with EF Core.
+### MySQL Entity Framework Provider
 
-Choose ONE of the following:
+**Default**: Using `MySql.EntityFrameworkCore` (official Oracle provider).
 
-#### Option 1: Pomelo (Community, Popular)
-```bash
-dotnet add package Pomelo.EntityFrameworkCore.MySql
-```
+This is the **official provider** maintained by the MySQL team at Oracle. It works out of the box with the generated project.
 
-Then in `Program.cs`, uncomment the Pomelo line:
-```csharp
-ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
-```
+#### Alternative: Pomelo (Community Provider)
 
-#### Option 2: Official Oracle Provider
-```bash
-dotnet add package MySql.EntityFrameworkCore
-```
+If you prefer the community-maintained Pomelo provider instead:
 
-Then in `Program.cs`, uncomment the Oracle line:
-```csharp
-ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
-```
+1. Replace the package in your `.csproj`:
+   ```xml
+   <!-- Remove -->
+   <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.*" />
+   
+   <!-- Add -->
+   <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.*" />
+   ```
 
-**Comparison:**
-- **Pomelo**: More popular in the community, actively maintained, wider compatibility
-- **Oracle**: Official provider from MySQL team, may have better Oracle support
+2. Update `Program.cs`:
+   ```csharp
+   // Change from:
+   ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
+   
+   // To:
+   ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
+   ```
 
-See [DDAP Philosophy](https://schivei.github.io/ddap/philosophy.html) - we don't force dependencies, **you choose**.
+**Why official by default?** Following DDAP philosophy: use official packages from database vendors, give you control to change if needed.
 <!--#endif -->
 <!--#if (UseDapper) -->
-**MySQL Driver:** Using `MySqlConnector` (already included) - high performance ADO.NET driver.
+**MySQL Driver:** Using `MySqlConnector` (high performance, widely adopted ADO.NET driver).
 <!--#endif -->
 <!--#endif -->
 #if (UsePostgreSQL)

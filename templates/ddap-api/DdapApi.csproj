@@ -31,18 +31,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.*" />
     <!--#endif -->
     <!--#if (UseMySQL) -->
-    <!-- 
-      MySQL Entity Framework Provider Choice:
-      Add ONE of the following packages based on your preference:
-      
-      Option 1 - Pomelo (Community, Popular):
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.*" />
-      
-      Option 2 - Official (Oracle):
-      <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.*" />
-      
-      See README.md for more details.
-    -->
+    <!-- Using official Oracle provider. You can replace with Pomelo if preferred. -->
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.*" />
     <!--#endif -->
     <!--#if (UsePostgreSQL) -->
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.*" />

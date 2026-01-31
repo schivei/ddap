@@ -57,10 +57,10 @@ ddapBuilder.AddDapper();
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.SqlServerDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UseMySQL)
-// NOTE: Add your chosen MySQL provider package first (see DdapApi.csproj comments)
-// For Pomelo: ddapBuilder.AddEntityFramework<Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder>();
-// For Oracle: ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
-throw new InvalidOperationException("Please add a MySQL Entity Framework provider package and uncomment the appropriate line above. See DdapApi.csproj and README.md for details.");
+// Using official Oracle provider. You can replace with Pomelo if you prefer:
+// 1. Change package reference in .csproj
+// 2. Change this line to: Pomelo.EntityFrameworkCore.MySql.Infrastructure.MySqlDbContextOptionsBuilder
+ddapBuilder.AddEntityFramework<MySql.EntityFrameworkCore.Infrastructure.MySQLDbContextOptionsBuilder>();
 #endif
 #if (UseEntityFramework && UsePostgreSQL)
 ddapBuilder.AddEntityFramework<Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.NpgsqlDbContextOptionsBuilder>();
