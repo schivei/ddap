@@ -13,14 +13,14 @@
 | Sprint | Status | Branch | PR | Tempo | Próxima Ação |
 |--------|--------|--------|----|-------|--------------|
 | Epic Base | ✅ Completo | copilot/improve-ddap-project | Este | 13-15h | Manter como base |
-| Sprint 1 | ✅ Completo | feat/fix-template-flags | #24 | 2h | Aguardar merge |
-| Sprint 2 | ✅ Completo | feat/resolve-packages | ⏳ | 4h | **Criar PR** |
-| **Sprint 3** | 📋 **Próximo** | - | - | 5-9h | **Iniciar após Sprint 2 merged** |
-| Sprint 4 | 📋 Planejado | - | - | 8-12h | Após Sprint 3 merged |
+| Sprint 1 | ✅ Completo | feat/fix-template-flags | #24 | 2h | ✅ Merged |
+| Sprint 2 | ✅ Completo | feat/resolve-packages | #25 | 4h | ✅ Merged |
+| Sprint 3 | ✅ Completo | docs-site updates | Incluído | 6h | ✅ Completo (icon, why-ddap, known-issues, multilang) |
+| **Sprint 4** | 📋 **Próximo** | - | - | 8-12h | **Template tests - Ver SPRINT4_PR_INSTRUCTIONS.md** |
 
-**Progresso**: 2/4 sprints completos (50%)  
-**Tempo Investido**: 19-21 horas  
-**Tempo Restante**: 13-21 horas
+**Progresso**: 3/4 sprints completos (75%)  
+**Tempo Investido**: 25-27 horas  
+**Tempo Restante**: 8-12 horas (apenas Sprint 4)
 
 ---
 
