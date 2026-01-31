@@ -218,7 +218,7 @@ public class AccessibilityTests : PageTest
         var pageWidth = await Page.EvaluateAsync<int>("document.body.scrollWidth");
         var viewportWidth = await Page.EvaluateAsync<int>("window.innerWidth");
         var devicePixelRatio = await Page.EvaluateAsync<double>("window.devicePixelRatio");
-        
+
         // Account for device pixel ratio (high-DPI displays report 2x width)
         var effectivePageWidth = devicePixelRatio > 1 ? pageWidth / devicePixelRatio : pageWidth;
 

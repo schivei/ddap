@@ -42,7 +42,7 @@ public class LanguageSwitcherTests : PageTest
         // Wait for language switcher API to be available (increased timeout)
         await Page.WaitForFunctionAsync(
             "() => window.ddapLanguage !== undefined",
-            new PageWaitForFunctionOptions { Timeout = 30000 }  // Increased to 30 seconds
+            new PageWaitForFunctionOptions { Timeout = 30000 } // Increased to 30 seconds
         );
     }
 
@@ -350,7 +350,7 @@ public class LanguageSwitcherTests : PageTest
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
         Assert.That(languageToggle, Is.Not.Null, "Language toggle not found");
-        
+
         await languageToggle!.ClickAsync();
         await Page.WaitForSelectorAsync(
             "#language-dropdown.show",
@@ -370,7 +370,11 @@ public class LanguageSwitcherTests : PageTest
 
             // Assert: French option should have aria-current
             var ariaCurrent = await frOption.GetAttributeAsync("aria-current");
-            Assert.That(ariaCurrent, Is.EqualTo("true"), "aria-current not set for active language");
+            Assert.That(
+                ariaCurrent,
+                Is.EqualTo("true"),
+                "aria-current not set for active language"
+            );
         }
     }
 

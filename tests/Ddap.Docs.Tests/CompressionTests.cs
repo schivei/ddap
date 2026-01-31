@@ -222,7 +222,10 @@ public class CompressionTests : PageTest
             $"{DocsBaseUrl}/styles.css",
             new APIRequestContextOptions
             {
-                Headers = new Dictionary<string, string> { { "Accept-Encoding", "br, gzip, deflate" } },
+                Headers = new Dictionary<string, string>
+                {
+                    { "Accept-Encoding", "br, gzip, deflate" },
+                },
             }
         );
 
@@ -231,16 +234,18 @@ public class CompressionTests : PageTest
 
         // Check if any compression was applied
         var headers = compressedResponse.Headers;
-        var hasCompression = headers.ContainsKey("content-encoding") || 
-                           headers.ContainsKey("Content-Encoding");
+        var hasCompression =
+            headers.ContainsKey("content-encoding") || headers.ContainsKey("Content-Encoding");
 
         if (hasCompression)
         {
-            var encoding = headers.TryGetValue("content-encoding", out var ce1) ? ce1 :
-                         headers.TryGetValue("Content-Encoding", out var ce2) ? ce2 : "";
-            
+            var encoding =
+                headers.TryGetValue("content-encoding", out var ce1) ? ce1
+                : headers.TryGetValue("Content-Encoding", out var ce2) ? ce2
+                : "";
+
             Console.WriteLine($"Compression applied: {encoding}");
-            
+
             // Verify it's a valid compression algorithm
             Assert.That(
                 encoding,
@@ -251,7 +256,9 @@ public class CompressionTests : PageTest
         else
         {
             // If no compression header, it might be because file is very small or already compressed
-            Console.WriteLine("No compression header found - file may be small or already compressed");
+            Console.WriteLine(
+                "No compression header found - file may be small or already compressed"
+            );
         }
 
         // Either way, the response should be successful
