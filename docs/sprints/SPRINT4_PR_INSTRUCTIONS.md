@@ -1,15 +1,18 @@
 # 🧪 Sprint 4: Add Template Tests - Guia Completo
 
-**Tempo Estimado**: 8-12 horas  
+**Tempo Estimado**: 10-14 horas (incluindo equalização multiplataforma)  
 **Status**: 📋 Pronto para Implementação  
 **Branch**: `feat/add-template-tests`  
 **Base**: `copilot/improve-ddap-project`
 
 ---
 
-## 🎯 Objetivo
+## 🎯 Objetivos
 
-Criar testes automatizados abrangentes para o template `ddap-api`, validando todas as combinações de parâmetros e garantindo que projetos gerados compilam e executam corretamente.
+1. Criar testes automatizados abrangentes para o template `ddap-api`
+2. Validar todas as combinações de parâmetros
+3. Garantir que projetos gerados compilam e executam corretamente
+4. **🆕 Equalizar scripts para funcionar em Windows (cmd/pwsh), Linux e Mac**
 
 ---
 
@@ -34,12 +37,14 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
 
 ---
 
-### Fase 2: Script de Validação Base (2-3h)
+### Fase 2: Scripts Multiplataforma (3-4h) 🆕
+
+#### 2.1 Script Bash (Linux/Mac)
 
 - [ ] **Criar tests/validate-template.sh**
   ```bash
   #!/bin/bash
-  # Template validation script
+  # Template validation script for Linux/Mac
   
   set -e
   
@@ -86,7 +91,7 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
     dotnet build --no-restore
     
     # Verify package references
-    # Check for correct packages based on parameters
+    grep -q "Microsoft.Data.SqlClient" "$name.csproj" || true
     
     echo "✅ PASSED: $name"
   }
@@ -97,7 +102,6 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
   
   test_template "Test1" "dapper" "sqlserver" "true" "false" "false"
   test_template "Test2" "entityframework" "mysql" "false" "true" "false"
-  # ... more tests
   
   echo ""
   echo "✅ All template tests passed!"
@@ -108,9 +112,234 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
   chmod +x tests/validate-template.sh
   ```
 
-- [ ] **Testar script básico**
+#### 2.2 Script PowerShell (Windows)
+
+- [ ] **Criar tests/validate-template.ps1**
+  ```powershell
+  # Template validation script for Windows
+  
+  $ErrorActionPreference = "Stop"
+  
+  $TEMPLATE_PATH = "templates/ddap-api"
+  $TEMP_DIR = Join-Path $env:TEMP "ddap-tests-$(Get-Random)"
+  New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
+  
+  function Test-Template {
+      param(
+          [string]$Name,
+          [string]$DatabaseProvider,
+          [string]$DatabaseType,
+          [string]$Rest,
+          [string]$GraphQL,
+          [string]$Grpc
+      )
+      
+      Write-Host "Testing: $Name"
+      
+      # Generate project
+      dotnet new ddap-api `
+        --name $Name `
+        --database-provider $DatabaseProvider `
+        --database-type $DatabaseType `
+        --rest $Rest `
+        --graphql $GraphQL `
+        --grpc $Grpc `
+        --output "$TEMP_DIR\$Name"
+      
+      if ($LASTEXITCODE -ne 0) {
+          throw "Failed to generate project: $Name"
+      }
+      
+      # Verify files exist
+      $csprojPath = "$TEMP_DIR\$Name\$Name.csproj"
+      if (-not (Test-Path $csprojPath)) {
+          Write-Host "❌ FAILED: Project file not created"
+          return $false
+      }
+      
+      # Restore packages
+      Push-Location "$TEMP_DIR\$Name"
+      try {
+          dotnet restore
+          if ($LASTEXITCODE -ne 0) {
+              throw "Failed to restore packages"
+          }
+          
+          # Build project
+          dotnet build --no-restore
+          if ($LASTEXITCODE -ne 0) {
+              throw "Failed to build project"
+          }
+          
+          Write-Host "✅ PASSED: $Name" -ForegroundColor Green
+          return $true
+      }
+      finally {
+          Pop-Location
+      }
+  }
+  
+  # Cleanup function
+  function Cleanup {
+      if (Test-Path $TEMP_DIR) {
+          Remove-Item -Recurse -Force $TEMP_DIR
+      }
+  }
+  
+  try {
+      Write-Host "🧪 Template Validation Tests" -ForegroundColor Cyan
+      Write-Host "==============================" -ForegroundColor Cyan
+      
+      Test-Template -Name "Test1" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false"
+      Test-Template -Name "Test2" -DatabaseProvider "entityframework" -DatabaseType "mysql" -Rest "false" -GraphQL "true" -Grpc "false"
+      
+      Write-Host ""
+      Write-Host "✅ All template tests passed!" -ForegroundColor Green
+  }
+  finally {
+      Cleanup
+  }
+  ```
+
+#### 2.3 Script Batch (Windows cmd)
+
+- [ ] **Criar tests/validate-template.cmd**
+  ```batch
+  @echo off
+  REM Template validation script for Windows cmd
+  
+  setlocal enabledelayedexpansion
+  
+  set TEMPLATE_PATH=templates\ddap-api
+  set TEMP_DIR=%TEMP%\ddap-tests-%RANDOM%
+  
+  mkdir "%TEMP_DIR%" 2>nul
+  
+  echo 🧪 Template Validation Tests
+  echo ==============================
+  
+  REM Test 1: SQL Server + Dapper
+  call :test_template "Test1" "dapper" "sqlserver" "true" "false" "false"
+  if errorlevel 1 goto :error
+  
+  REM Test 2: MySQL + Entity Framework
+  call :test_template "Test2" "entityframework" "mysql" "false" "true" "false"
+  if errorlevel 1 goto :error
+  
+  echo.
+  echo ✅ All template tests passed!
+  goto :cleanup
+  
+  :test_template
+  set name=%~1
+  set db_provider=%~2
+  set db_type=%~3
+  set rest=%~4
+  set graphql=%~5
+  set grpc=%~6
+  
+  echo Testing: %name%
+  
+  dotnet new ddap-api ^
+    --name %name% ^
+    --database-provider %db_provider% ^
+    --database-type %db_type% ^
+    --rest %rest% ^
+    --graphql %graphql% ^
+    --grpc %grpc% ^
+    --output "%TEMP_DIR%\%name%"
+  
+  if errorlevel 1 (
+      echo ❌ FAILED: Could not generate project
+      exit /b 1
+  )
+  
+  if not exist "%TEMP_DIR%\%name%\%name%.csproj" (
+      echo ❌ FAILED: Project file not created
+      exit /b 1
+  )
+  
+  cd /d "%TEMP_DIR%\%name%"
+  dotnet restore
+  if errorlevel 1 (
+      echo ❌ FAILED: Could not restore packages
+      exit /b 1
+  )
+  
+  dotnet build --no-restore
+  if errorlevel 1 (
+      echo ❌ FAILED: Could not build project
+      exit /b 1
+  )
+  
+  echo ✅ PASSED: %name%
+  cd /d "%~dp0"
+  exit /b 0
+  
+  :error
+  echo ❌ Template validation failed!
+  goto :cleanup
+  
+  :cleanup
+  if exist "%TEMP_DIR%" rmdir /s /q "%TEMP_DIR%"
+  exit /b %errorlevel%
+  ```
+
+#### 2.4 Script Wrapper Multiplataforma
+
+- [ ] **Criar tests/validate-template** (sem extensão)
+  ```bash
+  #!/usr/bin/env bash
+  # Cross-platform template validation wrapper
+  
+  # Detect OS
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+      # Windows (Git Bash or similar)
+      if command -v pwsh &> /dev/null; then
+          echo "Running PowerShell script..."
+          pwsh -File "$(dirname "$0")/validate-template.ps1"
+      else
+          echo "Running batch script..."
+          cmd //c "$(dirname "$0")/validate-template.cmd"
+      fi
+  else
+      # Linux or Mac
+      echo "Running bash script..."
+      bash "$(dirname "$0")/validate-template.sh"
+  fi
+  ```
+
+- [ ] **Fazer wrapper executável**
+  ```bash
+  chmod +x tests/validate-template
+  ```
+
+#### 2.5 Testar em Todas as Plataformas
+
+- [ ] **Linux**
   ```bash
   ./tests/validate-template.sh
+  # ou
+  ./tests/validate-template
+  ```
+
+- [ ] **Mac**
+  ```bash
+  ./tests/validate-template.sh
+  # ou
+  ./tests/validate-template
+  ```
+
+- [ ] **Windows PowerShell**
+  ```powershell
+  .\tests\validate-template.ps1
+  # ou
+  .\tests\validate-template
+  ```
+
+- [ ] **Windows cmd**
+  ```cmd
+  tests\validate-template.cmd
   ```
 
 ---
@@ -260,11 +489,14 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
 
 ### Fase 4: Integração com CI (2h)
 
-- [ ] **Adicionar job ao build.yml**
+- [ ] **Atualizar build.yml para suportar múltiplas plataformas**
   ```yaml
   template-tests:
     name: Template Tests
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       
@@ -277,21 +509,47 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
         run: |
           dotnet new install templates/ddap-api
       
-      - name: Run template tests
+      - name: Run template tests (Linux/Mac)
+        if: runner.os != 'Windows'
         run: ./tests/validate-template.sh
+      
+      - name: Run template tests (Windows PowerShell)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\tests\validate-template.ps1
+  ```
+
+- [ ] **Ou usar script wrapper universal**
+  ```yaml
+  - name: Run template tests
+    shell: bash
+    run: |
+      if [[ "$RUNNER_OS" == "Windows" ]]; then
+        pwsh -File tests/validate-template.ps1
+      else
+        bash tests/validate-template.sh
+      fi
   ```
 
 - [ ] **Testar localmente antes de commit**
   ```bash
-  # Simular CI localmente
+  # Linux/Mac
   dotnet new install templates/ddap-api
   ./tests/validate-template.sh
+  
+  # Windows PowerShell
+  dotnet new install templates/ddap-api
+  .\tests\validate-template.ps1
+  
+  # Windows cmd
+  dotnet new install templates\ddap-api
+  tests\validate-template.cmd
   ```
 
-- [ ] **Verificar que CI passa**
-  - [ ] Push changes
-  - [ ] Aguardar CI executar
-  - [ ] Verificar logs se falhar
+- [ ] **Verificar que CI passa em todas as plataformas**
+  - [ ] Ubuntu ✅
+  - [ ] Windows ✅
+  - [ ] macOS ✅
 
 ---
 
@@ -305,9 +563,34 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
   
   ## Running Tests
   
+  ### Linux/Mac
   ```bash
   ./tests/validate-template.sh
+  # or
+  ./tests/validate-template
   ```
+  
+  ### Windows PowerShell
+  ```powershell
+  .\tests\validate-template.ps1
+  # or
+  .\tests\validate-template
+  ```
+  
+  ### Windows cmd
+  ```cmd
+  tests\validate-template.cmd
+  ```
+  
+  ## Cross-Platform Support
+  
+  The tests work on:
+  - ✅ Linux (bash)
+  - ✅ macOS (bash)
+  - ✅ Windows PowerShell
+  - ✅ Windows cmd
+  
+  Scripts automatically detect the platform and use the appropriate implementation.
   
   ## Test Coverage
   
@@ -318,7 +601,13 @@ Criar testes automatizados abrangentes para o template `ddap-api`, validando tod
   
   ## Adding New Tests
   
-  Edit `validate-template.sh` and add new `test_template` calls.
+  Add test cases to all three script variants:
+  - `validate-template.sh` (Linux/Mac)
+  - `validate-template.ps1` (Windows PowerShell)
+  - `validate-template.cmd` (Windows cmd)
+  
+  Keep the test logic synchronized across platforms.
+  ```
   ```
 
 - [ ] **Atualizar README.md principal**
@@ -510,8 +799,9 @@ Sprints futuras (opcional):
 ---
 
 **Criado**: 2026-01-31  
+**Atualizado**: 2026-01-31 (adicionada equalização multiplataforma)  
 **Sprint**: 4 de 4  
 **Status**: 📋 Pronto para Implementação  
-**Estimativa**: 8-12 horas  
+**Estimativa**: 10-14 horas (incluindo suporte Windows/Linux/Mac)  
 
 **Boa sorte com a implementação! 🚀**

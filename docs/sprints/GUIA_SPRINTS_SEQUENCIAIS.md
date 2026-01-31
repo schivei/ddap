@@ -16,11 +16,11 @@
 | Sprint 1 | ✅ Completo | feat/fix-template-flags | #24 | 2h | ✅ Merged |
 | Sprint 2 | ✅ Completo | feat/resolve-packages | #25 | 4h | ✅ Merged |
 | Sprint 3 | ✅ Completo | docs-site updates | Incluído | 6h | ✅ Completo (icon, why-ddap, known-issues, multilang) |
-| **Sprint 4** | 📋 **Próximo** | - | - | 8-12h | **Template tests - Ver SPRINT4_PR_INSTRUCTIONS.md** |
+| **Sprint 4** | 📋 **Próximo** | - | - | 10-14h | **Template tests + scripts multiplataforma - Ver SPRINT4_PR_INSTRUCTIONS.md** |
 
 **Progresso**: 3/4 sprints completos (75%)  
 **Tempo Investido**: 25-27 horas  
-**Tempo Restante**: 8-12 horas (apenas Sprint 4)
+**Tempo Restante**: 10-14 horas (Sprint 4 com equalização multiplataforma)
 
 ---
 
