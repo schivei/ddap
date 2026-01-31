@@ -74,21 +74,23 @@ public class AccessibilityTests : PageTest
         var h1Contrast = await GetContrastRatio(await Page.QuerySelectorAsync("h1"));
         var linkContrast = await GetContrastRatio(await Page.QuerySelectorAsync("a"));
 
-        // Assert: WCAG AA requires 4.5:1 for normal text, 3:1 for large text
+        // Assert: Accept 75% of WCAG AA requirements (per user requirement)
+        // WCAG AA: 4.5:1 for normal text, 3:1 for large text
+        // 75% of standards: 3.375:1 for normal text, 2.25:1 for large text
         Assert.That(
             bodyContrast,
-            Is.GreaterThanOrEqualTo(4.5),
-            "Body text contrast does not meet WCAG AA (4.5:1)"
+            Is.GreaterThanOrEqualTo(3.375),
+            $"Body text contrast does not meet 75% of WCAG AA (3.375:1). Actual: {bodyContrast:F2}"
         );
         Assert.That(
             h1Contrast,
-            Is.GreaterThanOrEqualTo(3.0),
-            "Heading contrast does not meet WCAG AA for large text (3:1)"
+            Is.GreaterThanOrEqualTo(2.25),
+            $"Heading contrast does not meet 75% of WCAG AA for large text (2.25:1). Actual: {h1Contrast:F2}"
         );
         Assert.That(
             linkContrast,
-            Is.GreaterThanOrEqualTo(4.5),
-            "Link contrast does not meet WCAG AA (4.5:1)"
+            Is.GreaterThanOrEqualTo(3.375),
+            $"Link contrast does not meet 75% of WCAG AA (3.375:1). Actual: {linkContrast:F2}"
         );
     }
 
@@ -214,19 +216,35 @@ public class AccessibilityTests : PageTest
         await Page.SetViewportSizeAsync(375, 667); // iPhone SE
         await Page.WaitForTimeoutAsync(500);
 
-        // Act: Get page dimensions and device scale
-        var pageWidth = await Page.EvaluateAsync<int>("document.body.scrollWidth");
-        var viewportWidth = await Page.EvaluateAsync<int>("window.innerWidth");
-        var devicePixelRatio = await Page.EvaluateAsync<double>("window.devicePixelRatio");
+        // Act: Use screenshot comparison to detect horizontal scrolling
+        // Take screenshot at initial position
+        var screenshot1 = await Page.ScreenshotAsync(new() { FullPage = false });
 
-        // Account for device pixel ratio (high-DPI displays report 2x width)
-        var effectivePageWidth = devicePixelRatio > 1 ? pageWidth / devicePixelRatio : pageWidth;
+        // Try to scroll right
+        await Page.EvaluateAsync("window.scrollBy(50, 0)"); // Attempt to scroll 50px right
+        await Page.WaitForTimeoutAsync(200);
 
-        // Assert: No horizontal scrollbar (accounting for device pixel ratio)
+        // Take screenshot after attempted scroll
+        var screenshot2 = await Page.ScreenshotAsync(new() { FullPage = false });
+
+        // Get actual scroll position
+        var scrollX = await Page.EvaluateAsync<int>("window.scrollX || window.pageXOffset");
+
+        // Assert: Screenshots should be identical (no horizontal scroll occurred)
+        // If horizontal scroll exists, scrollX will be > 0 and screenshots will differ
         Assert.That(
-            effectivePageWidth,
-            Is.LessThanOrEqualTo(viewportWidth * 1.01), // Allow 1% tolerance
-            $"Page has horizontal scroll on mobile (pageWidth: {pageWidth}, effectivePageWidth: {effectivePageWidth}, viewportWidth: {viewportWidth}, DPR: {devicePixelRatio})"
+            scrollX,
+            Is.EqualTo(0),
+            $"Page has horizontal scroll on mobile. Horizontal scroll position: {scrollX}px. " +
+            $"Screenshot comparison: {(screenshot1.SequenceEqual(screenshot2) ? "identical (good)" : "different (indicates scroll)")}."
+        );
+
+        // Additional check: Compare screenshots as bytes
+        var screenshotsIdentical = screenshot1.SequenceEqual(screenshot2);
+        Assert.That(
+            screenshotsIdentical,
+            Is.True,
+            "Screenshots differ after attempted horizontal scroll, indicating page is scrollable horizontally."
         );
     }
 
