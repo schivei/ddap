@@ -367,6 +367,9 @@ public class LanguageSwitcherTests : PageTest
     [Test]
     public async Task LanguageAPI_Reset_ClearsLocalStorage()
     {
+        // Wait for language API to be available
+        await Page.WaitForFunctionAsync("() => window.ddapLanguage !== undefined", new PageWaitForFunctionOptions { Timeout = 5000 });
+        
         // Arrange: Set a language
         await Page.EvaluateAsync(
             @"
