@@ -42,51 +42,58 @@
         ]
       },
       {
+        "src": "locales/en",
         "files": [
-          "locales/en/*.md",
-          "locales/en/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "."
       },
       {
+        "src": "locales/pt-br",
         "files": [
-          "locales/pt-br/*.md",
-          "locales/pt-br/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "pt-br"
       },
       {
+        "src": "locales/es",
         "files": [
-          "locales/es/*.md",
-          "locales/es/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "es"
       },
       {
+        "src": "locales/fr",
         "files": [
-          "locales/fr/*.md",
-          "locales/fr/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "fr"
       },
       {
+        "src": "locales/de",
         "files": [
-          "locales/de/*.md",
-          "locales/de/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "de"
       },
       {
+        "src": "locales/ja",
         "files": [
-          "locales/ja/*.md",
-          "locales/ja/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "ja"
       },
       {
+        "src": "locales/zh",
         "files": [
-          "locales/zh/*.md",
-          "locales/zh/toc.yml"
+          "*.md",
+          "toc.yml"
         ],
         "dest": "zh"
       }
