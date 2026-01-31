@@ -1,6 +1,6 @@
 # 🧪 Sprint 4: Add Template Tests - Guia Completo
 
-**Tempo Estimado**: 10-14 horas (incluindo equalização multiplataforma)  
+**Tempo Estimado**: 11-15 horas (incluindo equalização multiplataforma e limpeza)  
 **Status**: 📋 Pronto para Implementação  
 **Branch**: `feat/add-template-tests`  
 **Base**: `copilot/improve-ddap-project`
@@ -13,6 +13,7 @@
 2. Validar todas as combinações de parâmetros
 3. Garantir que projetos gerados compilam e executam corretamente
 4. **🆕 Equalizar scripts para funcionar em Windows (cmd/pwsh), Linux e Mac**
+5. **🆕 Limpar arquivos sobressalentes e atualizar checklists**
 
 ---
 
@@ -649,6 +650,146 @@
 
 ---
 
+### Fase 7: Limpeza e Verificação de Checklists (30min-1h) 🆕
+
+#### 7.1 Limpeza de Arquivos Sobressalentes
+
+- [ ] **Identificar arquivos temporários**
+  ```bash
+  # Procurar por arquivos de teste temporários
+  find . -name "Test*" -type d | grep -v tests/
+  find . -name "*.tmp" -o -name "*.temp"
+  
+  # Procurar por diretórios de saída de template
+  ls -d /tmp/ddap-test-* 2>/dev/null || true
+  ```
+
+- [ ] **Remover arquivos de teste gerados**
+  ```bash
+  # Remover projetos de teste temporários
+  rm -rf /tmp/ddap-test-*
+  
+  # Limpar cache de templates
+  rm -rf ~/.templateengine/packages/ddap-api* || true
+  
+  # Limpar qualquer Test* criado durante testes
+  git clean -fdx --dry-run  # Ver o que será removido
+  git clean -fdx            # Remover (cuidado!)
+  ```
+
+- [ ] **Verificar .gitignore**
+  ```bash
+  # Garantir que está ignorando arquivos corretos
+  cat .gitignore | grep -E "(Test|tmp|temp)"
+  
+  # Adicionar padrões se necessário:
+  # Test*/
+  # *.tmp
+  # *.temp
+  # /tmp/
+  ```
+
+- [ ] **Limpar documentação temporária**
+  ```bash
+  # Remover MDs temporários se houver
+  find docs/ -name "TEMP_*.md" -o -name "WIP_*.md" -o -name "DRAFT_*.md"
+  
+  # Executar script de organização
+  ./organize-docs.sh
+  ```
+
+#### 7.2 Verificação de Checklists
+
+- [ ] **Revisar checklist desta Sprint 4**
+  - [ ] Abrir `SPRINT4_PR_INSTRUCTIONS.md`
+  - [ ] Marcar todos os itens completos com `[x]`
+  - [ ] Verificar que nenhum item crítico foi esquecido
+  - [ ] Adicionar notas sobre desafios encontrados (se houver)
+
+- [ ] **Atualizar checklist do epic**
+  - [ ] Abrir `docs/sprints/GUIA_SPRINTS_SEQUENCIAIS.md`
+  - [ ] Marcar Sprint 4 como `[✅]` quando completo
+  - [ ] Atualizar tempo real investido
+  - [ ] Adicionar observações finais
+
+- [ ] **Verificar outros checklists relacionados**
+  - [ ] `ROTEIRO_ACOES.md` - Ação 3.1 (Template Tests)
+  - [ ] Marcar como completo: `[✅] Ação 3.1: Testes de Template`
+  - [ ] Atualizar status geral do roadmap
+
+- [ ] **Documentar lições aprendidas**
+  ```markdown
+  ## Lições Aprendidas - Sprint 4
+  
+  ### O que funcionou bem:
+  - [Liste aqui]
+  
+  ### Desafios encontrados:
+  - [Liste aqui]
+  
+  ### Tempo real vs estimado:
+  - Estimado: 10-14h
+  - Real: [preencher]
+  - Diferença: [preencher]
+  
+  ### Melhorias para futuras sprints:
+  - [Liste aqui]
+  ```
+
+#### 7.3 Preparar para Merge
+
+- [ ] **Commit final**
+  ```bash
+  git add .
+  git status  # Verificar o que será commitado
+  
+  # Garantir que não há arquivos indesejados
+  git status | grep -E "(Test|tmp|.temp)"
+  
+  git commit -m "Complete Sprint 4: Add template tests with cross-platform support"
+  ```
+
+- [ ] **Push para epic branch**
+  ```bash
+  git push origin feat/add-template-tests
+  ```
+
+- [ ] **Criar PR**
+  - Base: `copilot/improve-ddap-project`
+  - Compare: `feat/add-template-tests`
+  - Título: "Sprint 4: Add Template Tests with Cross-Platform Support"
+  - Descrição: Incluir resumo, testes implementados, limpeza feita
+
+- [ ] **Checklist do PR**
+  ```markdown
+  ## Sprint 4 Complete ✅
+  
+  ### Implementado
+  - [x] Script bash para Linux/Mac
+  - [x] Script PowerShell para Windows
+  - [x] Script batch para Windows cmd
+  - [x] Wrapper universal
+  - [x] 30+ cenários de teste
+  - [x] Integração com CI/CD
+  - [x] Documentação completa
+  - [x] Limpeza de arquivos temporários
+  - [x] Checklists atualizados
+  
+  ### Testes
+  - [x] Todos os testes passando
+  - [x] Testado em Linux
+  - [x] Testado em Windows
+  - [x] Testado em Mac (se possível)
+  
+  ### Documentação
+  - [x] tests/README.md criado
+  - [x] README.md principal atualizado
+  - [x] CONTRIBUTING.md atualizado
+  - [x] Checklists marcados
+  ```
+
+---
+
 ## 📊 Cenários de Teste (Total: 30+)
 
 ### Matriz de Teste
@@ -799,9 +940,9 @@ Sprints futuras (opcional):
 ---
 
 **Criado**: 2026-01-31  
-**Atualizado**: 2026-01-31 (adicionada equalização multiplataforma)  
+**Atualizado**: 2026-01-31 (adicionadas limpeza de arquivos e verificação de checklists)  
 **Sprint**: 4 de 4  
 **Status**: 📋 Pronto para Implementação  
-**Estimativa**: 10-14 horas (incluindo suporte Windows/Linux/Mac)  
+**Estimativa**: 11-15 horas (incluindo suporte Windows/Linux/Mac e limpeza)  
 
 **Boa sorte com a implementação! 🚀**

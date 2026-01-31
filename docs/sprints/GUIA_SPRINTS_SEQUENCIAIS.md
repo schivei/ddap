@@ -16,11 +16,11 @@
 | Sprint 1 | ✅ Completo | feat/fix-template-flags | #24 | 2h | ✅ Merged |
 | Sprint 2 | ✅ Completo | feat/resolve-packages | #25 | 4h | ✅ Merged |
 | Sprint 3 | ✅ Completo | docs-site updates | Incluído | 6h | ✅ Completo (icon, why-ddap, known-issues, multilang) |
-| **Sprint 4** | 📋 **Próximo** | - | - | 10-14h | **Template tests + scripts multiplataforma - Ver SPRINT4_PR_INSTRUCTIONS.md** |
+| **Sprint 4** | 📋 **Próximo** | - | - | 11-15h | **Template tests + scripts multiplataforma + limpeza - Ver SPRINT4_PR_INSTRUCTIONS.md** |
 
 **Progresso**: 3/4 sprints completos (75%)  
 **Tempo Investido**: 25-27 horas  
-**Tempo Restante**: 10-14 horas (Sprint 4 com equalização multiplataforma)
+**Tempo Restante**: 11-15 horas (Sprint 4 com equalização multiplataforma e limpeza)
 
 ---
 
@@ -421,7 +421,7 @@ git push origin copilot/improve-ddap-project
 
 ## 🧪 Sprint 4: Add Template Tests
 
-**Tempo Estimado**: 8-12 horas  
+**Tempo Estimado**: 11-15 horas (incluindo equalização multiplataforma e limpeza)  
 **Quando Iniciar**: Após Sprint 3 merged para epic branch  
 **Branch**: `feat/add-template-tests`  
 **Base**: `copilot/improve-ddap-project` (com Sprint 3 incluído)
@@ -429,11 +429,13 @@ git push origin copilot/improve-ddap-project
 ### Objetivos Principais
 
 1. ✅ Criar script de validação de templates
-2. ✅ Implementar 64+ cenários de teste
+2. ✅ Implementar 30+ cenários de teste
 3. ✅ Validar pacotes corretos são incluídos
 4. ✅ Validar que projetos compilam
 5. ✅ Integrar testes no CI
 6. ✅ Documentar processo de teste
+7. 🆕 **Equalizar scripts para Windows, Linux e Mac**
+8. 🆕 **Limpar arquivos sobressalentes e atualizar checklists**
 
 ---
 
