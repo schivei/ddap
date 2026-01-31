@@ -8,6 +8,8 @@
   [![NuGet](https://img.shields.io/nuget/v/Ddap.Core)](https://www.nuget.org/packages/Ddap.Core)
   [![License](https://img.shields.io/github/license/schivei/ddap)](LICENSE)
   [![Build](https://img.shields.io/github/actions/workflow/status/schivei/ddap/build.yml)](https://github.com/schivei/ddap/actions)
+  
+  > ⚠️ **Migrating from v0.x?** Package names have changed. See [Known Issues](docs/known-issues.md) for migration guide.
 </div>
 
 ## ⚡ What is DDAP?

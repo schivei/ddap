@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
+    <title>Why DDAP? - DDAP</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../lib/github-markdown.min.css">
+    <script src="../lib/marked.min.js"></script>
+    <script src="../lib/purify.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Header with theme toggle -->
+    <header class="site-header">
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <a href="../pt-br/index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo" aria-label="DDAP Logo">🎛️</span>
+                    <span class="brand-name">DDAP</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="get-started.html">Get Started</a>
+                <a href="philosophy.html">Philosophy</a>
+                <a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">GitHub</span>
+                    <span class="sr-only">GitHub (opens in new tab)</span>
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-live="polite">
+                    <span class="theme-icon" aria-hidden="true">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="doc-page">
+        <div class="container">
+            <article class="markdown-body doc-content" id="content">
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Why DDAP?</h1>
+<p>Choosing the right API framework can make or break your project. DDAP takes a radically different approach to API generation—one that empowers you instead of constraining you.</p>
+<h2>The Problem: Framework Lock-In</h2>
+<p>Most API frameworks promise to speed up development, but they come with hidden costs:</p>
+<h3>🔒 Forced Dependencies</h3>
+<p>You're locked into specific libraries whether you like them or not:</p>
+<ul>
+<li><strong>Serializers</strong>: Forced to use Newtonsoft.Json when you want System.Text.Json</li>
+<li><strong>ORMs</strong>: Locked into Entity Framework when Dapper is better for your use case  </li>
+<li><strong>Logging</strong>: Can't switch from the framework's built-in logger</li>
+<li><strong>Validation</strong>: Stuck with their validation library</li>
+</ul>
+<p><strong>Example Problem</strong>: Your framework uses Newtonsoft.Json internally. You want to switch to System.Text.Json for a 3x performance boost. <strong>You can't</strong>—it's hardcoded everywhere. You're stuck.</p>
+<h3>🔒 Hidden Magic</h3>
+<p>Frameworks do "magic" behind the scenes that you can't see, debug, or modify:</p>
+<ul>
+<li>Auto-generated code you can't inspect</li>
+<li>Convention-based behavior that breaks when you deviate</li>
+<li>Black-box query generation</li>
+<li>Opaque caching strategies</li>
+</ul>
+<p><strong>Example Problem</strong>: Your API is slow. The framework generates inefficient queries. You can't optimize them because you can't see or control the query generation. <strong>You're stuck</strong>.</p>
+<h3>🔒 Database Coupling</h3>
+<p>Many frameworks are tightly coupled to specific database providers:</p>
+<ul>
+<li>MySQL framework won't work with PostgreSQL</li>
+<li>Different packages for each database</li>
+<li>Migration pain when switching databases</li>
+<li>Can't support multiple databases in same app</li>
+</ul>
+<p><strong>Example Problem</strong>: You built with MySQL. Now you need to support PostgreSQL for a major client. <strong>You're rewriting everything</strong>.</p>
+<h3>🔒 Migration Nightmares</h3>
+<p>When you outgrow the framework or need to change direction:</p>
+<ul>
+<li>Rewrite large portions of your codebase</li>
+<li>Vendor lock-in makes switching expensive</li>
+<li>Technical debt accumulates over time</li>
+<li>"It works, don't touch it" mentality sets in</li>
+</ul>
+<p><strong>Example Problem</strong>: You started with a simple CRUD API. Now you need GraphQL. Your framework doesn't support it. <strong>You're building a second API from scratch</strong>.</p>
+<hr>
+<h2>The DDAP Solution: Infrastructure, Not Opinion</h2>
+<p>DDAP takes a completely different approach. We provide <strong>infrastructure</strong> without forcing any decisions.</p>
+<h3>✅ Developer Empowerment</h3>
+<table>
+<thead>
+<tr>
+<th>You Choose</th>
+<th>Not the Framework</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🎯 Database type (SQL Server, MySQL, PostgreSQL, SQLite, custom)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 ORM (Dapper or Entity Framework)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 JSON serializer (System.Text.Json, Newtonsoft.Json, or any)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 API protocols (REST, GraphQL, gRPC, or all three)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 Validation library (FluentValidation, DataAnnotations, custom)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 Authentication scheme (JWT, OAuth, custom)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 Logging framework (Serilog, NLog, built-in, custom)</td>
+<td></td>
+</tr>
+<tr>
+<td>🎯 <strong>Everything else!</strong></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>✅ Explicit, Not Magic</h3>
+<p>Everything DDAP does is transparent and under your control:</p>
+<pre><code class="language-csharp">// You see and control everything
+var ddapBuilder = builder.Services.AddDdap(options =&gt;
+{
+    options.ConnectionString = connectionString;
+    options.AutoReload = new AutoReloadOptions
+    {
+        Enabled = true,
+        IdleTimeout = TimeSpan.FromMinutes(5)
+    };
+});
+
+// You choose your data access
+ddapBuilder.AddDapper();  // Or AddEntityFramework()
+
+// You choose your API protocols
+ddapBuilder.AddRest();     // Or not
+ddapBuilder.AddGraphQL();  // Or not  
+ddapBuilder.AddGrpc();     // Or not
+</code></pre>
+<p>No hidden configuration. No magic. <strong>You're in control.</strong></p>
+<h3>✅ Database Agnostic</h3>
+<p>One package works with <strong>any</strong> database:</p>
+<pre><code class="language-xml">&lt;!-- Single generic Dapper package --&gt;
+&lt;PackageReference Include="Ddap.Data.Dapper" Version="1.*" /&gt;
+
+&lt;!-- Choose YOUR database driver --&gt;
+&lt;PackageReference Include="Microsoft.Data.SqlClient" Version="5.*" /&gt;
+&lt;!-- OR --&gt;
+&lt;PackageReference Include="MySqlConnector" Version="2.*" /&gt;
+&lt;!-- OR --&gt;
+&lt;PackageReference Include="Npgsql" Version="8.*" /&gt;
+&lt;!-- OR any IDbConnection provider --&gt;
+</code></pre>
+<p><strong>Switch databases?</strong> Just swap the driver. No code changes needed.</p>
+<p><strong>Support multiple databases?</strong> Use different connections. DDAP doesn't care.</p>
+<h3>✅ Official Packages First</h3>
+<p>Unlike other frameworks that force community packages, DDAP prioritizes <strong>official vendor packages</strong>:</p>
+<ul>
+<li>✅ SQL Server: <code>Microsoft.Data.SqlClient</code> (Microsoft official)</li>
+<li>✅ MySQL: <code>MySql.EntityFrameworkCore</code> (Oracle official)</li>
+<li>✅ PostgreSQL: <code>Npgsql</code> (official)</li>
+<li>✅ SQLite: <code>Microsoft.Data.Sqlite</code> (Microsoft official)</li>
+</ul>
+<p><strong>Want a community package instead?</strong> (e.g., Pomelo for MySQL)<br>Fine! Switch it. We don't force anything. We just default to official packages.</p>
+<h3>✅ Zero Migration Pain</h3>
+<p>DDAP grows with your needs:</p>
+<p><strong>Start simple:</strong></p>
+<pre><code class="language-csharp">ddapBuilder.AddRest();
+</code></pre>
+<p><strong>Add GraphQL later:</strong></p>
+<pre><code class="language-csharp">ddapBuilder.AddRest();
+ddapBuilder.AddGraphQL();  // Just add this line
+</code></pre>
+<p><strong>Add gRPC too:</strong></p>
+<pre><code class="language-csharp">ddapBuilder.AddRest();
+ddapBuilder.AddGraphQL();
+ddapBuilder.AddGrpc();     // Just add this line
+</code></pre>
+<p><strong>Same codebase. Same entities. Multiple protocols.</strong></p>
+<hr>
+<h2>Real-World Scenarios</h2>
+<h3>Scenario 1: Performance Optimization</h3>
+<p><strong>Other Framework:</strong></p>
+<blockquote>
+<p>"We need to optimize this query, but the framework generates it automatically and we can't modify it without hacking the framework internals."</p>
+</blockquote>
+<p><strong>DDAP:</strong></p>
+<blockquote>
+<p>"Let's switch from Entity Framework to Dapper for this hot path."</p>
+</blockquote>
+<pre><code class="language-csharp">// Keep EF for most of your app
+ddapBuilder.AddEntityFramework();
+
+// Use Dapper for specific hot paths
+public class PerformanceRepository
+{
+    private readonly IDbConnection _connection;
+    
+    public async Task&lt;List&lt;Order&gt;&gt; GetTopOrdersAsync()
+    {
+        // Raw Dapper query for maximum performance
+        return await _connection.QueryAsync&lt;Order&gt;(
+            "SELECT TOP 100 * FROM Orders ORDER BY Total DESC");
+    }
+}
+</code></pre>
+<p><strong>Result:</strong> 10x faster queries where it matters, without rewriting your entire app.</p>
+<h3>Scenario 2: Multi-Database Support</h3>
+<p><strong>Other Framework:</strong></p>
+<blockquote>
+<p>"We built with MySQL. Now a major client requires SQL Server. We need to rewrite the entire data layer."</p>
+</blockquote>
+<p><strong>DDAP:</strong></p>
+<blockquote>
+<p>"Just swap the connection."</p>
+</blockquote>
+<pre><code class="language-csharp">// Before (MySQL)
+services.AddDdap(options =&gt; options.ConnectionString = mySqlConnection)
+    .AddDapper(() =&gt; new MySqlConnection(mySqlConnection));
+
+// After (SQL Server)
+services.AddDdap(options =&gt; options.ConnectionString = sqlServerConnection)
+    .AddDapper(() =&gt; new SqlConnection(sqlServerConnection));
+</code></pre>
+<p><strong>Result:</strong> Same code, different database. Deploy to both clients.</p>
+<h3>Scenario 3: API Evolution</h3>
+<p><strong>Other Framework:</strong></p>
+<blockquote>
+<p>"Our REST API is working great, but now we need GraphQL for the mobile team and gRPC for microservices. Time to build separate APIs."</p>
+</blockquote>
+<p><strong>DDAP:</strong></p>
+<blockquote>
+<p>"Enable more protocols."</p>
+</blockquote>
+<pre><code class="language-csharp">// Week 1: REST only
+ddapBuilder.AddRest();
+
+// Week 5: Add GraphQL for mobile
+ddapBuilder.AddRest();
+ddapBuilder.AddGraphQL();
+
+// Week 10: Add gRPC for microservices
+ddapBuilder.AddRest();
+ddapBuilder.AddGraphQL();
+ddapBuilder.AddGrpc();
+</code></pre>
+<p><strong>Result:</strong> One codebase, three protocols. Same entities, same logic.</p>
+<hr>
+<h2>The DDAP Philosophy</h2>
+<h3>"Developer in Control"</h3>
+<p>DDAP was built on a single principle: <strong>You should control your architecture, not your framework.</strong></p>
+<p>We believe:</p>
+<ul>
+<li>✅ <strong>Explicit is better than implicit</strong> - No magic, no surprises</li>
+<li>✅ <strong>Choice is better than constraint</strong> - You pick your stack</li>
+<li>✅ <strong>Official is better than community</strong> - Use vendor packages by default</li>
+<li>✅ <strong>Infrastructure, not opinion</strong> - We provide tools, you make decisions</li>
+</ul>
+<h3>What DDAP Provides</h3>
+<p>Think of DDAP as <strong>scaffolding</strong>:</p>
+<pre><code>┌─────────────────────────────────────┐
+│         YOUR APPLICATION            │
+│  (Your choices, your code)          │
+├─────────────────────────────────────┤
+│            DDAP Layer               │
+│  (Infrastructure only)              │
+│  - Entity discovery                 │
+│  - Metadata mapping                 │
+│  - Base API types                   │
+│  - Auto-reload system               │
+│  - Lifecycle hooks                  │
+├─────────────────────────────────────┤
+│         YOUR CHOICES                │
+│  - Database driver                  │
+│  - ORM (Dapper/EF)                  │
+│  - Serializer                       │
+│  - API protocols                    │
+│  - Everything else                  │
+└─────────────────────────────────────┘
+</code></pre>
+<p>DDAP sits in the middle, providing infrastructure without opinions.</p>
+<h3>What DDAP Doesn't Do</h3>
+<p>We intentionally <strong>don't</strong>:</p>
+<ul>
+<li>❌ Force specific libraries on you</li>
+<li>❌ Hide what's happening</li>
+<li>❌ Lock you into patterns</li>
+<li>❌ Make architectural decisions for you</li>
+<li>❌ Generate code you can't modify</li>
+<li>❌ Prevent you from doing what you need</li>
+</ul>
+<p><strong>If DDAP gets in your way, that's a bug.</strong> <a href="https://github.com/schivei/ddap/issues">Report it</a>.</p>
+<hr>
+<h2>Comparison: DDAP vs Others</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Other Frameworks</th>
+<th>DDAP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Serializer</strong></td>
+<td>Forced (usually Newtonsoft)</td>
+<td>Your choice</td>
+</tr>
+<tr>
+<td><strong>ORM</strong></td>
+<td>Forced (usually EF)</td>
+<td>Dapper or EF, your choice</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>Database-specific packages</td>
+<td>One package, any database</td>
+</tr>
+<tr>
+<td><strong>API Style</strong></td>
+<td>Pick one: REST OR GraphQL</td>
+<td>All three: REST + GraphQL + gRPC</td>
+</tr>
+<tr>
+<td><strong>Code Generation</strong></td>
+<td>Hidden, can't modify</td>
+<td>Partial classes, extend anywhere</td>
+</tr>
+<tr>
+<td><strong>Configuration</strong></td>
+<td>Convention-based, hidden</td>
+<td>Explicit, in your Program.cs</td>
+</tr>
+<tr>
+<td><strong>Query Control</strong></td>
+<td>Framework-generated only</td>
+<td>Write raw SQL when needed</td>
+</tr>
+<tr>
+<td><strong>Migration Path</strong></td>
+<td>Rewrite when outgrown</td>
+<td>Add features incrementally</td>
+</tr>
+<tr>
+<td><strong>Philosophy</strong></td>
+<td>"Our way or highway"</td>
+<td>"Developer in Control"</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Who Should Use DDAP?</h2>
+<h3>✅ Perfect For:</h3>
+<ul>
+<li><strong>Experienced developers</strong> who know what they want</li>
+<li><strong>Teams</strong> who need flexibility for diverse requirements</li>
+<li><strong>Projects</strong> that need to evolve without rewrites</li>
+<li><strong>Organizations</strong> supporting multiple databases</li>
+<li><strong>Performance-critical</strong> applications needing fine-grained control</li>
+<li><strong>Architects</strong> who want to own their technical decisions</li>
+</ul>
+<h3>❌ Maybe Not For:</h3>
+<ul>
+<li><strong>Beginners</strong> wanting everything decided for them</li>
+<li><strong>Throwaway prototypes</strong> (though DDAP works great here too)</li>
+<li><strong>Projects</strong> where "just works" is more important than control</li>
+</ul>
+<hr>
+<h2>Getting Started</h2>
+<p>Ready to take control?</p>
+<pre><code class="language-bash"># Install template
+dotnet new install Ddap.Templates
+
+# Create project with YOUR choices
+dotnet new ddap-api --name MyApi \
+    --database-type sqlserver \
+    --database-provider dapper \
+    --include-rest \
+    --include-graphql
+
+# You're in control from day one
+cd MyApi
+dotnet run
+</code></pre>
+<hr>
+<h2>Learn More</h2>
+<ul>
+<li><a href="get-started.md">Get Started</a> - Quick start guide</li>
+<li><a href="philosophy.md">Philosophy</a> - Deep dive into "Developer in Control"</li>
+<li><a href="templates.md">Templates</a> - Template options and customization</li>
+<li><a href="database-providers.md">Database Providers</a> - Database setup guide</li>
+<li><a href="api-providers.md">API Providers</a> - REST, GraphQL, gRPC details</li>
+<li><a href="https://github.com/schivei/ddap">GitHub</a> - Source code and issues</li>
+</ul>
+<hr>
+<h2>Questions?</h2>
+<p><strong>"Isn't having choices more complex?"</strong><br>Yes, you make decisions. But you're making them anyway—other frameworks just hide them and make them for you. DDAP makes them explicit and changeable.</p>
+<p><strong>"Why not just use [other framework]?"</strong><br>If it works for you, great! Use it. DDAP is for developers who've been burned by framework lock-in and want control.</p>
+<p><strong>"Is DDAP production-ready?"</strong><br>Yes. DDAP is built for production. We have real applications running on it. See <a href="https://github.com/schivei/ddap">GitHub</a> for status.</p>
+<p><strong>"Does DDAP have a community?"</strong><br>Growing! Check <a href="https://github.com/schivei/ddap/discussions">GitHub Discussions</a> and <a href="https://github.com/schivei/ddap/issues">Issues</a>.</p>
+<hr>
+<div align="center">
+
+<p><strong>Ready to take control?</strong></p>
+<p><a href="get-started.md">Get Started</a> | <a href="https://github.com/schivei/ddap">View on GitHub</a></p>
+</div>
+
+        </div>
+    
+            </article>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DDAP</h3>
+                    <p>Built with ❤️ by developers who believe in control, not constraints.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="get-started.html">Getting Started</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="https://github.com/schivei/ddap" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        <li><a href="https://www.nuget.org/packages/Ddap.Core" target="_blank" rel="noopener noreferrer">NuGet</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/schivei/ddap/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="https://github.com/schivei/ddap/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 DDAP Contributors. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../theme-toggle.js"></script>
+    <script src="../language-switcher.js"></script>
+    
+
+    <script>
+        // Set current language
+        localStorage.setItem('ddap-language', 'pt-br');
+        
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        });
+    </script>
+    </body>
+</html>
