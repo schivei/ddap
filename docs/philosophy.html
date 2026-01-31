@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DDAP - Dynamic Data API Provider Documentation">
-    <title>Philosophy | DDAP Documentation</title>
+    <title>Developer in Control: The DDAP Philosophy - DDAP</title>
     
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="lib/github-markdown.min.css">
@@ -43,7 +43,485 @@
     <main id="main-content" class="doc-page">
         <div class="container">
             <article class="markdown-body doc-content" id="content">
-                <!-- CONTENT_PLACEHOLDER -->
+                
+        <div id="markdown-content" class="markdown-body">
+            <h1>Developer in Control: The DDAP Philosophy</h1>
+<h2>Introduction</h2>
+<p><strong>Developer in Control</strong> is the foundational philosophy behind DDAP (Domain-Driven API Platform). At its core, this philosophy means that <strong>you</strong>, the developer, make all the critical decisions about your application—not the framework.</p>
+<p>DDAP provides the infrastructure and patterns you need to build robust, scalable APIs, but it never forces technology choices upon you. You decide which JSON serializer to use, which database to connect to, how to configure your middleware, and how to structure your domain logic.</p>
+<p>In an era where frameworks increasingly make decisions for you—often hiding those decisions behind layers of abstraction—DDAP takes the opposite approach: <strong>explicit, transparent, and under your control</strong>.</p>
+<hr>
+<h2>The Problem with Opinionated Frameworks</h2>
+<p>Modern frameworks often claim to help you move faster by making decisions on your behalf. While this can accelerate initial development, it creates long-term problems:</p>
+<h3>Hardcoded Serialization Libraries</h3>
+<p>Many frameworks hardwire specific serialization libraries:</p>
+<pre><code class="language-csharp">// Typical opinionated framework
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddFrameworkApi(); // Uses Newtonsoft.Json internally
+    // You're stuck with Newtonsoft.Json whether you like it or not
+    // Changing it requires fighting the framework or forking it
+}
+</code></pre>
+<p><strong>The Problem:</strong> When <code>System.Text.Json</code> became the preferred serializer for performance, teams using these frameworks had to:</p>
+<ul>
+<li>Wait for the framework to update (if ever)</li>
+<li>Work around the framework's assumptions</li>
+<li>Accept degraded performance</li>
+<li>Fork and maintain their own version</li>
+</ul>
+<h3>Database-Specific Packages</h3>
+<p>Opinionated frameworks often include database-specific dependencies:</p>
+<pre><code class="language-csharp">// Framework packages bring their own database opinions
+Install-Package FrameworkX.Api          // Depends on Entity Framework
+Install-Package FrameworkX.Repository   // Depends on Npgsql
+Install-Package FrameworkX.Caching     // Depends on StackExchange.Redis
+</code></pre>
+<p><strong>The Problem:</strong></p>
+<ul>
+<li>You pay the DLL tax even if you use different tools</li>
+<li>Version conflicts arise between framework dependencies and your choices</li>
+<li>Switching databases means fighting framework expectations</li>
+<li>Your application grows heavier with unused dependencies</li>
+</ul>
+<h3>Hidden Configurations</h3>
+<p>Opinionated frameworks make choices in ways you can't see or control:</p>
+<pre><code class="language-csharp">// What is this actually doing?
+services.AddFrameworkDefaults();
+
+// Behind the scenes (hidden from you):
+// - Configures logging (but which provider?)
+// - Sets up error handling (but how?)
+// - Adds middleware (but what middleware and in what order?)
+// - Configures serialization (but with what settings?)
+// - Establishes conventions (but which ones?)
+</code></pre>
+<p><strong>The Problem:</strong> When issues arise, you can't debug what you can't see. When requirements change, you can't modify what you don't control.</p>
+<h3>Lock-In Patterns</h3>
+<p>Over time, these "helpful" abstractions create deep coupling:</p>
+<pre><code class="language-csharp">// Your code becomes dependent on framework abstractions
+public class ProductService : FrameworkServiceBase&lt;Product&gt;
+{
+    // Using framework-specific base class
+    // Inheriting framework-specific behavior
+    // Locked into framework patterns
+}
+</code></pre>
+<p><strong>The Problem:</strong> Migrating away from the framework requires rewriting large portions of your codebase. You're locked in—not by choice, but by accumulated dependencies.</p>
+<hr>
+<h2>The DDAP Way</h2>
+<p>DDAP takes a fundamentally different approach. It provides <strong>infrastructure without opinions</strong>.</p>
+<h3>Infrastructure Only</h3>
+<p>DDAP generates the plumbing code you need but doesn't make technology choices:</p>
+<pre><code class="language-csharp">// DDAP generates this infrastructure
+public abstract partial class ProductsApi : ApiBase
+{
+    // Abstract methods for you to implement
+    protected abstract Task&lt;IResult&gt; HandleCreate(CreateProductCommand command);
+    protected abstract Task&lt;IResult&gt; HandleGetById(Guid id);
+}
+
+// You implement it YOUR way
+public partial class ProductsApi
+{
+    private readonly IProductRepository _repository;  // Your choice of repository
+    private readonly IValidator&lt;CreateProductCommand&gt; _validator;  // Your choice of validation
+    
+    protected override async Task&lt;IResult&gt; HandleCreate(CreateProductCommand command)
+    {
+        // Your implementation
+        // Your dependencies
+        // Your control
+    }
+}
+</code></pre>
+<h3>You Choose Everything</h3>
+<p>Every technology decision is explicit and yours:</p>
+<pre><code class="language-csharp">// Program.cs - YOU configure everything
+var builder = WebApplication.CreateBuilder(args);
+
+// Choose your serializer
+builder.Services.ConfigureHttpJsonOptions(options =&gt;
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    // System.Text.Json, Newtonsoft.Json, or anything else - your choice
+});
+
+// Choose your database access
+builder.Services.AddScoped&lt;IDbConnection&gt;(_ =&gt; 
+    new NpgsqlConnection(connectionString));  // PostgreSQL
+    // Or SqlConnection, MySqlConnection, or any other - your choice
+
+// Choose your GraphQL configuration
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType&lt;Query&gt;()
+    .ModifyRequestOptions(opt =&gt; opt.IncludeExceptionDetails = true)
+    // Every option explicitly configured by you
+</code></pre>
+<h3>Explicit &gt; Implicit</h3>
+<p>DDAP makes everything explicit. There's no magic:</p>
+<pre><code class="language-csharp">// Traditional framework - implicit behavior
+[ApiController]
+public class ProductsController : ControllerBase
+{
+    // What middleware is running?
+    // What validation is happening?
+    // What error handling is in place?
+    // All hidden from you
+}
+
+// DDAP - explicit behavior
+public partial class ProductsApi : ApiBase
+{
+    protected override async Task&lt;IResult&gt; HandleCreate(CreateProductCommand command)
+    {
+        // Explicit validation - you see it
+        var validationResult = await _validator.ValidateAsync(command);
+        if (!validationResult.IsValid)
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        
+        // Explicit error handling - you control it
+        try
+        {
+            var product = await _repository.CreateAsync(command);
+            return Results.Created($"/api/products/{product.Id}", product);
+        }
+        catch (DuplicateException ex)
+        {
+            return Results.Conflict(new { error = ex.Message });
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2>Real-World Scenarios</h2>
+<h3>Scenario 1: Serialization Choice</h3>
+<p><strong>With an Opinionated Framework:</strong></p>
+<pre><code class="language-csharp">// Framework forces Newtonsoft.Json
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddFrameworkApi(); // Newtonsoft.Json baked in
+    }
+}
+
+// Want to use System.Text.Json for performance? Too bad.
+// Want custom serialization for specific endpoints? Fight the framework.
+</code></pre>
+<p><strong>With DDAP:</strong></p>
+<pre><code class="language-csharp">// You choose - System.Text.Json
+builder.Services.ConfigureHttpJsonOptions(options =&gt;
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
+
+// OR Newtonsoft.Json if you prefer
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =&gt;
+    {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
+
+// OR even different serializers for different endpoints
+public partial class ProductsApi
+{
+    protected override Task&lt;IResult&gt; HandleGetById(Guid id)
+    {
+        var product = _repository.GetById(id);
+        // Return with YOUR chosen serialization approach
+        return Task.FromResult(Results.Json(product, _customSerializerOptions));
+    }
+}
+</code></pre>
+<h3>Scenario 2: Database Choice</h3>
+<p><strong>With an Opinionated Framework:</strong></p>
+<pre><code class="language-csharp">// Framework packages include database dependencies
+// FrameworkX.Data.csproj includes:
+&lt;PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" /&gt;
+&lt;PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" /&gt;
+
+// You must:
+// 1. Accept Entity Framework even if you use Dapper
+// 2. Accept PostgreSQL packages even if you use SQL Server
+// 3. Deal with version conflicts
+// 4. Ship unnecessary DLLs
+</code></pre>
+<p><strong>With DDAP:</strong></p>
+<pre><code class="language-csharp">// DDAP.Core has ZERO database dependencies
+// You add exactly what you need:
+
+// Using Dapper with SQL Server
+Install-Package Dapper
+Install-Package Microsoft.Data.SqlClient
+
+// Using Dapper with PostgreSQL
+Install-Package Dapper
+Install-Package Npgsql
+
+// Using Dapper with MySQL
+Install-Package Dapper
+Install-Package MySql.Data
+
+// Using Entity Framework
+Install-Package Microsoft.EntityFrameworkCore
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+
+// One Dapper package works with ANY database
+public partial class ProductsApi
+{
+    private readonly IDbConnection _connection;
+    
+    protected override async Task&lt;IResult&gt; HandleGetAll()
+    {
+        // Same code works with SQL Server, PostgreSQL, MySQL, SQLite, Oracle...
+        var products = await _connection.QueryAsync&lt;Product&gt;(
+            "SELECT * FROM Products WHERE IsActive = @IsActive",
+            new { IsActive = true });
+        
+        return Results.Ok(products);
+    }
+}
+</code></pre>
+<h3>Scenario 3: GraphQL Configuration</h3>
+<p><strong>With an Opinionated Framework:</strong></p>
+<pre><code class="language-csharp">// Framework pre-configures GraphQL
+services.AddFrameworkGraphQL();
+
+// Configuration is hidden
+// Want to change error handling? Difficult.
+// Want to add custom directives? Fight the framework.
+// Want to modify query complexity? Hope it's exposed.
+</code></pre>
+<p><strong>With DDAP:</strong></p>
+<pre><code class="language-csharp">// You configure HotChocolate exactly as you want
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType&lt;Query&gt;()
+    .AddMutationType&lt;Mutation&gt;()
+    .AddType&lt;ProductType&gt;()
+    .AddFiltering()
+    .AddSorting()
+    .AddProjections()
+    .ModifyRequestOptions(opt =&gt;
+    {
+        opt.IncludeExceptionDetails = builder.Environment.IsDevelopment();
+        opt.ExecutionTimeout = TimeSpan.FromSeconds(30);
+    })
+    .AddErrorFilter&lt;CustomErrorFilter&gt;()
+    .AddDiagnosticEventListener&lt;CustomDiagnostics&gt;();
+
+// Every option is explicit and under your control
+</code></pre>
+<hr>
+<h2>What DDAP Provides vs What You Control</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>DDAP Provides</th>
+<th>You Control</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>API Structure</strong></td>
+<td>Generated partial classes with abstract methods</td>
+<td>Implementation of all business logic</td>
+</tr>
+<tr>
+<td><strong>Routing</strong></td>
+<td>Attribute-based route templates</td>
+<td>Route patterns and versioning strategy</td>
+</tr>
+<tr>
+<td><strong>Validation</strong></td>
+<td>Hooks for validation</td>
+<td>Choice of validation library (FluentValidation, DataAnnotations, custom)</td>
+</tr>
+<tr>
+<td><strong>Serialization</strong></td>
+<td>No opinion—uses ASP.NET defaults</td>
+<td>Serializer choice and configuration</td>
+</tr>
+<tr>
+<td><strong>Database Access</strong></td>
+<td>No dependencies</td>
+<td>ORM/micro-ORM choice and configuration</td>
+</tr>
+<tr>
+<td><strong>Error Handling</strong></td>
+<td>Basic exception handling pattern</td>
+<td>Custom error responses and logging</td>
+</tr>
+<tr>
+<td><strong>Authentication</strong></td>
+<td>No opinion</td>
+<td>Auth mechanism (JWT, OAuth, custom)</td>
+</tr>
+<tr>
+<td><strong>GraphQL</strong></td>
+<td>Generated query/mutation types</td>
+<td>HotChocolate configuration and schema design</td>
+</tr>
+<tr>
+<td><strong>Dependency Injection</strong></td>
+<td>Uses ASP.NET DI</td>
+<td>Service registrations and lifetimes</td>
+</tr>
+<tr>
+<td><strong>Middleware</strong></td>
+<td>None</td>
+<td>All middleware configuration</td>
+</tr>
+<tr>
+<td><strong>Caching</strong></td>
+<td>No opinion</td>
+<td>Caching strategy and implementation</td>
+</tr>
+<tr>
+<td><strong>Logging</strong></td>
+<td>No opinion</td>
+<td>Logging provider and configuration</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Design Principles</h2>
+<h3>No Hidden Magic</h3>
+<p>Every piece of generated code is visible in your project. You can read it, understand it, and modify it if needed.</p>
+<pre><code class="language-csharp">// Generated code is in YOUR project
+// src/Generated/ProductsApi.g.cs
+public abstract partial class ProductsApi : ApiBase
+{
+    // You can see exactly what's generated
+    // No hidden base classes in framework DLLs
+}
+</code></pre>
+<h3>Explicit Dependencies</h3>
+<p>DDAP Core has minimal dependencies—only what's essential for ASP.NET Core integration:</p>
+<pre><code class="language-xml">&lt;!-- DDAP.Core.csproj --&gt;
+&lt;ItemGroup&gt;
+    &lt;PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="8.0.0" /&gt;
+    &lt;PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" /&gt;
+&lt;/ItemGroup&gt;
+
+&lt;!-- That's it. No database. No serialization. No GraphQL. --&gt;
+</code></pre>
+<h3>Partial Classes for Extension</h3>
+<p>Generated code uses partial classes so you can extend without modification:</p>
+<pre><code class="language-csharp">// Generated (do not modify)
+public abstract partial class ProductsApi : ApiBase
+{
+    [HttpPost]
+    [Route("products")]
+    protected abstract Task&lt;IResult&gt; HandleCreate(CreateProductCommand command);
+}
+
+// Your implementation (extend freely)
+public partial class ProductsApi
+{
+    private readonly ILogger&lt;ProductsApi&gt; _logger;
+    
+    // Add your own fields and methods
+    private async Task&lt;bool&gt; IsSkuUnique(string sku)
+    {
+        return await _repository.IsSkuUniqueAsync(sku);
+    }
+    
+    protected override async Task&lt;IResult&gt; HandleCreate(CreateProductCommand command)
+    {
+        if (!await IsSkuUnique(command.Sku))
+            return Results.Conflict("SKU already exists");
+        
+        // Your implementation
+    }
+}
+</code></pre>
+<h3>Convention over Configuration (But Configurable)</h3>
+<p>DDAP provides sensible defaults but lets you override anything:</p>
+<pre><code class="language-csharp">// Convention: Routes follow REST patterns
+[HttpGet]
+[Route("products/{id:guid}")]  // Convention
+
+// But you can override
+[HttpGet]
+[Route("api/v2/products/{id:guid}")]  // Your custom route
+
+// Convention: Commands map to POST, Queries to GET
+// But you control the actual implementation completely
+</code></pre>
+<hr>
+<h2>When to Use DDAP</h2>
+<p>DDAP is ideal when you:</p>
+<ol>
+<li><strong>Value Long-Term Maintainability</strong> over rapid prototyping</li>
+<li><strong>Need Full Control</strong> over technology choices</li>
+<li><strong>Have Specific Requirements</strong> that generic frameworks don't accommodate</li>
+<li><strong>Want to Avoid Lock-In</strong> to framework opinions</li>
+<li><strong>Prefer Explicit Code</strong> over "magical" abstractions</li>
+<li><strong>Need to Support Multiple Databases</strong> with minimal code changes</li>
+<li><strong>Have Team Members</strong> who understand your domain better than framework authors do</li>
+<li><strong>Require Performance Optimization</strong> and want to choose your own tools</li>
+<li><strong>Plan to Migrate</strong> gradually from another framework without rewriting everything</li>
+<li><strong>Believe in Code Generation</strong> as documentation rather than abstraction</li>
+</ol>
+<hr>
+<h2>When NOT to Use DDAP</h2>
+<p>Be honest with yourself. DDAP might not be the best choice if you:</p>
+<ol>
+<li><p><strong>Need to Move Extremely Fast</strong> on a prototype or MVP</p>
+<ul>
+<li>Opinionated frameworks can accelerate initial development</li>
+<li>DDAP requires you to make decisions that frameworks make for you</li>
+</ul>
+</li>
+<li><p><strong>Have a Team Unfamiliar with Domain-Driven Design</strong></p>
+<ul>
+<li>DDAP works best when your team understands DDD concepts</li>
+<li>The learning curve might slow down teams new to these patterns</li>
+</ul>
+</li>
+<li><p><strong>Want Everything Decided for You</strong></p>
+<ul>
+<li>If you prefer frameworks that make all the choices, DDAP will feel bare-bones</li>
+<li>You'll need to configure things that other frameworks handle automatically</li>
+</ul>
+</li>
+<li><p><strong>Need Rich Framework Ecosystems</strong></p>
+<ul>
+<li>Mature frameworks have extensive plugin ecosystems</li>
+<li>DDAP is newer and has a smaller community (though growing)</li>
+</ul>
+</li>
+<li><p><strong>Prefer Convention-Heavy Approaches</strong></p>
+<ul>
+<li>Rails-style "magic" might be more your style</li>
+<li>DDAP's explicitness requires more upfront thought</li>
+</ul>
+</li>
+<li><p><strong>Are Building Throwaway Projects</strong></p>
+<ul>
+<li>If the project won't be maintained long-term, framework lock-in doesn't matter</li>
+<li>DDAP's benefits shine in long-lived, maintained applications</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Conclusion</h2>
+<p><strong>Developer in Control</strong> isn't just a tagline—it's a commitment. DDAP commits to:</p>
+<ul>
+<li>Never forcing technology choices on you</li>
+<li>Keeping dependencies minimal and explicit</li>
+<li>Generating code you can see, understand, and modify</li>
+<li>Staying out of your way while providing valuable infrastructure</li>
+<li>Treating you as an expert who makes informed decisions</li>
+</ul>
+<p>When you choose DDAP, you choose control, transparency, and long-term maintainability over short-term convenience. You choose to be the architect of your application, not a consumer of someone else's opinions.</p>
+<p>Welcome to development where <strong>you're in control</strong>.</p>
+
+        </div>
+    
             </article>
         </div>
     </main>
@@ -88,61 +566,17 @@
 
     <script src="theme-toggle.js"></script>
     <script src="language-switcher.js"></script>
+    
+
     <script>
-        // Load and render markdown content with language support
-        const baseMdFile = 'philosophy.md';
+        // Set current language
+        localStorage.setItem('ddap-language', 'en');
         
-        function getLocalizedMarkdownPath(baseFile) {
-            // Get current language from localStorage or default to 'en'
-            const currentLang = localStorage.getItem('ddap-language') || 'en';
-            
-            // If English, use the base file
-            if (currentLang === 'en') {
-                return baseFile;
-            }
-            
-            // For other languages, try to load from locales directory
-            // e.g., get-started.md -> locales/pt-br/get-started.md
-            return `locales/${currentLang}/${baseFile}`;
-        }
-        
-        function loadMarkdown(mdPath) {
-            fetch(mdPath)
-                .then(response => {
-                    if (!response.ok) {
-                        // If translated version not found, fallback to English
-                        if (mdPath.includes('locales/')) {
-                            console.log(`Translated version not found, loading English version`);
-                            return fetch(baseMdFile);
-                        }
-                        throw new Error('Document not found');
-                    }
-                    return response.text();
-                })
-                .then(markdown => {
-                    const rawHtml = marked.parse(markdown);
-                    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-                    document.getElementById('content').innerHTML = sanitizedHtml;
-                    document.title = (document.querySelector('#content h1')?.textContent || 'Philosophy') + ' | DDAP Documentation';
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = 
-                        '<h1>Error Loading Document</h1><p>Could not load the requested document.</p>';
-                });
-        }
-        
-        // Load markdown with current language
-        const mdFile = getLocalizedMarkdownPath(baseMdFile);
-        loadMarkdown(mdFile);
-        
-        // Listen for language changes (when user switches language)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'ddap-language') {
-                // Reload content with new language
-                const newMdFile = getLocalizedMarkdownPath(baseMdFile);
-                loadMarkdown(newMdFile);
-            }
+        // Remove loading indicator since content is static
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
         });
     </script>
-</body>
+    </body>
 </html>
