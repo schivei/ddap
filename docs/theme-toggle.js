@@ -137,6 +137,7 @@
     
     /**
      * Update theme toggle button appearance and label
+     * In high contrast mode, use text instead of icons for better accessibility
      */
     function updateThemeToggle(currentTheme) {
         const toggle = document.getElementById('theme-toggle');
@@ -146,7 +147,17 @@
         const icon = toggle.querySelector('.theme-icon');
         
         if (icon) {
-            icon.textContent = THEME_ICONS[nextTheme];
+            // In high contrast mode, show text instead of emoji icons
+            if (currentTheme === 'high-contrast' || prefersHighContrast()) {
+                // Show text label instead of icon
+                icon.textContent = nextTheme === 'light' ? 'Light' : 
+                                 nextTheme === 'dark' ? 'Dark' : 'High Contrast';
+                icon.setAttribute('aria-hidden', 'false'); // Make text readable
+            } else {
+                // Show emoji icon in normal modes
+                icon.textContent = THEME_ICONS[nextTheme];
+                icon.setAttribute('aria-hidden', 'true'); // Hide from screen readers (aria-label is used)
+            }
         }
         
         // Update aria-label to describe what will happen on click

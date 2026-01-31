@@ -1026,6 +1026,40 @@ section {
     border: 2px solid var(--color-primary) !important;
 }
 
+/* Hide decorative icons in high contrast mode (reduces distraction for disabilities) */
+:root[data-high-contrast="true"] .emoji,
+:root[data-high-contrast="true"] [role="img"]:not([aria-label]),
+:root[data-high-contrast="true"] .decorative-icon {
+    display: none !important;
+}
+
+/* Hide background images in high contrast (reduces visual complexity) */
+:root[data-high-contrast="true"] *[style*="background-image"] {
+    background-image: none !important;
+}
+
+/* Simplify theme toggle icon display in high contrast */
+:root[data-high-contrast="true"] .theme-icon {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 0.875rem !important;
+    font-style: normal !important;
+}
+
+/* Remove emoji from headings in high contrast */
+:root[data-high-contrast="true"] h1::before,
+:root[data-high-contrast="true"] h2::before,
+:root[data-high-contrast="true"] h3::before,
+:root[data-high-contrast="true"] h4::before,
+:root[data-high-contrast="true"] h5::before,
+:root[data-high-contrast="true"] h6::before {
+    content: none !important;
+}
+
+/* Ensure language switcher works without icons */
+:root[data-high-contrast="true"] #language-toggle {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
 /* Existing high contrast styles */
 
 :root[data-theme="high-contrast"] .btn-primary {
