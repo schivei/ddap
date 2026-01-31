@@ -25,22 +25,25 @@ public class LanguageSwitcherTests : PageTest
                 Console.WriteLine($"[BROWSER {msg.Type.ToUpper()}] {msg.Text}");
             }
         };
-        
+
         // Capture page errors
         Page.PageError += (_, error) =>
         {
             Console.WriteLine($"[PAGE ERROR] {error}");
         };
-        
+
         // Clear localStorage before each test
         await Context.ClearCookiesAsync();
 
         // Navigate to the documentation home page
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
+
         // Wait for language switcher API to be available
-        await Page.WaitForFunctionAsync("() => window.ddapLanguage !== undefined", new PageWaitForFunctionOptions { Timeout = 10000 });
+        await Page.WaitForFunctionAsync(
+            "() => window.ddapLanguage !== undefined",
+            new PageWaitForFunctionOptions { Timeout = 10000 }
+        );
     }
 
     [Test]
@@ -158,7 +161,10 @@ public class LanguageSwitcherTests : PageTest
         Assert.That(languageToggle, Is.Not.Null);
 
         await languageToggle!.ClickAsync();
-        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
+        await Page.WaitForSelectorAsync(
+            "#language-dropdown.show",
+            new() { State = WaitForSelectorState.Visible, Timeout = 2000 }
+        );
 
         // Act: Click on Portuguese option - this will navigate
         var ptOption = await Page.QuerySelectorAsync("[data-language='pt-br']");
@@ -180,7 +186,10 @@ public class LanguageSwitcherTests : PageTest
         Assert.That(languageToggle, Is.Not.Null);
 
         await languageToggle!.ClickAsync();
-        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
+        await Page.WaitForSelectorAsync(
+            "#language-dropdown.show",
+            new() { State = WaitForSelectorState.Visible, Timeout = 2000 }
+        );
 
         // Act: Click on Spanish option - this will navigate
         var esOption = await Page.QuerySelectorAsync("[data-language='es']");
@@ -256,10 +265,13 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Click the toggle button
         await languageToggle!.ClickAsync();
-        
+
         // Wait for dropdown to appear with transition
         var dropdown = await Page.QuerySelectorAsync("#language-dropdown");
-        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
+        await Page.WaitForSelectorAsync(
+            "#language-dropdown.show",
+            new() { State = WaitForSelectorState.Visible, Timeout = 2000 }
+        );
 
         // Assert: Dropdown should be visible
         var isVisible = await dropdown!.IsVisibleAsync();
@@ -335,12 +347,15 @@ public class LanguageSwitcherTests : PageTest
         // Act: Open dropdown
         var languageToggle = await Page.QuerySelectorAsync("#language-toggle");
         await languageToggle!.ClickAsync();
-        await Page.WaitForSelectorAsync("#language-dropdown.show", new() { State = WaitForSelectorState.Visible, Timeout = 2000 });
+        await Page.WaitForSelectorAsync(
+            "#language-dropdown.show",
+            new() { State = WaitForSelectorState.Visible, Timeout = 2000 }
+        );
 
         // Assert: French option should have active class
         var frOption = await Page.QuerySelectorAsync("[data-language='fr']");
         Assert.That(frOption, Is.Not.Null, "French option not found");
-        
+
         var hasActiveClass = await frOption!.EvaluateAsync<bool>(
             "el => el.classList.contains('active')"
         );
@@ -388,15 +403,22 @@ public class LanguageSwitcherTests : PageTest
         // Wait for language API to be available with longer timeout
         try
         {
-            await Page.WaitForFunctionAsync("() => window.ddapLanguage !== undefined", new PageWaitForFunctionOptions { Timeout = 10000 });
+            await Page.WaitForFunctionAsync(
+                "() => window.ddapLanguage !== undefined",
+                new PageWaitForFunctionOptions { Timeout = 10000 }
+            );
         }
         catch
         {
             // If still not available, log what scripts are loaded
-            var scripts = await Page.EvaluateAsync<string>("document.querySelectorAll('script').length");
-            throw new Exception($"window.ddapLanguage not available after 10s. Scripts loaded: {scripts}");
+            var scripts = await Page.EvaluateAsync<string>(
+                "document.querySelectorAll('script').length"
+            );
+            throw new Exception(
+                $"window.ddapLanguage not available after 10s. Scripts loaded: {scripts}"
+            );
         }
-        
+
         // Arrange: Set a language
         await Page.EvaluateAsync(
             @"

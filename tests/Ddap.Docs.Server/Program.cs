@@ -12,17 +12,19 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
-    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
-    {
-        "text/html",
-        "text/css",
-        "application/javascript",
-        "text/javascript",
-        "application/json",
-        "text/xml",
-        "application/xml",
-        "image/svg+xml"
-    });
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[]
+        {
+            "text/html",
+            "text/css",
+            "application/javascript",
+            "text/javascript",
+            "application/json",
+            "text/xml",
+            "application/xml",
+            "image/svg+xml",
+        }
+    );
 });
 
 // Configure compression levels
