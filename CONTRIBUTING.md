@@ -453,6 +453,52 @@ public void IntegrationTest() { }
 public void SqlServerTest() { }
 ```
 
+### Template Testing
+
+When working on project templates (`Ddap.Templates`):
+
+#### Unit Tests
+
+Run the comprehensive unit test suite:
+
+```bash
+# Run all template tests
+dotnet test tests/Ddap.Templates.Tests/
+
+# Tests verify:
+# - Template generation with all parameter combinations
+# - Package inclusions (REST, GraphQL, gRPC, Auth, etc.)
+# - Database provider configurations
+# - Generated projects restore and build successfully
+```
+
+#### Validation Scripts
+
+For quick smoke testing during development:
+
+```bash
+# Linux/Mac
+./tests/validate-template.sh
+
+# Windows PowerShell
+.\tests\validate-template.ps1
+
+# Windows cmd
+tests\validate-template.cmd
+
+# Universal wrapper (auto-detects platform)
+./tests/validate-template
+```
+
+The validation scripts test 23 scenarios covering:
+- Database providers (SQL Server, MySQL, PostgreSQL, SQLite)
+- Data access (Dapper, Entity Framework)
+- API types (REST, GraphQL, gRPC)
+- Features (Auth, Subscriptions, Aspire)
+- Minimal and maximum configurations
+
+See [`tests/README.md`](tests/README.md) for complete template testing documentation.
+
 ### Mocking
 
 Use Moq for mocking dependencies:
