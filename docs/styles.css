@@ -2194,3 +2194,270 @@ pre,
     }
 }
 
+/* ===================================
+   DocFX-Specific Theme Integration
+   =================================== */
+
+/* DocFX Navbar - Apply theme colors */
+.navbar,
+.navbar-default {
+    background-color: var(--bg-primary) !important;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand,
+.navbar-nav > li > a {
+    color: var(--text-primary) !important;
+}
+
+.navbar-nav > li > a:hover,
+.navbar-nav > li > a:focus {
+    color: var(--color-primary) !important;
+    background-color: var(--bg-secondary) !important;
+}
+
+/* DocFX Sidebar - Apply theme colors */
+.sidenav,
+.toc {
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidenav a,
+.toc a {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.sidenav a:hover,
+.toc a:hover {
+    color: var(--color-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.sidenav .active > a,
+.toc .active > a {
+    color: var(--color-primary);
+    font-weight: 600;
+    background-color: var(--bg-tertiary);
+}
+
+/* DocFX Article/Content - Apply theme colors */
+.article,
+.markdown-body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.article h1,
+.article h2,
+.article h3,
+.article h4,
+.article h5,
+.article h6,
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    color: var(--text-primary);
+}
+
+.article p,
+.markdown-body p {
+    color: var(--text-primary);
+}
+
+.article a,
+.markdown-body a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+.article a:hover,
+.markdown-body a:hover {
+    color: var(--color-primary-hover);
+}
+
+/* DocFX Code Blocks - Apply theme colors */
+.article pre,
+.markdown-body pre,
+.hljs {
+    background-color: var(--bg-code) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+}
+
+.article code,
+.markdown-body code {
+    background-color: var(--bg-code);
+    color: var(--text-primary);
+}
+
+/* DocFX Tables - Apply theme colors */
+.article table,
+.markdown-body table {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.article th,
+.markdown-body th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.article td,
+.markdown-body td {
+    border-color: var(--border-color);
+}
+
+.article tr:nth-child(even),
+.markdown-body tr:nth-child(even) {
+    background-color: var(--bg-secondary);
+}
+
+/* DocFX Alerts/Blockquotes - Apply theme colors */
+.article blockquote,
+.markdown-body blockquote {
+    border-left: 4px solid var(--color-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.alert {
+    border-left: 4px solid var(--color-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.alert-info {
+    border-left-color: var(--color-primary);
+}
+
+.alert-success {
+    border-left-color: var(--color-success);
+}
+
+.alert-warning {
+    border-left-color: var(--color-warning);
+}
+
+.alert-danger {
+    border-left-color: var(--color-error);
+}
+
+/* DocFX Footer - Apply theme colors */
+.footer {
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.footer a {
+    color: var(--color-primary);
+}
+
+/* DocFX Breadcrumb - Apply theme colors */
+.breadcrumb {
+    background-color: var(--bg-secondary);
+}
+
+.breadcrumb > li + li:before {
+    color: var(--text-tertiary);
+}
+
+.breadcrumb > li > a {
+    color: var(--color-primary);
+}
+
+/* DocFX API Documentation - Apply theme colors */
+.api-doc .member,
+.api-doc .signature {
+    background-color: var(--bg-code);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.api-doc .member-name {
+    color: var(--color-primary);
+}
+
+.api-doc .member-type {
+    color: var(--color-secondary);
+}
+
+/* DocFX Search - Apply theme colors */
+.search-results {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.search-result-item {
+    color: var(--text-primary);
+}
+
+.search-result-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.search-result-item-title {
+    color: var(--color-primary);
+}
+
+/* High Contrast Mode - Enhanced DocFX Elements */
+:root[data-theme="high-contrast"] .sidenav,
+:root[data-theme="high-contrast"] .toc,
+:root[data-theme="high-contrast"] .navbar {
+    border-width: 2px;
+}
+
+:root[data-theme="high-contrast"] .article a,
+:root[data-theme="high-contrast"] .markdown-body a {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    font-weight: 600;
+}
+
+:root[data-theme="high-contrast"] .article code,
+:root[data-theme="high-contrast"] .markdown-body code,
+:root[data-theme="high-contrast"] .hljs {
+    border-width: 2px;
+    font-weight: 600;
+}
+
+/* Ensure DocFX elements don't break mobile layout */
+@media (max-width: 768px) {
+    .sidenav,
+    .toc {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .navbar {
+        overflow-x: hidden;
+    }
+    
+    .article,
+    .markdown-body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Stack DocFX layout on mobile */
+    .sidetoggle {
+        display: block;
+    }
+    
+    .sidenav {
+        position: relative;
+        width: 100%;
+    }
+}
+
