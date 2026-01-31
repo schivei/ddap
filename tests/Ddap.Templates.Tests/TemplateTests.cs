@@ -237,10 +237,10 @@ public class TemplateTests : IDisposable
     }
 
     [Theory]
-    [InlineData("sqlserver", "Ddap.Data.Dapper.SqlServer")]
-    [InlineData("mysql", "Ddap.Data.Dapper.MySQL")]
-    [InlineData("postgresql", "Ddap.Data.Dapper.PostgreSQL")]
-    [InlineData("sqlite", "Ddap.Data.Dapper")]
+    [InlineData("sqlserver", "Microsoft.Data.SqlClient")]
+    [InlineData("mysql", "MySql.Data")]
+    [InlineData("postgresql", "Npgsql")]
+    [InlineData("sqlite", "Microsoft.Data.Sqlite")]
     public void Template_Should_IncludeCorrectDapperPackage_ForDatabaseType(
         string databaseType,
         string expectedPackage
@@ -304,7 +304,7 @@ public class TemplateTests : IDisposable
         csprojContent.Should().Contain("Ddap.Auth");
 
         var programContent = File.ReadAllText(Path.Combine(projectDir, "Program.cs"));
-        programContent.Should().Contain("AddAuthentication");
+        programContent.Should().Contain("AddDdapAuthentication");
         programContent.Should().Contain("UseAuthentication()");
 
         var appsettingsContent = File.ReadAllText(Path.Combine(projectDir, "appsettings.json"));
