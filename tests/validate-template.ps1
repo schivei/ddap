@@ -121,36 +121,36 @@ try {
     
     # Phase 1: Database Provider Tests
     Write-Color "=== Database Provider Tests ===" -Color Yellow
-    Test-Template -Name "SqlServerDapper" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false"
-    Test-Template -Name "SqlServerEF" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "false" -GraphQL "true" -Grpc "false"
-    Test-Template -Name "MySqlDapper" -DatabaseProvider "dapper" -DatabaseType "mysql" -Rest "false" -GraphQL "false" -Grpc "true"
-    Test-Template -Name "MySqlEF" -DatabaseProvider "entityframework" -DatabaseType "mysql" -Rest "true" -GraphQL "true" -Grpc "false"
-    Test-Template -Name "PostgresDapper" -DatabaseProvider "dapper" -DatabaseType "postgresql" -Rest "true" -GraphQL "false" -Grpc "false"
-    Test-Template -Name "PostgresEF" -DatabaseProvider "entityframework" -DatabaseType "postgresql" -Rest "false" -GraphQL "true" -Grpc "false"
-    Test-Template -Name "SqliteDapper" -DatabaseProvider "dapper" -DatabaseType "sqlite" -Rest "false" -GraphQL "false" -Grpc "true"
-    Test-Template -Name "SqliteEF" -DatabaseProvider "entityframework" -DatabaseType "sqlite" -Rest "true" -GraphQL "false" -Grpc "false"
+    if (-not (Test-Template -Name "SqlServerDapper" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false")) { throw "Test failed: SqlServerDapper" }
+    if (-not (Test-Template -Name "SqlServerEF" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "false" -GraphQL "true" -Grpc "false")) { throw "Test failed: SqlServerEF" }
+    if (-not (Test-Template -Name "MySqlDapper" -DatabaseProvider "dapper" -DatabaseType "mysql" -Rest "false" -GraphQL "false" -Grpc "true")) { throw "Test failed: MySqlDapper" }
+    if (-not (Test-Template -Name "MySqlEF" -DatabaseProvider "entityframework" -DatabaseType "mysql" -Rest "true" -GraphQL "true" -Grpc "false")) { throw "Test failed: MySqlEF" }
+    if (-not (Test-Template -Name "PostgresDapper" -DatabaseProvider "dapper" -DatabaseType "postgresql" -Rest "true" -GraphQL "false" -Grpc "false")) { throw "Test failed: PostgresDapper" }
+    if (-not (Test-Template -Name "PostgresEF" -DatabaseProvider "entityframework" -DatabaseType "postgresql" -Rest "false" -GraphQL "true" -Grpc "false")) { throw "Test failed: PostgresEF" }
+    if (-not (Test-Template -Name "SqliteDapper" -DatabaseProvider "dapper" -DatabaseType "sqlite" -Rest "false" -GraphQL "false" -Grpc "true")) { throw "Test failed: SqliteDapper" }
+    if (-not (Test-Template -Name "SqliteEF" -DatabaseProvider "entityframework" -DatabaseType "sqlite" -Rest "true" -GraphQL "false" -Grpc "false")) { throw "Test failed: SqliteEF" }
     
     # Phase 2: API Provider Tests
     Write-Color "=== API Provider Tests ===" -Color Yellow
-    Test-Template -Name "RestOnly" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false"
-    Test-Template -Name "GraphQLOnly" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "false" -GraphQL "true" -Grpc "false"
-    Test-Template -Name "GrpcOnly" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "false" -GraphQL "false" -Grpc "true"
-    Test-Template -Name "RestGraphQL" -DatabaseProvider "dapper" -DatabaseType "mysql" -Rest "true" -GraphQL "true" -Grpc "false"
-    Test-Template -Name "RestGrpc" -DatabaseProvider "entityframework" -DatabaseType "postgresql" -Rest "true" -GraphQL "false" -Grpc "true"
-    Test-Template -Name "GraphQLGrpc" -DatabaseProvider "dapper" -DatabaseType "sqlite" -Rest "false" -GraphQL "true" -Grpc "true"
-    Test-Template -Name "AllAPIs" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "true" -GraphQL "true" -Grpc "true"
+    if (-not (Test-Template -Name "RestOnly" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false")) { throw "Test failed: RestOnly" }
+    if (-not (Test-Template -Name "GraphQLOnly" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "false" -GraphQL "true" -Grpc "false")) { throw "Test failed: GraphQLOnly" }
+    if (-not (Test-Template -Name "GrpcOnly" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "false" -GraphQL "false" -Grpc "true")) { throw "Test failed: GrpcOnly" }
+    if (-not (Test-Template -Name "RestGraphQL" -DatabaseProvider "dapper" -DatabaseType "mysql" -Rest "true" -GraphQL "true" -Grpc "false")) { throw "Test failed: RestGraphQL" }
+    if (-not (Test-Template -Name "RestGrpc" -DatabaseProvider "entityframework" -DatabaseType "postgresql" -Rest "true" -GraphQL "false" -Grpc "true")) { throw "Test failed: RestGrpc" }
+    if (-not (Test-Template -Name "GraphQLGrpc" -DatabaseProvider "dapper" -DatabaseType "sqlite" -Rest "false" -GraphQL "true" -Grpc "true")) { throw "Test failed: GraphQLGrpc" }
+    if (-not (Test-Template -Name "AllAPIs" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "true" -GraphQL "true" -Grpc "true")) { throw "Test failed: AllAPIs" }
     
     # Phase 3: Feature Tests
     Write-Color "=== Feature Tests ===" -Color Yellow
-    Test-Template -Name "WithAuth" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false" -IncludeAuth "true"
-    Test-Template -Name "WithSubscriptions" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "false" -GraphQL "true" -Grpc "false" -IncludeSubscriptions "true"
-    Test-Template -Name "WithAspire" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false" -UseAspire "true"
-    Test-Template -Name "AllFeatures" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "true" -GraphQL "true" -Grpc "false" -IncludeAuth "true" -IncludeSubscriptions "true"
+    if (-not (Test-Template -Name "WithAuth" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false" -IncludeAuth "true")) { throw "Test failed: WithAuth" }
+    if (-not (Test-Template -Name "WithSubscriptions" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "false" -GraphQL "true" -Grpc "false" -IncludeSubscriptions "true")) { throw "Test failed: WithSubscriptions" }
+    if (-not (Test-Template -Name "WithAspire" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false" -UseAspire "true")) { throw "Test failed: WithAspire" }
+    if (-not (Test-Template -Name "AllFeatures" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "true" -GraphQL "true" -Grpc "false" -IncludeAuth "true" -IncludeSubscriptions "true" -UseAspire "false")) { throw "Test failed: AllFeatures" }
     
     # Phase 4: Complex Combinations
     Write-Color "=== Complex Combination Tests ===" -Color Yellow
-    Test-Template -Name "Minimal" -DatabaseProvider "dapper" -DatabaseType "sqlite" -Rest "false" -GraphQL "false" -Grpc "false"
-    Test-Template -Name "Maximum" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "true" -GraphQL "true" -Grpc "true" -IncludeAuth "true" -IncludeSubscriptions "true" -UseAspire "true"
+    if (-not (Test-Template -Name "Minimal" -DatabaseProvider "dapper" -DatabaseType "sqlite" -Rest "false" -GraphQL "false" -Grpc "false")) { throw "Test failed: Minimal" }
+    if (-not (Test-Template -Name "Maximum" -DatabaseProvider "entityframework" -DatabaseType "sqlserver" -Rest "true" -GraphQL "true" -Grpc "true" -IncludeAuth "true" -IncludeSubscriptions "true" -UseAspire "true")) { throw "Test failed: Maximum" }
     
     # Uninstall template
     Write-Host ""
@@ -161,7 +161,7 @@ try {
     Write-Color "✅ All template tests passed!" -Color Green
     Write-Host ""
     Write-Host "Summary:"
-    Write-Host "  Total scenarios tested: 23"
+    Write-Host "  Total scenarios tested: 21"
     Write-Host "  Database types: SQL Server, MySQL, PostgreSQL, SQLite"
     Write-Host "  Data providers: Dapper, Entity Framework"
     Write-Host "  API types: REST, GraphQL, gRPC"

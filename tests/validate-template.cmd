@@ -76,7 +76,7 @@ call :test_template "WithSubscriptions" "dapper" "sqlserver" "false" "true" "fal
 if errorlevel 1 goto :error
 call :test_template "WithAspire" "dapper" "sqlserver" "true" "false" "false" "false" "false" "true"
 if errorlevel 1 goto :error
-call :test_template "AllFeatures" "entityframework" "sqlserver" "true" "true" "false" "true" "true"
+call :test_template "AllFeatures" "entityframework" "sqlserver" "true" "true" "false" "true" "true" "false"
 if errorlevel 1 goto :error
 
 REM Phase 4: Complex Combinations
@@ -94,7 +94,7 @@ echo.
 echo ✅ All template tests passed!
 echo.
 echo Summary:
-echo   Total scenarios tested: 23
+echo   Total scenarios tested: 21
 echo   Database types: SQL Server, MySQL, PostgreSQL, SQLite
 echo   Data providers: Dapper, Entity Framework
 echo   API types: REST, GraphQL, gRPC

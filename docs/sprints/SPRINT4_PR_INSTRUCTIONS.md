@@ -631,7 +631,7 @@
   - [ ] ⚠️ Full testing blocked by template bug (AddDapper missing parameters)
 
 - [x] **Revisar cobertura**
-  - [x] Confirmar que todos os cenários estão cobertos (23 scripts + 15+ unit tests)
+  - [x] Confirmar que todos os cenários estão cobertos (21 validation script scenarios + 15+ unit tests)
   - [x] Matriz de teste documentada
 
 - [ ] **Testar em ambiente limpo**

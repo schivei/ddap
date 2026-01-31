@@ -490,7 +490,7 @@ tests\validate-template.cmd
 ./tests/validate-template
 ```
 
-The validation scripts test 23 scenarios covering:
+The validation scripts test 21 scenarios covering:
 - Database providers (SQL Server, MySQL, PostgreSQL, SQLite)
 - Data access (Dapper, Entity Framework)
 - API types (REST, GraphQL, gRPC)

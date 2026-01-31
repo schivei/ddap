@@ -84,7 +84,7 @@ The universal wrapper script (`validate-template`) automatically detects your pl
 - Aspire orchestration
 - Project restore and build
 
-### Validation Scripts (23 scenarios)
+### Validation Scripts (21 scenarios)
 1. **Database Provider Tests (8 scenarios)**
    - SQL Server + Dapper
    - SQL Server + Entity Framework
@@ -110,7 +110,7 @@ The universal wrapper script (`validate-template`) automatically detects your pl
    - With Aspire
    - All Features
 
-4. **Complex Combinations (4 scenarios)**
+4. **Complex Combinations (2 scenarios)**
    - Minimal configuration
    - Maximum configuration (all features enabled)
 
@@ -125,10 +125,8 @@ The tests run automatically on:
 - Pushes to `main`
 - Manual workflow dispatch
 
-Multi-platform testing matrix:
+Current CI test environment:
 - Ubuntu (latest)
-- Windows (latest)
-- macOS (latest)
 
 See `.github/workflows/build.yml` for the full CI configuration.
 
@@ -258,8 +256,8 @@ When working on the template:
 ## Performance
 
 - **Unit tests**: ~2-5 minutes (runs all 15+ tests)
-- **Validation scripts**: ~5-10 minutes (runs 23 scenarios with build verification)
-- **CI/CD full matrix**: ~15-30 minutes (runs on 3 platforms)
+- **Validation scripts**: ~5-10 minutes (runs 21 scenarios with build verification)
+- **CI/CD**: ~15-30 minutes (includes all tests)
 
 Tests can be slow because each scenario:
 1. Generates a new project
