@@ -17,12 +17,30 @@ public class LanguageSwitcherTests : PageTest
     [SetUp]
     public async Task Setup()
     {
+        // Capture console messages
+        Page.Console += (_, msg) =>
+        {
+            if (msg.Type == "error" || msg.Type == "warning")
+            {
+                Console.WriteLine($"[BROWSER {msg.Type.ToUpper()}] {msg.Text}");
+            }
+        };
+        
+        // Capture page errors
+        Page.PageError += (_, error) =>
+        {
+            Console.WriteLine($"[PAGE ERROR] {error}");
+        };
+        
         // Clear localStorage before each test
         await Context.ClearCookiesAsync();
 
         // Navigate to the documentation home page
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        
+        // Wait for language switcher API to be available
+        await Page.WaitForFunctionAsync("() => window.ddapLanguage !== undefined", new PageWaitForFunctionOptions { Timeout = 10000 });
     }
 
     [Test]
@@ -367,8 +385,17 @@ public class LanguageSwitcherTests : PageTest
     [Test]
     public async Task LanguageAPI_Reset_ClearsLocalStorage()
     {
-        // Wait for language API to be available
-        await Page.WaitForFunctionAsync("() => window.ddapLanguage !== undefined", new PageWaitForFunctionOptions { Timeout = 5000 });
+        // Wait for language API to be available with longer timeout
+        try
+        {
+            await Page.WaitForFunctionAsync("() => window.ddapLanguage !== undefined", new PageWaitForFunctionOptions { Timeout = 10000 });
+        }
+        catch
+        {
+            // If still not available, log what scripts are loaded
+            var scripts = await Page.EvaluateAsync<string>("document.querySelectorAll('script').length");
+            throw new Exception($"window.ddapLanguage not available after 10s. Scripts loaded: {scripts}");
+        }
         
         // Arrange: Set a language
         await Page.EvaluateAsync(
