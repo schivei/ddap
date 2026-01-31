@@ -161,13 +161,27 @@
     /**
      * Check if a page exists before navigating to it
      */
-    async function checkPageExists(url) {
+    async function checkPageExists(url, timeoutMs = 5000) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function() {
+            controller.abort();
+        }, timeoutMs);
+
         try {
-            const response = await fetch(url, { method: 'HEAD' });
+            const response = await fetch(url, {
+                method: 'HEAD',
+                signal: controller.signal,
+            });
             return response.ok;
         } catch (error) {
-            console.warn(`Failed to check page existence: ${url}`, error);
+            if (error && error.name === 'AbortError') {
+                console.warn(`Timeout while checking page existence: ${url}`);
+            } else {
+                console.warn(`Failed to check page existence: ${url}`, error);
+            }
             return false;
+        } finally {
+            clearTimeout(timeoutId);
         }
     }
     
