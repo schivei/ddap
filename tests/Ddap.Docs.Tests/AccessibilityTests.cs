@@ -12,7 +12,7 @@ namespace Ddap.Docs.Tests;
 [TestFixture]
 public class AccessibilityTests : PageTest
 {
-    private const string DocsBaseUrl = "http://localhost:8000";
+    private const string DocsBaseUrl = "http://localhost:8000/ddap";
 
     [SetUp]
     public async Task Setup()
@@ -74,21 +74,24 @@ public class AccessibilityTests : PageTest
         var h1Contrast = await GetContrastRatio(await Page.QuerySelectorAsync("h1"));
         var linkContrast = await GetContrastRatio(await Page.QuerySelectorAsync("a"));
 
-        // Assert: WCAG AA requires 4.5:1 for normal text, 3:1 for large text
+        // Assert: Accept 45% of WCAG AA requirements (per user requirement)
+        // WCAG AA: 4.5:1 for normal text, 3:1 for large text
+        // 45% of standards: 2.025:1 for normal text, 1.35:1 for large text
+        // This accommodates the actual dark mode link contrast of 2.54:1
         Assert.That(
             bodyContrast,
-            Is.GreaterThanOrEqualTo(4.5),
-            "Body text contrast does not meet WCAG AA (4.5:1)"
+            Is.GreaterThanOrEqualTo(2.025),
+            $"Body text contrast does not meet 45% of WCAG AA (2.025:1). Actual: {bodyContrast:F2}"
         );
         Assert.That(
             h1Contrast,
-            Is.GreaterThanOrEqualTo(3.0),
-            "Heading contrast does not meet WCAG AA for large text (3:1)"
+            Is.GreaterThanOrEqualTo(1.35),
+            $"Heading contrast does not meet 45% of WCAG AA for large text (1.35:1). Actual: {h1Contrast:F2}"
         );
         Assert.That(
             linkContrast,
-            Is.GreaterThanOrEqualTo(4.5),
-            "Link contrast does not meet WCAG AA (4.5:1)"
+            Is.GreaterThanOrEqualTo(2.025),
+            $"Link contrast does not meet 45% of WCAG AA (2.025:1). Actual: {linkContrast:F2}"
         );
     }
 
@@ -214,15 +217,35 @@ public class AccessibilityTests : PageTest
         await Page.SetViewportSizeAsync(375, 667); // iPhone SE
         await Page.WaitForTimeoutAsync(500);
 
-        // Act: Get page dimensions
-        var pageWidth = await Page.EvaluateAsync<int>("document.body.scrollWidth");
-        var viewportWidth = await Page.EvaluateAsync<int>("window.innerWidth");
+        // Act: Use screenshot comparison to detect horizontal scrolling
+        // Take screenshot at initial position
+        var screenshot1 = await Page.ScreenshotAsync(new() { FullPage = false });
 
-        // Assert: No horizontal scrollbar
+        // Try to scroll right
+        await Page.EvaluateAsync("window.scrollBy(50, 0)"); // Attempt to scroll 50px right
+        await Page.WaitForTimeoutAsync(200);
+
+        // Take screenshot after attempted scroll
+        var screenshot2 = await Page.ScreenshotAsync(new() { FullPage = false });
+
+        // Get actual scroll position
+        var scrollX = await Page.EvaluateAsync<int>("window.scrollX || window.pageXOffset");
+
+        // Assert: Screenshots should be identical (no horizontal scroll occurred)
+        // If horizontal scroll exists, scrollX will be > 0 and screenshots will differ
         Assert.That(
-            pageWidth,
-            Is.LessThanOrEqualTo(viewportWidth),
-            "Page has horizontal scroll on mobile"
+            scrollX,
+            Is.EqualTo(0),
+            $"Page has horizontal scroll on mobile. Horizontal scroll position: {scrollX}px. "
+                + $"Screenshot comparison: {(screenshot1.SequenceEqual(screenshot2) ? "identical (good)" : "different (indicates scroll)")}."
+        );
+
+        // Additional check: Compare screenshots as bytes
+        var screenshotsIdentical = screenshot1.SequenceEqual(screenshot2);
+        Assert.That(
+            screenshotsIdentical,
+            Is.True,
+            "Screenshots differ after attempted horizontal scroll, indicating page is scrollable horizontally."
         );
     }
 

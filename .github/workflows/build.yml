@@ -81,7 +81,6 @@ jobs:
 
     - name: Check code formatting
       run: dotnet csharpier check .
-      continue-on-error: false
 
     - name: Build
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
@@ -103,16 +102,14 @@ jobs:
     # - name: Install Playwright Browsers
     #   run: pwsh tests/Ddap.Docs.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
-    - name: Run tests (excluding templates and docs)
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Templates.Tests&FullyQualifiedName!~Ddap.Docs.Tests"
+    - name: Run tests (excluding docs)
+      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity normal --settings .runsettings --collect:"XPlat Code Coverage" --results-directory ./coverage --filter "FullyQualifiedName!~Ddap.Docs.Tests"
       env:
         SQLSERVER_CONNECTION: "Server=localhost,1433;Database=testdb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
         POSTGRES_CONNECTION: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres_password;"
 
-    - name: Run template tests
-      run: dotnet test tests/Ddap.Templates.Tests/ --configuration Release --verbosity normal
-      continue-on-error: true
+    # Template tests removed - template project was removed from codebase
 
     # - name: Stop Documentation Server
     #   if: always()
@@ -151,7 +148,6 @@ jobs:
         fi
         chmod +x check-coverage.sh
         ./check-coverage.sh
-      continue-on-error: false
 
     - name: Create Coverage Summary
       if: always()
@@ -177,20 +173,17 @@ jobs:
       with:
         header: coverage
         path: coverage/report/SummaryGithub.md
-      continue-on-error: true
 
     - name: Validate Documentation
       run: |
         chmod +x validate-docs.sh
         ./validate-docs.sh
-      continue-on-error: false
     
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
       with:
         directory: ./coverage
         fail_ci_if_error: false
-      continue-on-error: true
 
   check-changes:
     name: Check for Package Code Changes
@@ -319,6 +312,5 @@ jobs:
     - name: Publish to NuGet
       run: |
         for package in ./artifacts/*.nupkg; do
-          dotnet nuget push "$package" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate || echo "Package already exists or publish failed, continuing..."
+          dotnet nuget push "$package" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
         done
-      continue-on-error: true

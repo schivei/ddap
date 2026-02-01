@@ -678,20 +678,97 @@ These scripts are automatically run in GitHub Actions:
 
 **All checks must pass for PR merge.**
 
+## Pre-Commit Setup (MANDATORY)
+
+### ⚠️ CRITICAL RULE: NEVER USE --no-verify ⚠️
+
+**HIGHEST PRIORITY MANDATORY RULE:**
+
+```bash
+# ❌ NEVER DO THIS - ABSOLUTELY FORBIDDEN
+git commit --no-verify -m "anything"
+
+# ❌ NEVER BYPASS HUSKY HOOKS
+git commit -n -m "anything"
+
+# ✅ ALWAYS commit normally - let Husky do its job
+git commit -m "your message"
+```
+
+**Why this is forbidden:**
+- Bypasses ALL quality checks (formatting, tests, validation)
+- Can introduce broken code into the repository
+- Defeats the entire purpose of automated quality gates
+- Creates technical debt
+- Can break CI/CD pipelines
+- Violates DDAP code quality standards
+
+**What to do instead:**
+1. Fix the failing tests/checks
+2. Ensure code is correct
+3. Commit normally (Husky will validate)
+4. If tests fail, fix them - don't bypass
+
+**Exception: NONE**
+There are NO valid exceptions to this rule. Ever.
+
+### Initial Setup (Run Once)
+
+**ALWAYS** run these commands when starting work on the project:
+
+```bash
+# 1. Restore .NET tools (CSharpier, Husky)
+dotnet tool restore
+
+# 2. Install Husky git hooks
+dotnet husky install
+
+# 3. Verify CSharpier is available
+dotnet csharpier --version
+```
+
+### What Husky Does Automatically
+
+Once installed, Husky runs on every `git commit`:
+
+1. ✅ **Restores .NET tools** automatically
+2. ✅ **Formats code with CSharpier** automatically
+3. ✅ **Stages formatted files** automatically
+4. ✅ **Restores project dependencies** automatically
+5. ✅ **Runs all tests** automatically
+6. ✅ **Validates static files** automatically
+7. ✅ **Aborts commit if tests fail** automatically
+
+**You don't need to do anything manually!** Just commit normally:
+
+```bash
+git add .
+git commit -m "feat: your feature"
+# Husky automatically formats, tests, validates
+# Commit succeeds only if everything passes
+```
+
+If the commit is rejected, it means something is wrong. Fix it, don't bypass it.
+
 ## Quick Reference
 
-### Before Committing Checklist
+### Before Committing Checklist (Now Mostly Automated)
 
-- [ ] ✅ **Code formatted** with CSharpier (`dotnet csharpier .`)
-- [ ] ✅ **Build passes** without warnings (`dotnet build --configuration Release`)
-- [ ] ✅ **All tests pass** (`dotnet test --configuration Release`)
-- [ ] ✅ **Coverage thresholds met** (`./check-coverage.sh` - 80% line & branch per file)
-- [ ] ✅ **Documentation validated** (`./validate-docs.sh` - all 7 languages)
-- [ ] ✅ **Philosophy compliance** (`./validate-philosophy.sh` - "Developer in Control")
-- [ ] ✅ **Commit message** follows Conventional Commits format
-- [ ] ✅ **No orphan files** left behind (TEMP_*, WIP_*, analysis docs moved to docs/)
-- [ ] ✅ **Evidence included** (if feature change: screenshots, tests, examples)
-- [ ] ✅ **Documentation updated** (if user-facing change)
+The Husky pre-commit hook now handles most of these automatically:
+
+- [x] ✅ **Code formatted** with CSharpier - **AUTOMATED BY HUSKY**
+- [x] ✅ **Build passes** without warnings - **AUTOMATED BY HUSKY** (via tests)
+- [x] ✅ **All tests pass** - **AUTOMATED BY HUSKY**
+- [x] ✅ **Static files validated** - **AUTOMATED BY HUSKY**
+- [ ] ✅ **Coverage thresholds met** (`./check-coverage.sh` - 80% line & branch per file) - MANUAL
+- [ ] ✅ **Documentation validated** (`./validate-docs.sh` - all 7 languages) - MANUAL
+- [ ] ✅ **Philosophy compliance** (`./validate-philosophy.sh` - "Developer in Control") - MANUAL
+- [ ] ✅ **Commit message** follows Conventional Commits format - MANUAL
+- [ ] ✅ **No orphan files** left behind (TEMP_*, WIP_*, analysis docs moved to docs/) - MANUAL
+- [ ] ✅ **Evidence included** (if feature change: screenshots, tests, examples) - MANUAL
+- [ ] ✅ **Documentation updated** (if user-facing change) - MANUAL
+
+**4 of 10 checks are fully automated!**
 
 ### Common Commands
 

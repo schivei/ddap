@@ -1,291 +1,143 @@
-# Template Tests
+# Testing Guidelines
 
-Automated tests for the `ddap-api` template to ensure it generates valid, buildable projects across all supported configurations.
+This document describes the testing infrastructure and best practices for the DDAP project.
 
 ## Overview
 
-The DDAP template tests validate that:
-- Templates generate correctly with all parameter combinations
-- Generated projects restore dependencies successfully
-- Generated projects build without errors or warnings
-- All database providers work correctly (SQL Server, MySQL, PostgreSQL, SQLite)
-- All data access providers work correctly (Dapper, Entity Framework)
-- All API types work correctly (REST, GraphQL, gRPC)
-- Optional features work correctly (Auth, Subscriptions, Aspire)
+DDAP uses a comprehensive testing approach:
+
+- **Unit tests** for business logic and core functionality
+- **Integration tests** for data access and API endpoints
+- **E2E tests** for documentation and user workflows
 
 ## Running Tests
 
-### Automated Tests (Unit Tests)
-
-The main test suite is in `Ddap.Templates.Tests` and runs with xUnit:
+### Run All Tests
 
 ```bash
-# Run all template tests
-dotnet test tests/Ddap.Templates.Tests/
-
-# Run from solution root
-dotnet test --filter "FullyQualifiedName~Ddap.Templates.Tests"
+dotnet test
 ```
 
-These tests:
-- Are included in the test suite at `tests/Ddap.Templates.Tests/`
-- Run with `dotnet test`
-- Use xUnit and FluentAssertions
-- Cover 15+ scenarios for template generation, package inclusion, and build verification
-
-### Validation Scripts (Quick Smoke Tests)
-
-For quick validation during development, use the platform-specific scripts:
-
-#### Linux/Mac
+### Run Specific Test Project
 
 ```bash
-./tests/validate-template.sh
-# or
-./tests/validate-template
+# Core framework tests
+dotnet test tests/Ddap.Tests/
+
+# Client library tests
+dotnet test tests/Ddap.Client.Core.Tests/
+dotnet test tests/Ddap.Client.GraphQL.Tests/
+dotnet test tests/Ddap.Client.Grpc.Tests/
+dotnet test tests/Ddap.Client.Rest.Tests/
+
+# Integration tests
+dotnet test tests/Ddap.IntegrationTests/
+
+# gRPC tests
+dotnet test tests/Ddap.Grpc.Tests/
 ```
 
-#### Windows PowerShell
-
-```powershell
-.\tests\validate-template.ps1
-# or
-.\tests\validate-template
-```
-
-#### Windows cmd
-
-```cmd
-tests\validate-template.cmd
-```
-
-## Cross-Platform Support
-
-The validation scripts work on:
-- ✅ Linux (bash)
-- ✅ macOS (bash)
-- ✅ Windows PowerShell (pwsh/powershell)
-- ✅ Windows Command Prompt (cmd)
-
-The universal wrapper script (`validate-template`) automatically detects your platform and runs the appropriate implementation.
-
-## Test Coverage
-
-### Unit Tests (15+ scenarios)
-- Template installation and listing
-- Basic project generation
-- REST API package inclusion
-- GraphQL API package inclusion
-- Multiple API providers
-- Database-specific Dapper packages (SQL Server, MySQL, PostgreSQL, SQLite)
-- Entity Framework packages
-- Authentication feature
-- Subscriptions feature
-- Aspire orchestration
-- Project restore and build
-
-### Validation Scripts (21 scenarios)
-1. **Database Provider Tests (8 scenarios)**
-   - SQL Server + Dapper
-   - SQL Server + Entity Framework
-   - MySQL + Dapper
-   - MySQL + Entity Framework
-   - PostgreSQL + Dapper
-   - PostgreSQL + Entity Framework
-   - SQLite + Dapper
-   - SQLite + Entity Framework
-
-2. **API Provider Tests (7 scenarios)**
-   - REST only
-   - GraphQL only
-   - gRPC only
-   - REST + GraphQL
-   - REST + gRPC
-   - GraphQL + gRPC
-   - All APIs (REST + GraphQL + gRPC)
-
-3. **Feature Tests (4 scenarios)**
-   - With Authentication
-   - With Subscriptions
-   - With Aspire
-   - All Features
-
-4. **Complex Combinations (2 scenarios)**
-   - Minimal configuration
-   - Maximum configuration (all features enabled)
-
-## CI/CD Integration
-
-Template tests are integrated into the CI/CD pipeline:
-
-### GitHub Actions
-
-The tests run automatically on:
-- Pull requests to `main`
-- Pushes to `main`
-- Manual workflow dispatch
-
-Current CI test environment:
-- Ubuntu (latest)
-
-See `.github/workflows/build.yml` for the full CI configuration.
-
-## Adding New Tests
-
-### Adding Unit Tests
-
-Add new tests to `tests/Ddap.Templates.Tests/TemplateTests.cs`:
-
-```csharp
-[Fact]
-public void Template_Should_DoSomething()
-{
-    // Arrange
-    var projectName = "TestProject";
-    var testDir = Path.Combine(_workingDirectory, Guid.NewGuid().ToString("N"));
-
-    // Act
-    RunCommand(
-        "dotnet",
-        $"new ddap-api --name {projectName} --your-param value",
-        testDir
-    );
-
-    // Assert
-    var projectDir = Path.Combine(testDir, projectName);
-    File.Exists(Path.Combine(projectDir, "expected-file.cs")).Should().BeTrue();
-}
-```
-
-### Adding Validation Script Tests
-
-To add new validation scenarios, update all three script variants:
-1. `validate-template.sh` (Linux/Mac)
-2. `validate-template.ps1` (Windows PowerShell)
-3. `validate-template.cmd` (Windows cmd)
-
-Keep the test logic synchronized across all platforms.
-
-#### Example: Adding a new test to bash script
+### Run with Coverage
 
 ```bash
-test_template "MyNewTest" "dapper" "sqlserver" "true" "false" "false" "true"
+dotnet test --collect:"XPlat Code Coverage"
 ```
 
-#### Example: Adding a new test to PowerShell script
+### Test Categories
 
-```powershell
-Test-Template -Name "MyNewTest" -DatabaseProvider "dapper" -DatabaseType "sqlserver" -Rest "true" -GraphQL "false" -Grpc "false" -IncludeAuth "true"
+Tests use xUnit traits to categorize:
+
+```bash
+# Run specific category
+dotnet test --filter "Category=Unit"
+dotnet test --filter "Category=Integration"
 ```
 
-#### Example: Adding a new test to batch script
+## Documentation Tests
 
-```batch
-call :test_template "MyNewTest" "dapper" "sqlserver" "true" "false" "false" "true"
+Documentation tests are in `tests/Ddap.Docs.Tests/` and use Playwright for E2E testing:
+
+```bash
+dotnet test tests/Ddap.Docs.Tests/
 ```
 
-## Template Parameters
+Before running, ensure Playwright browsers are installed:
 
-The `ddap-api` template supports the following parameters:
+```bash
+pwsh bin/Debug/net10.0/playwright.ps1 install
+```
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `--database-provider` | choice | `dapper` | ORM/data access provider (`dapper`, `entityframework`) |
-| `--database-type` | choice | `sqlserver` | Target database system (`sqlserver`, `mysql`, `postgresql`, `sqlite`) |
-| `--rest` | bool | `true` | Enable REST API |
-| `--graphql` | bool | `false` | Enable GraphQL |
-| `--grpc` | bool | `false` | Enable gRPC |
-| `--include-auth` | bool | `false` | Include JWT authentication and authorization |
-| `--include-subscriptions` | bool | `false` | Include real-time subscriptions support |
-| `--use-aspire` | bool | `false` | Include .NET Aspire orchestration and observability |
-| `--connection-string` | string | (empty) | Database connection string (optional) |
+## Coverage Requirements
 
-## Test Artifacts
+All tests should maintain:
+- **80% line coverage** per file
+- **80% branch coverage** per file
 
-Tests create temporary directories for generated projects:
-- **Unit tests**: `%TEMP%/ddap-template-tests-{guid}`
-- **Validation scripts**: `%TEMP%/ddap-tests-{random}` (Windows) or `/tmp/ddap-tests-{random}` (Unix)
+Coverage is checked automatically in CI:
 
-These are automatically cleaned up after test completion.
+```bash
+./check-coverage.sh
+```
+
+## CI/CD Testing
+
+Tests run automatically on:
+- Every pull request
+- Every push to main
+- Scheduled nightly builds
+
+See `.github/workflows/build.yml` for configuration.
+
+## Test Organization
+
+```
+tests/
+├── Ddap.Tests/                  # Core framework tests (357 tests)
+├── Ddap.Client.Core.Tests/      # Client core tests (18 tests)
+├── Ddap.Client.GraphQL.Tests/   # GraphQL client tests (18 tests)
+├── Ddap.Client.Grpc.Tests/      # gRPC client tests (18 tests)
+├── Ddap.Client.Rest.Tests/      # REST client tests (21 tests)
+├── Ddap.Grpc.Tests/             # gRPC server tests (40 tests)
+├── Ddap.IntegrationTests/       # Integration tests (13 tests)
+└── Ddap.Docs.Tests/            # Documentation E2E tests (44 tests)
+```
+
+**Total: 529 tests**
+
+## Best Practices
+
+1. **Keep tests fast** - Unit tests should run in milliseconds
+2. **Isolate tests** - No shared state between tests
+3. **Use descriptive names** - `MethodName_Scenario_ExpectedResult`
+4. **Arrange-Act-Assert** - Clear test structure
+5. **One assertion per test** - Focus on single behavior
+6. **Clean up resources** - Dispose of connections, files, etc.
+7. **Mock external dependencies** - Use in-memory databases for unit tests
 
 ## Troubleshooting
 
-### Template installation fails
+### Documentation Tests Fail
 
-If you get errors about the template already being installed:
-
-```bash
-# Uninstall first
-dotnet new uninstall Ddap.Templates
-
-# Then reinstall
-dotnet new install templates/ddap-api
-```
-
-### Generated project fails to build
-
-Check the test output for specific build errors. Common issues:
-- Missing package dependencies (run `dotnet restore`)
-- Incompatible package versions
-- Syntax errors in generated code
-
-### Permission denied errors (Unix)
-
-Make sure scripts are executable:
+If documentation tests fail, rebuild the docs:
 
 ```bash
-chmod +x tests/validate-template.sh
-chmod +x tests/validate-template
+docfx build docs/docfx.json
 ```
 
-## Development Workflow
+### Coverage Too Low
 
-When working on the template:
+If coverage is below 80%, add more tests:
 
-1. **Make changes** to the template files in `templates/ddap-api/`
-2. **Run validation** to ensure changes work:
-   ```bash
-   ./tests/validate-template
-   ```
-3. **Run full test suite**:
-   ```bash
-   dotnet test tests/Ddap.Templates.Tests/
-   ```
-4. **Commit changes** only after all tests pass
+```bash
+# Generate coverage report
+dotnet test --collect:"XPlat Code Coverage"
 
-## Performance
-
-- **Unit tests**: ~2-5 minutes (runs all 15+ tests)
-- **Validation scripts**: ~5-10 minutes (runs 21 scenarios with build verification)
-- **CI/CD**: ~15-30 minutes (includes all tests)
-
-Tests can be slow because each scenario:
-1. Generates a new project
-2. Restores NuGet packages
-3. Builds the project
-4. Cleans up artifacts
-
-This is intentional to ensure comprehensive validation.
-
-## Contributing
-
-When contributing template changes:
-
-1. ✅ **Add tests** for new features or parameters
-2. ✅ **Update all scripts** if adding validation scenarios
-3. ✅ **Test locally** before pushing
-4. ✅ **Document** new parameters in this README
-5. ✅ **Follow** the DDAP "Developer in Control" philosophy
+# View HTML report
+open TestResults/*/coverage.cobertura.xml
+```
 
 ## Related Documentation
 
-- [Template Configuration](../templates/ddap-api/.template.config/template.json)
-- [Contributing Guide](../CONTRIBUTING.md)
-- [DDAP Philosophy](../.github/copilot-instructions.md)
-- [Sprint 4 Instructions](../docs/sprints/SPRINT4_PR_INSTRUCTIONS.md)
-
----
-
-**Last Updated**: 2026-01-31  
-**Sprint**: Sprint 4 - Template Testing  
-**Status**: ✅ Complete
+- [Contributing Guidelines](../CONTRIBUTING.md) - How to contribute tests
+- [Code Coverage](../check-coverage.sh) - Coverage validation script
+- [CI/CD](../.github/workflows/build.yml) - Automated testing

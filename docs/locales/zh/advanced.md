@@ -632,7 +632,6 @@ Create your own template variants by modifying generated projects:
 
 ```bash
 # Generate a base project
-dotnet new ddap-api --name MyTemplate
 
 # Customize it:
 # - Add your authentication strategy

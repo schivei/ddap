@@ -50,7 +50,6 @@ jobs:
       run: |
         chmod +x validate-philosophy.sh
         ./validate-philosophy.sh
-      continue-on-error: false
     
     - name: Comment Philosophy Check Results
       if: always() && steps.changed-files.outputs.has_changes == 'true'
