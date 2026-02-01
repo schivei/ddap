@@ -8,7 +8,6 @@ namespace Ddap.Docs.Tests;
 /// Tests for response compression (Brotli and Gzip).
 /// Verifies that the server properly compresses responses based on Accept-Encoding headers.
 /// </summary>
-[Ignore("Tests fail because static files (CSS/JS) don't exist in minimal test setup")]
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class CompressionTests : PageTest
