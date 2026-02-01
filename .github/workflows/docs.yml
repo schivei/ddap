@@ -204,7 +204,6 @@ jobs:
           echo "- 🗄️ database-providers.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🌐 api-providers.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🔄 auto-reload.md" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 templates.md" >> $GITHUB_STEP_SUMMARY
           echo "- 🐛 troubleshooting.md" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.deployment.outcome }}" == "success" ]; then
