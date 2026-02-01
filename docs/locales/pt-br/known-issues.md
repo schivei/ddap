@@ -85,7 +85,7 @@ Consulte [Documentação de Auto-Reload](auto-reload.md) para detalhes.
 
 **Status:** Conhecido - Integração Aspire é complexa e pode precisar de customização.
 
-**Solução alternativa:** Siga a [Documentação de Templates](templates.md) para instruções específicas de configuração do Aspire.
+**Solução alternativa:** Siga o [Guia de Introdução](get-started.md) para instruções de configuração.
 
 ---
 

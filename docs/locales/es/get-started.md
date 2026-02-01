@@ -36,8 +36,6 @@ dotnet run
 
 That's it! Your API is now running with auto-generated endpoints for your database.
 
-> **Learn more:** See [Templates Guide](./templates.md) for detailed template options and customization.
-
 ## Manual Installation
 
 If you prefer manual setup or want to add DDAP to an existing project:
@@ -289,7 +287,6 @@ When enabled, DDAP automatically detects database schema changes and reloads wit
 Now that you have DDAP running, explore these topics:
 
 - **[Philosophy](./philosophy.md)** - Understand the "Developer in Control" philosophy
-- **[Templates](./templates.md)** - Use project templates for faster setup
 - **[Auto-Reload](./auto-reload.md)** - Configure automatic schema reloading
 - **[Architecture](./architecture.md)** - Learn about DDAP's architecture and design
 - **[Advanced Usage](./advanced.md)** - Extensibility, custom endpoints, and advanced patterns

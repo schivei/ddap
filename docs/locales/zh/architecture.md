@@ -566,7 +566,6 @@ DDAP's architecture prioritizes:
 For more details, see:
 - [Philosophy](./philosophy.md) - Developer in Control approach
 - [Get Started](./get-started.md) - Quick start guide
-- [Templates](./templates.md) - Project templates
 - [Auto-Reload](./auto-reload.md) - Schema reloading system
 - [Advanced Usage](./advanced.md) - Extensibility patterns
 - [API Providers](./api-providers.md) - REST, GraphQL, gRPC

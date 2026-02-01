@@ -1176,7 +1176,6 @@ public class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 ## Next Steps
 
 - [Philosophy](./philosophy.md) - Developer in Control philosophy
-- [Templates](./templates.md) - Project templates and quick start
 - [Auto-Reload](./auto-reload.md) - Auto-reload configuration and patterns
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 - [Database Providers](./database-providers.md) - Database-specific features

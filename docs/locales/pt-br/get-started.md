@@ -36,8 +36,6 @@ dotnet run
 
 É isso! Sua API agora está em execução com endpoints gerados automaticamente para seu banco de dados.
 
-> **Saiba mais:** Veja [Guia de Templates](./templates.md) para opções detalhadas de template e personalização.
-
 ## Instalação Manual
 
 Se você preferir configuração manual ou quiser adicionar DDAP a um projeto existente:

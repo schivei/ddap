@@ -15,7 +15,6 @@ MD_FILES=(
     "database-providers.md"
     "api-providers.md"
     "auto-reload.md"
-    "templates.md"
     "architecture.md"
     "advanced.md"
     "troubleshooting.md"
