@@ -16,7 +16,6 @@ Este diretório contém a versão em Português (Brasil) da documentação do DD
 - [🚧] Provedores de Banco de Dados
 - [🚧] Provedores de API
 - [🚧] Auto-Reload
-- [🚧] Templates
 - [🚧] Solução de Problemas
 
 ## Contribuindo

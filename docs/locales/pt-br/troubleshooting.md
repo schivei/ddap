@@ -877,7 +877,6 @@ if (app.Environment.IsDevelopment())
 
 - [Philosophy](./philosophy.md) - Developer in Control philosophy
 - [Get Started](./get-started.md) - Basic setup and configuration
-- [Templates](./templates.md) - Quick start with templates
 - [Auto-Reload](./auto-reload.md) - Auto-reload configuration
 - [Advanced Usage](./advanced.md) - Extensibility patterns
 - [Database Providers](./database-providers.md) - Database-specific documentation

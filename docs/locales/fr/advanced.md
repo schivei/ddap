@@ -9,7 +9,6 @@ This guide covers advanced patterns, extensibility, and best practices for using
 - [Custom Queries and Mutations](#custom-queries-and-mutations)
 - [Advanced Configuration](#advanced-configuration)
 - [Auto-Reload Patterns](#auto-reload-patterns)
-- [Template Customization](#template-customization)
 - [Lifecycle Hooks](#lifecycle-hooks)
 - [Performance Optimization](#performance-optimization)
 - [Production Best Practices](#production-best-practices)
@@ -622,87 +621,6 @@ builder.Services.AddDdap(options =>
 });
 ```
 
-## Template Customization
-
-DDAP templates generate starting projects that you can fully customize. Here are common customization patterns.
-
-### Custom Template Options
-
-Create your own template variants by modifying generated projects:
-
-```bash
-# Generate a base project
-
-# Customize it:
-# - Add your authentication strategy
-# - Configure logging providers
-# - Set up middleware pipeline
-# - Add domain services
-
-# Package as a template
-dotnet pack -c Release
-dotnet new install ./bin/Release/MyTemplate.Templates.1.0.0.nupkg
-```
-
-### Post-Generation Scripts
-
-Add scripts to `scripts/` folder in generated projects:
-
-```bash
-# scripts/setup.sh
-#!/bin/bash
-echo "Setting up development environment..."
-
-# Initialize user secrets
-dotnet user-secrets init
-
-# Set default connection string
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=Dev;Integrated Security=true;"
-
-# Restore packages
-dotnet restore
-
-# Run migrations (if using EF)
-dotnet ef database update
-
-echo "Setup complete!"
-```
-
-### Extending Generated Code
-
-All generated code uses partial classes for extension:
-
-```csharp
-// Generated/EntityController.g.cs (generated - don't modify)
-public abstract partial class EntityController : ControllerBase
-{
-    // Generated methods...
-}
-
-// Controllers/EntityController.cs (your customizations)
-public partial class EntityController
-{
-    private readonly ILogger<EntityController> _logger;
-    private readonly IMemoryCache _cache;
-    
-    public EntityController(
-        IEntityRepository repository,
-        ILogger<EntityController> logger,
-        IMemoryCache cache)
-    {
-        _repository = repository;
-        _logger = logger;
-        _cache = cache;
-    }
-    
-    [HttpGet("custom/health")]
-    public IActionResult Health()
-    {
-        return Ok(new { Status = "Healthy", Entities = _repository.Entities.Count });
-    }
-}
-```
-
 ## Lifecycle Hooks
 
 DDAP provides lifecycle hooks at various points for custom logic.
@@ -1176,7 +1094,6 @@ public class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 ## Next Steps
 
 - [Philosophy](./philosophy.md) - Developer in Control philosophy
-- [Templates](./templates.md) - Project templates and quick start
 - [Auto-Reload](./auto-reload.md) - Auto-reload configuration and patterns
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 - [Database Providers](./database-providers.md) - Database-specific features

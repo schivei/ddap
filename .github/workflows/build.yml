@@ -109,8 +109,6 @@ jobs:
         MYSQL_CONNECTION: "Server=localhost;Port=3306;Database=testdb;User=root;Password=root_password;"
         POSTGRES_CONNECTION: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres_password;"
 
-    # Template tests removed - template project was removed from codebase
-
     # - name: Stop Documentation Server
     #   if: always()
     #   run: |

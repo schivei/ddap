@@ -65,7 +65,6 @@ img.shields.io  ⚠️ 可选（仅视觉徽章）
 - api-providers.html
 - architecture.html
 - auto-reload.html
-- templates.html
 - advanced.html
 - troubleshooting.html
 - client-getting-started.html

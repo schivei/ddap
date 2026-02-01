@@ -220,7 +220,6 @@ ddap/
     │   ├── ROTEIRO_ACOES.md
     │   └── ...
     ├── testing/                  # 6 test reports
-    │   ├── TEMPLATE_TESTING_DETAILED.md
     │   ├── TOOLING_TESTING_REPORT.md
     │   └── ...
     └── archive/                  # 10 historical docs

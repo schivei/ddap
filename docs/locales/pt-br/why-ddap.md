@@ -320,19 +320,6 @@ We intentionally **don't**:
 
 Ready to take control?
 
-```bash
-# Install template
-
-# Create project with YOUR choices
-    --database-type sqlserver \
-    --database-provider dapper \
-    --include-rest \
-    --include-graphql
-
-# You're in control from day one
-cd MyApi
-dotnet run
-```
 
 ---
 
@@ -340,7 +327,6 @@ dotnet run
 
 - [Get Started](get-started.md) - Quick start guide
 - [Philosophy](philosophy.md) - Deep dive into "Developer in Control"
-- [Templates](templates.md) - Template options and customization
 - [Database Providers](database-providers.md) - Database setup guide
 - [API Providers](api-providers.md) - REST, GraphQL, gRPC details
 - [GitHub](https://github.com/schivei/ddap) - Source code and issues
