@@ -182,69 +182,6 @@ app.MapWhen(
 
 app.MapGet("/", () => Results.Redirect("/ddap/"));
 
-// Install Playwright browsers if needed
-Console.WriteLine("🎭 Checking Playwright browsers...");
-try
-{
-    var testProjectPath = Path.Combine(repoRoot, "tests", "Ddap.Docs.Tests");
-    var playwrightScript = Path.Combine(
-        testProjectPath,
-        "bin",
-        "Release",
-        "net10.0",
-        "playwright.ps1"
-    );
-
-    // Check if playwright.ps1 exists
-    if (File.Exists(playwrightScript))
-    {
-        // Try to install browsers (chromium only for headless tests)
-        var playwrightProcess = Process.Start(
-            new ProcessStartInfo
-            {
-                FileName = "pwsh",
-                Arguments = $"\"{playwrightScript}\" install chromium --with-deps",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-            }
-        );
-
-        if (playwrightProcess != null)
-        {
-            var output = playwrightProcess.StandardOutput.ReadToEnd();
-            var error = playwrightProcess.StandardError.ReadToEnd();
-            playwrightProcess.WaitForExit();
-
-            if (playwrightProcess.ExitCode == 0)
-            {
-                Console.WriteLine("✅ Playwright browsers ready");
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"⚠️  Playwright browser installation exited with code {playwrightProcess.ExitCode}"
-                );
-                if (!string.IsNullOrWhiteSpace(error))
-                {
-                    Console.WriteLine($"   Error: {error}");
-                }
-            }
-        }
-    }
-    else
-    {
-        Console.WriteLine(
-            "ℹ️  Playwright script not found. Browsers will be installed on first test run."
-        );
-    }
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"⚠️  Could not install Playwright browsers: {ex.Message}");
-    Console.WriteLine("   Tests will attempt to install browsers on first run.");
-}
-
 Console.WriteLine("🚀 Starting server on http://localhost:8000");
 Console.WriteLine($"📚 Serving documentation from: {docsPath}");
 Console.WriteLine("Press Ctrl+C to stop");
