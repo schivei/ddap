@@ -43,7 +43,7 @@ Unlike other frameworks that lock you into specific libraries, databases, or pat
 | ✅ Auto-Reload infrastructure | 🎯 Auto-Reload configuration (when, how) |
 | ✅ Hooks and lifecycle callbacks | 🎯 GraphQL configuration (complete control) |
 | ✅ Partial classes for extension | 🎯 REST configuration (formatters, routing) |
-| ✅ Project templates (`dotnet new`) | 🎯 gRPC configuration (services, options) |
+| | 🎯 gRPC configuration (services, options) |
 | | 🎯 **Everything else!** |
 
 ### ❌ Other Frameworks vs ✅ DDAP
@@ -205,13 +205,6 @@ app.Run();
 - REST: `GET /api/entity`
 - GraphQL: `POST /graphql { entities { name } }`
 
-### OR Use the Template
-
-```bash
-cd MyApi
-dotnet run
-```
-
 ---
 
 ## ✨ Features
@@ -241,10 +234,6 @@ options.AutoReload = new AutoReloadOptions
     Behavior = ReloadBehavior.ServeOldSchema,
     Detection = ChangeDetection.CheckHash
 };
-```
-
-### 📦 Project Templates
-```bash
 ```
 
 ### 🎛️ Zero Opinions
@@ -340,8 +329,6 @@ public partial class EntityController
 |---------|-------------|--------|
 | `Ddap.CodeGen` | Source generators for boilerplate code | ✅ Stable |
 
-> **⚠️ Template Known Issue**: API provider flags (--rest, --graphql, --grpc) currently not working. Fix in progress. [Track issue](https://github.com/schivei/ddap/issues)
-
 ### Client Libraries
 
 | Package | Description | Status |
@@ -360,7 +347,6 @@ public partial class EntityController
 - 🗄️ **[Database Providers](https://schivei.github.io/ddap/database-providers)** - Dapper vs EF
 - 🌐 **[API Providers](https://schivei.github.io/ddap/api-providers)** - REST, GraphQL, gRPC
 - 🔄 **[Auto-Reload](https://schivei.github.io/ddap/auto-reload)** - Schema refresh system
-- 📦 **[Templates](https://schivei.github.io/ddap/templates)** - `dotnet new` guide
 - 🏗️ **[Architecture](https://schivei.github.io/ddap/architecture)** - How it works
 - 🔧 **[Advanced](https://schivei.github.io/ddap/advanced)** - Extensibility
 - 🔍 **[Troubleshooting](https://schivei.github.io/ddap/troubleshooting)** - Common issues

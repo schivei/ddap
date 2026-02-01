@@ -2,7 +2,6 @@
 
 ## Problema Atual
 
-O template usa versões fixas que podem ficar desatualizadas:
 
 ```xml
 <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.*" />
@@ -55,7 +54,6 @@ O template usa versões fixas que podem ficar desatualizadas:
 
 ## Recomendação: Usar Major Version Wildcard
 
-Para templates, usar `X.*` onde X é a major version mais recente:
 
 ```xml
 <!-- ADO.NET Drivers -->
@@ -147,7 +145,6 @@ EF Core 9 é a última versão estável:
 Npgsql 8.x é a versão stable atual:
 - Compatible com .NET 10
 - Versão 10 ainda não foi lançada
-- Template atual usa "10.0.*" incorretamente
 
 ### Por Que Microsoft.Data.Sqlite 8.* (não 10.*)?
 
@@ -157,7 +154,6 @@ Segue versionamento do .NET SDK:
 
 ## Implementação
 
-Atualizar `templates/ddap-api/DdapApi.csproj`:
 
 1. Trocar todos `X.0.*` por `X.*`
 2. Corrigir versões incorretas (Npgsql, SQLite)
@@ -169,5 +165,4 @@ Atualizar `templates/ddap-api/DdapApi.csproj`:
 ✅ **Sempre Atual**: Pega patches e minor versions automaticamente  
 ✅ **Segurança**: Patches de segurança aplicados automaticamente  
 ✅ **Estabilidade**: Não pega breaking changes (major versions)  
-✅ **Baixa Manutenção**: Não precisa atualizar template constantemente  
 ✅ **Reproduzível**: Com lock file, builds são consistentes

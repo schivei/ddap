@@ -646,19 +646,6 @@ section {
     padding: 1rem;
 }
 
-.template-option {
-    max-width: 900px;
-    margin: 2rem auto 0;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    padding: 2rem;
-}
-
-.template-option h3 {
-    margin-bottom: 1rem;
-}
-
 /* ===================================
    Comparison Section
    =================================== */

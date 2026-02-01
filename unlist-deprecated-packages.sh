@@ -75,7 +75,6 @@ CURRENT_PACKAGES=(
     "Ddap.Grpc"
     "Ddap.Rest"
     "Ddap.Subscriptions"
-    "Ddap.Templates"
 )
 
 echo -e "${GREEN}Current packages in solution:${NC}"

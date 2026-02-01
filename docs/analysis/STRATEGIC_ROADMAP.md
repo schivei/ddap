@@ -445,7 +445,6 @@ ddap docs --format swagger,graphql --output ./docs
 - JetBrains Rider
 
 **Features**:
-- DDAP project templates
 - IntelliSense for DDAP configuration
 - Database schema preview
 - API endpoint testing
@@ -532,13 +531,11 @@ ddap docs --format swagger,graphql --output ./docs
 - ✅ Testing and bug fixes
 - ✅ Documentation improvements
 - ✅ Icon and branding
-- 🔄 Fix template generation bugs
 
 ### Q2 2026
 - LINQ support Phase 1 (Expression trees)
 - TypeScript client development
 - CLI tool development
-- Template bug fixes deployment
 
 ### Q3 2026
 - LINQ support Phase 2 (Advanced queries)
@@ -612,7 +609,6 @@ ddap docs --format swagger,graphql --output ./docs
 - 🎯 **LINQ Support**: Implement query expression visitors
 - 🌍 **Multi-Language**: Build client libraries for your favorite language
 - 📚 **Documentation**: Write tutorials, create examples
-- 🐛 **Bug Fixes**: Help fix template generation issues
 
 ### For Users
 - ⭐ **Star the Repository**: Show support on GitHub

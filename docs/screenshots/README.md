@@ -140,9 +140,8 @@ The complete documentation includes **16 pages** in English and Portuguese (Bras
 5. `database-providers.md` - Database Provider Guide (shown)
 6. `api-providers.md` - API Provider Guide (REST, gRPC, GraphQL)
 7. `auto-reload.md` - Auto-Reload Configuration
-8. `templates.md` - Project Templates
-9. `advanced.md` - Advanced Usage
-10. `troubleshooting.md` - Troubleshooting Guide
+8. `advanced.md` - Advanced Usage
+9. `troubleshooting.md` - Troubleshooting Guide
 11. `client-getting-started.md` - Client Library Guide
 12. `client-rest.md` - REST Client Guide
 13. `client-graphql.md` - GraphQL Client Guide
