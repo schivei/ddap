@@ -109,7 +109,13 @@ jobs:
         run: |
           cd tests/Ddap.Docs.Tests
           dotnet build --configuration Release
-          pwsh bin/Release/net10.0/playwright.ps1 install --with-deps
+          PLAYWRIGHT_SCRIPT=$(find bin -type f -name "playwright.ps1" | head -n 1)
+          if [ -z "$PLAYWRIGHT_SCRIPT" ]; then
+            echo "❌ Playwright script not found under bin directory."
+            exit 1
+          fi
+          echo "✅ Using Playwright script at: $PLAYWRIGHT_SCRIPT"
+          pwsh "$PLAYWRIGHT_SCRIPT" install --with-deps
 
       - name: Build documentation server
         run: |
