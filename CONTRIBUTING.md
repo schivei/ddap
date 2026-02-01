@@ -453,18 +453,6 @@ public void IntegrationTest() { }
 public void SqlServerTest() { }
 ```
 
-### Template Testing
-
-
-#### Unit Tests
-
-Run the comprehensive unit test suite:
-
-```bash
-# Run all tests
-dotnet test
-```
-
 ### Mocking
 
 Use Moq for mocking dependencies:

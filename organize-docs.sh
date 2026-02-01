@@ -43,7 +43,7 @@ for file in SPRINT*.md ROTEIRO_*.md PROXIMOS_*.md GUIA_*.md ESTRATEGIA_*.md; do
 done
 
 # Move testing files
-for file in TEST_*.md TESTING_*.md TEMPLATE_TESTING*.md TOOLING_TESTING*.md WEBSITE_TESTING*.md; do
+for file in TEST_*.md TESTING_*.md TOOLING_TESTING*.md WEBSITE_TESTING*.md; do
     if [ -f "$file" ]; then
         echo -e "${YELLOW}Moving:${NC} $file → docs/testing/"
         mv "$file" docs/testing/
@@ -110,7 +110,6 @@ cat > docs/testing/README.md << 'EOF'
 
 This directory contains test reports and testing strategies:
 
-- **Template Testing**: Comprehensive testing of the .NET template generator
 - **Tooling Testing**: Evaluation of development tooling (CSharpier, Husky, etc.)
 - **Website Testing**: Multi-language documentation site testing
 - **Test Summaries**: Overall test results and findings
