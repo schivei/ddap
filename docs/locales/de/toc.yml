@@ -16,8 +16,6 @@
   href: api-providers.md
 - name: Auto-Reload
   href: auto-reload.md
-- name: Templates
-  href: templates.md
 - name: Client Libraries
   items:
     - name: Getting Started
