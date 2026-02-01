@@ -192,7 +192,6 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
-    [Ignore("Requires full DocFX site build")]
     [CancelAfter(30000)]
     public async Task ScreenReader_SemanticHTML_Present()
     {
