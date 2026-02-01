@@ -79,16 +79,6 @@ See [Auto-Reload Documentation](auto-reload.md) for details.
 
 ---
 
-### 5. Template Generation - Aspire Support
-
-**Issue:** Templates with Aspire integration may require additional manual configuration.
-
-**Status:** Known - Aspire integration is complex and may need customization.
-
-**Workaround:** Follow [Get Started Guide](get-started.md) for setup instructions.
-
----
-
 ## Reporting Issues
 
 Found a bug or limitation not listed here?
@@ -112,7 +102,7 @@ Issues that have been resolved in recent versions:
 
 ### ✅ MySQL Provider Choice (Fixed in 1.0.0)
 
-**Was:** Template forced `Pomelo.EntityFrameworkCore.MySql`.
+**Was:** Forced `Pomelo.EntityFrameworkCore.MySql`.
 
 **Now:** Uses official `MySql.EntityFrameworkCore` by default, with Pomelo as documented alternative.
 
@@ -122,11 +112,11 @@ User maintains full control over MySQL provider choice.
 
 ### ✅ Non-Existent Packages (Fixed in 1.0.0)
 
-**Was:** Templates referenced non-existent packages like `Ddap.Data.Dapper.SqlServer`.
+**Was:** Referenced non-existent packages like `Ddap.Data.Dapper.SqlServer`.
 
 **Now:** Uses base `Ddap.Data.Dapper` package with official database drivers.
 
-All templates generate correctly with proper package references.
+All packages generate correctly with proper package references.
 
 ---
 

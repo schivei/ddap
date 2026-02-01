@@ -171,7 +171,7 @@ ddap/
 ├── examples/                    # Example applications
 │   └── Ddap.Example.Api/
 ├── docs/                        # Documentation
-└── .github/                     # GitHub workflows and templates
+└── .github/                     # GitHub workflows
 ```
 
 ### Running Database Tests

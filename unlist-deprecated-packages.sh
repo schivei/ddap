@@ -84,7 +84,6 @@ echo
 # Known deprecated packages (packages that were removed from the solution)
 DEPRECATED_PACKAGES=(
     "Ddap.Memory"
-    "Ddap.Templates"
 )
 
 echo -e "${YELLOW}Known deprecated packages:${NC}"

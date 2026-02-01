@@ -11,7 +11,6 @@
 
 **Fase de Análise e Documentação** (Completada):
 - Exploração inicial do projeto: ~30 minutos
-- Testes de template (manual): ~2 horas
 - Testes de tooling (build, test, lint): ~1 hora
 - Análise de filosofia e compliance: ~2 horas
 - Geração e teste de website: ~1 hora
@@ -32,7 +31,6 @@
 **Breakdown por Documento**:
 1. TESTING_FINDINGS.md: 8.400 palavras
 2. TOOLING_TESTING_REPORT.md: 12.000 palavras
-3. TEMPLATE_TESTING_DETAILED.md: 22.000 palavras
 4. PHILOSOPHY_COMPLIANCE_ANALYSIS.md: 20.000 palavras
 5. WEBSITE_TESTING_REPORT.md: 11.000 palavras
 6. STRATEGIC_ROADMAP.md: 17.000 palavras
@@ -85,11 +83,9 @@
 
 **Por quê?**
 
-**Ação 1.1: Corrigir Template Flags**
 - Original: 2-4 horas
 - **Revisado: 4-6 horas**
 - Razão: 
-  - Depuração de template.json pode ser tricky
   - Múltiplas iterações de teste necessárias
   - Validação extensiva (64+ cenários idealmente)
   - Possíveis edge cases não previstos
@@ -98,7 +94,6 @@
 - Original: 2-3 horas
 - **Revisado: 4-8 horas**
 - Razão:
-  - Mudanças em múltiplos arquivos (template.json, Program.cs, .csproj)
   - 4 bancos de dados diferentes (SQL Server, MySQL, PostgreSQL, SQLite)
   - Testes para cada combinação
   - Atualização de documentação
@@ -156,7 +151,6 @@
 **Original**: 4 horas  
 **Revisado**: 8-12 horas
 
-**Ação 3.1: Testes de Template**
 - Original: 4 horas
 - **Revisado: 8-12 horas**
 - Razão:
@@ -187,7 +181,6 @@ Isso é aproximadamente:
 ## 🎯 Fatores que Aumentam Tempo
 
 ### Complexidade Técnica
-1. **Template Engine do .NET**: Comportamento não óbvio com computed symbols
 2. **Múltiplas Configurações**: 4 DBs × 2 ORMs × 7 combinações de API = 56 cenários
 3. **Cross-Platform**: Testes em Linux, Windows, macOS
 4. **Multi-Language**: 7 idiomas no site
@@ -227,7 +220,6 @@ Isso é aproximadamente:
 ### O Que Funcionou Bem
 
 1. ✅ **Abordagem Sistemática**: Testar → Documentar → Analisar → Planejar
-2. ✅ **Separação de Concerns**: Template vs Tooling vs Filosofia
 3. ✅ **Documentação Detalhada**: Fácil de seguir e referenciar
 4. ✅ **Priorização Clara**: Crítico → Importante → Melhoria
 
@@ -261,7 +253,6 @@ Isso é aproximadamente:
 **Tempo Estimado**: 25-39 horas  
 **Output**:
 - ~500-1000 linhas de código modificadas
-- Template funcional
 - Testes automatizados
 - Site publicado
 
@@ -386,7 +377,6 @@ Os "devaneios" eram necessários para:
 - Status: **MERGE ESTE PRIMEIRO**
 
 **PRs Futuros** (separados):
-- PR #2: Ação 1.1 (Template flags)
 - PR #3: Ações 1.2 + 1.3 (Pacotes)
 - PR #4: Fase 2 (Docs/site updates)
 - PR #5: Fase 3 (Testes automatizados)

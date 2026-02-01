@@ -247,10 +247,6 @@ type EntityMetadata {
 - SignalR integration
 - GraphQL subscriptions
 
-- `dotnet new` templates for rapid project setup
-- Pre-configured projects with best practices
-- Support for multiple databases and API providers
-
 ## Design Patterns
 
 ### Builder Pattern

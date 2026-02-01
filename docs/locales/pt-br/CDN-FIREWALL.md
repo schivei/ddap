@@ -65,7 +65,6 @@ Páginas de documentação que agora funcionam com bibliotecas locais:
 - api-providers.html
 - architecture.html
 - auto-reload.html
-- templates.html
 - advanced.html
 - troubleshooting.html
 - client-getting-started.html

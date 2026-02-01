@@ -536,7 +536,6 @@ ddap/
 │   ├── analysis/         # Analysis documents
 │   ├── sprints/          # Sprint documentation
 │   └── testing/          # Test reports
-└── templates/            # .NET templates
 ```
 
 ## Validation Scripts

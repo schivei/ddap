@@ -20,25 +20,7 @@ Before you begin, make sure you have:
 - Basic knowledge of ASP.NET Core
 - Your database connection string
 
-## Quick Start with Templates
-
-The fastest way to get started with DDAP is using the project template:
-
-```bash
-# Install the template
-
-# Create a new DDAP API (interactive mode will prompt you)
-cd MyDdapApi
-
-# Run your API
-dotnet run
-```
-
-That's it! Your API is now running with auto-generated endpoints for your database.
-
-## Manual Installation
-
-If you prefer manual setup or want to add DDAP to an existing project:
+## Installation
 
 ### Step 1: Create a New ASP.NET Core Project
 

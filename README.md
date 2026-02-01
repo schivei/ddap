@@ -205,13 +205,6 @@ app.Run();
 - REST: `GET /api/entity`
 - GraphQL: `POST /graphql { entities { name } }`
 
-### OR Use the Template
-
-```bash
-cd MyApi
-dotnet run
-```
-
 ---
 
 ## ✨ Features
@@ -241,10 +234,6 @@ options.AutoReload = new AutoReloadOptions
     Behavior = ReloadBehavior.ServeOldSchema,
     Detection = ChangeDetection.CheckHash
 };
-```
-
-### 📦 Project Templates
-```bash
 ```
 
 ### 🎛️ Zero Opinions
@@ -339,8 +328,6 @@ public partial class EntityController
 | Package | Description | Status |
 |---------|-------------|--------|
 | `Ddap.CodeGen` | Source generators for boilerplate code | ✅ Stable |
-
-> **⚠️ Template Known Issue**: API provider flags (--rest, --graphql, --grpc) currently not working. Fix in progress. [Track issue](https://github.com/schivei/ddap/issues)
 
 ### Client Libraries
 

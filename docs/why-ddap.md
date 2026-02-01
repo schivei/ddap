@@ -320,20 +320,6 @@ We intentionally **don't**:
 
 Ready to take control?
 
-```bash
-# Install template
-
-# Create project with YOUR choices
-    --database-type sqlserver \
-    --database-provider dapper \
-    --include-rest \
-    --include-graphql
-
-# You're in control from day one
-cd MyApi
-dotnet run
-```
-
 ---
 
 ## Learn More
