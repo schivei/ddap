@@ -45,8 +45,17 @@ var ddapBuilder = builder.Services.AddDdap(options =>
 });
 
 // Add database provider
-#if (UseDapper)
-ddapBuilder.AddDapper();
+#if (UseDapper && UseSqlServer)
+ddapBuilder.AddDapperSqlServer(() => new Microsoft.Data.SqlClient.SqlConnection(connectionString));
+#endif
+#if (UseDapper && UseMySQL)
+ddapBuilder.AddDapperMySql(() => new MySql.Data.MySqlClient.MySqlConnection(connectionString));
+#endif
+#if (UseDapper && UsePostgreSQL)
+ddapBuilder.AddDapperPostgreSql(() => new Npgsql.NpgsqlConnection(connectionString));
+#endif
+#if (UseDapper && UseSQLite)
+ddapBuilder.AddDapper(() => new Microsoft.Data.Sqlite.SqliteConnection(connectionString));
 #endif
 #if (UseEntityFramework && UseSqlServer)
 ddapBuilder.AddEntityFramework<Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.SqlServerDbContextOptionsBuilder>();
