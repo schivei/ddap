@@ -13,15 +13,13 @@ EXIT_CODE=0
 LANGUAGES=("en" "pt-br" "es" "fr" "de" "ja" "zh")
 
 # Documentation pages that should exist in all languages
+# Note: DocFX-generated pages (index, get-started, architecture, advanced) are not included
+# as they are generated from .md files and validated during DocFX build
+# templates.html was removed with template project removal
 REQUIRED_PAGES=(
-    "index.html"
-    "get-started.html"
-    "templates.html"
     "database-providers.html"
     "api-providers.html"
-    "architecture.html"
     "philosophy.html"
-    "advanced.html"
     "client-getting-started.html"
     "client-rest.html"
     "client-graphql.html"
