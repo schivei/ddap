@@ -208,8 +208,6 @@ app.Run();
 ### OR Use the Template
 
 ```bash
-dotnet new install Ddap.Templates
-dotnet new ddap-api --name MyApi
 cd MyApi
 dotnet run
 ```
@@ -247,7 +245,6 @@ options.AutoReload = new AutoReloadOptions
 
 ### 📦 Project Templates
 ```bash
-dotnet new ddap-api --database-provider dapper --database-type mysql --api-providers "rest,graphql"
 ```
 
 ### 🎛️ Zero Opinions
@@ -341,7 +338,6 @@ public partial class EntityController
 
 | Package | Description | Status |
 |---------|-------------|--------|
-| `Ddap.Templates` | Project templates (`dotnet new ddap-api`) | ⚠️ [Known Issues](https://github.com/schivei/ddap/issues) |
 | `Ddap.CodeGen` | Source generators for boilerplate code | ✅ Stable |
 
 > **⚠️ Template Known Issue**: API provider flags (--rest, --graphql, --grpc) currently not working. Fix in progress. [Track issue](https://github.com/schivei/ddap/issues)

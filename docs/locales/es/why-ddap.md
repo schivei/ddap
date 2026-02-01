@@ -322,10 +322,8 @@ Ready to take control?
 
 ```bash
 # Install template
-dotnet new install Ddap.Templates
 
 # Create project with YOUR choices
-dotnet new ddap-api --name MyApi \
     --database-type sqlserver \
     --database-provider dapper \
     --include-rest \

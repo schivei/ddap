@@ -26,10 +26,8 @@ A maneira mais rápida de começar com DDAP é usando o template de projeto:
 
 ```bash
 # Instalar o template
-dotnet new install Ddap.Templates
 
 # Criar uma nova API DDAP (modo interativo solicitará)
-dotnet new ddap-api --name MyDdapApi
 cd MyDdapApi
 
 # Executar sua API

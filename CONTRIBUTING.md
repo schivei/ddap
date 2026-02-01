@@ -455,7 +455,6 @@ public void SqlServerTest() { }
 
 ### Template Testing
 
-When working on project templates (`Ddap.Templates`):
 
 #### Unit Tests
 
@@ -463,7 +462,6 @@ Run the comprehensive unit test suite:
 
 ```bash
 # Run all template tests
-dotnet test tests/Ddap.Templates.Tests/
 
 # Tests verify:
 # - Template generation with all parameter combinations
