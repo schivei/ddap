@@ -22,12 +22,12 @@ public class AccessibilityAutoDetectionTests : PageTest
 
         // Navigate to the documentation home page
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         // Wait for theme API to be available
         await Page.WaitForFunctionAsync(
             "() => window.ddapTheme !== undefined",
-            new PageWaitForFunctionOptions { Timeout = 10000 }
+            new PageWaitForFunctionOptions { Timeout = 5000 }
         );
     }
 
@@ -114,7 +114,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     {
         // Arrange: Apply high contrast theme
         await Page.EvaluateAsync("window.ddapTheme.apply('high-contrast')");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Check for reduced motion attribute
         var hasReducedMotion = await Page.EvaluateAsync<bool>(
@@ -134,7 +134,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     {
         // Arrange: Apply high contrast theme
         await Page.EvaluateAsync("window.ddapTheme.apply('high-contrast')");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Check for high contrast attribute
         var hasHighContrast = await Page.EvaluateAsync<bool>(
@@ -154,7 +154,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     {
         // Arrange: Apply light theme
         await Page.EvaluateAsync("window.ddapTheme.apply('light')");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Check for high contrast attribute
         var hasHighContrast = await Page.EvaluateAsync<bool>(
@@ -174,7 +174,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     {
         // Arrange: Apply high contrast theme
         await Page.EvaluateAsync("window.ddapTheme.apply('high-contrast')");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Get link text decoration
         var link = await Page.QuerySelectorAsync("a");
@@ -207,7 +207,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     {
         // Arrange: Apply high contrast theme
         await Page.EvaluateAsync("window.ddapTheme.apply('high-contrast')");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Focus on a button and get outline
         var button = await Page.QuerySelectorAsync("button");

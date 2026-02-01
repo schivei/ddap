@@ -19,7 +19,7 @@ public class AccessibilityTests : PageTest
     {
         // Navigate to the documentation home page
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
     }
 
     [Test]
@@ -32,7 +32,7 @@ public class AccessibilityTests : PageTest
             localStorage.setItem('ddap-theme', 'light');
         "
         );
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Check contrast ratios for key elements
         var bodyContrast = await GetContrastRatio(await Page.QuerySelectorAsync("body"));
@@ -67,7 +67,7 @@ public class AccessibilityTests : PageTest
             localStorage.setItem('ddap-theme', 'dark');
         "
         );
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Check contrast ratios for key elements
         var bodyContrast = await GetContrastRatio(await Page.QuerySelectorAsync("body"));
@@ -105,7 +105,7 @@ public class AccessibilityTests : PageTest
             localStorage.setItem('ddap-theme', 'high-contrast');
         "
         );
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Check contrast ratios for key elements
         var bodyContrast = await GetContrastRatio(await Page.QuerySelectorAsync("body"));
@@ -170,7 +170,7 @@ public class AccessibilityTests : PageTest
 
         // Act: Press Enter to activate skip link
         await Page.Keyboard.PressAsync("Enter");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Assert: Focus should be on main content
         var focusedElementId = await Page.EvaluateAsync<string>("document.activeElement.id");
@@ -215,7 +215,7 @@ public class AccessibilityTests : PageTest
     {
         // Arrange: Set mobile viewport
         await Page.SetViewportSizeAsync(375, 667); // iPhone SE
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Use screenshot comparison to detect horizontal scrolling
         // Take screenshot at initial position
@@ -309,7 +309,7 @@ public class AccessibilityTests : PageTest
 
             // Navigate to the linked page
             await Page.GotoAsync($"{DocsBaseUrl}/{href}");
-            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
             // Assert: Page loaded successfully
             var title = await Page.TitleAsync();
@@ -317,7 +317,7 @@ public class AccessibilityTests : PageTest
 
             // Go back to home
             await Page.GotoAsync($"{DocsBaseUrl}/index.html");
-            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
         }
     }
 

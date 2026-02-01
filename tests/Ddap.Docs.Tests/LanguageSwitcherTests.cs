@@ -37,12 +37,12 @@ public class LanguageSwitcherTests : PageTest
 
         // Navigate to the documentation home page
         await Page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
-        // Wait for language switcher API to be available (increased timeout)
+        // Wait for language switcher API to be available
         await Page.WaitForFunctionAsync(
             "() => window.ddapLanguage !== undefined",
-            new PageWaitForFunctionOptions { Timeout = 30000 } // Increased to 30 seconds
+            new PageWaitForFunctionOptions { Timeout = 5000 }
         );
     }
 
@@ -84,7 +84,7 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Navigate to the page
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         // Assert: Language should be detected as Portuguese
         var currentLang = await page.GetAttributeAsync("html", "lang");
@@ -112,7 +112,7 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Navigate to the page
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         // Assert: Language should be detected as Spanish
         var currentLang = await page.GetAttributeAsync("html", "lang");
@@ -139,7 +139,7 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Navigate to the page
         await page.GotoAsync($"{DocsBaseUrl}/index.html");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         // Assert: Language should fallback to English
         var currentLang = await page.GetAttributeAsync("html", "lang");
@@ -212,7 +212,7 @@ public class LanguageSwitcherTests : PageTest
             window.ddapLanguage.switch('pt-br');
         "
         );
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Act: Get stored language from localStorage
         var storedLanguage = await Page.EvaluateAsync<string>(
@@ -242,7 +242,7 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Reload page to trigger language detection with localStorage preference
         await page.ReloadAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         // Assert: Saved preference should override browser language
         var currentLang = await page.GetAttributeAsync("html", "lang");
@@ -337,22 +337,16 @@ public class LanguageSwitcherTests : PageTest
 
         // Reload to apply the language change
         await Page.ReloadAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        await Page.WaitForTimeoutAsync(1000);
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        await Page.WaitForTimeoutAsync(200);
 
         // Wait for language-switcher container to be created
         await Page.WaitForSelectorAsync(
             "#language-switcher",
-            new() { State = WaitForSelectorState.Attached, Timeout = 20000 }
+            new() { State = WaitForSelectorState.Attached, Timeout = 5000 }
         );
 
-        // Wait for language toggle button to be present (increased timeout for CI)
-        await Page.WaitForSelectorAsync(
-            "#language-toggle",
-            new() { State = WaitForSelectorState.Attached, Timeout = 20000 }
-        );
-
-        // Ensure it's visible
+        // Wait for language toggle button to be visible
         await Page.WaitForSelectorAsync(
             "#language-toggle",
             new() { State = WaitForSelectorState.Visible, Timeout = 5000 }
@@ -466,7 +460,7 @@ public class LanguageSwitcherTests : PageTest
 
         // Arrange: Directly set localStorage (don't use switch() as it navigates away)
         await Page.EvaluateAsync("localStorage.setItem('ddap-language', 'de')");
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Verify it was set
         var beforeReset = await Page.EvaluateAsync<string?>(
@@ -476,7 +470,7 @@ public class LanguageSwitcherTests : PageTest
 
         // Act: Reset language (this should clear localStorage)
         await Page.EvaluateAsync("window.ddapLanguage.reset()");
-        await Page.WaitForTimeoutAsync(1000);
+        await Page.WaitForTimeoutAsync(200);
 
         // Assert: localStorage should be cleared
         var storedLanguage = await Page.EvaluateAsync<string?>(
@@ -499,7 +493,7 @@ public class LanguageSwitcherTests : PageTest
             window.ddapLanguage.reset();
         "
         );
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(100);
 
         // Note: The announcer is created when applyLanguage is called during switchLanguage
         // Since switchLanguage causes navigation, we test the reset function instead
