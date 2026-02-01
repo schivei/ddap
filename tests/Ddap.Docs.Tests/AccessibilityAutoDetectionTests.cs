@@ -8,7 +8,6 @@ namespace Ddap.Docs.Tests;
 /// Tests for accessibility auto-detection features.
 /// Verifies prefers-contrast, prefers-reduced-motion, and forced-colors detection.
 /// </summary>
-[Ignore("Playwright tests are slow and flaky - require browser automation. Better suited for manual testing.")]
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class AccessibilityAutoDetectionTests : PageTest
@@ -33,6 +32,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task PrefersReducedMotion_Function_ReturnsBoolean()
     {
         // Act: Check if function exists and returns boolean
@@ -47,6 +47,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task PrefersHighContrast_Function_ReturnsBoolean()
     {
         // Act: Check if function exists and returns boolean
@@ -61,6 +62,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task EnableAutoDetect_Function_Exists()
     {
         // Act: Check if function exists
@@ -86,6 +88,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task DisableAutoDetect_Function_Exists()
     {
         // Act: Check if function exists
@@ -111,6 +114,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task HighContrastMode_HasReducedMotionAttribute()
     {
         // Arrange: Apply high contrast theme
@@ -131,6 +135,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task HighContrastMode_HasHighContrastAttribute()
     {
         // Arrange: Apply high contrast theme
@@ -151,6 +156,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LightMode_DoesNotHaveHighContrastAttribute()
     {
         // Arrange: Apply light theme
@@ -171,6 +177,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task HighContrastMode_LinksAreUnderlined()
     {
         // Arrange: Apply high contrast theme
@@ -204,6 +211,7 @@ public class AccessibilityAutoDetectionTests : PageTest
     // Visual inspection confirms focus indicators are enhanced in high contrast mode.
     /*
     [Test]
+    [CancelAfter(30000)]
     public async Task HighContrastMode_FocusIndicators_AreEnhanced()
     {
         // Arrange: Apply high contrast theme

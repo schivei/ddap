@@ -8,7 +8,7 @@ namespace Ddap.Docs.Tests;
 /// Tests for response compression (Brotli and Gzip).
 /// Verifies that the server properly compresses responses based on Accept-Encoding headers.
 /// </summary>
-[Ignore("Playwright tests are slow and flaky - require browser automation. Better suited for manual testing.")]
+[Ignore("Tests fail because static files (CSS/JS) don't exist in minimal test setup")]
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class CompressionTests : PageTest
@@ -16,6 +16,7 @@ public class CompressionTests : PageTest
     private const string DocsBaseUrl = "http://localhost:8000/ddap";
 
     [Test]
+    [CancelAfter(30000)]
     public async Task BrotliCompression_IsUsed_WhenRequested()
     {
         // Act: Make request with Brotli support
@@ -51,6 +52,7 @@ public class CompressionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task GzipCompression_IsUsed_WhenBrotliNotSupported()
     {
         // Act: Make request with only Gzip support
@@ -82,6 +84,7 @@ public class CompressionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task NoCompression_WhenNotRequested()
     {
         // Act: Make request without compression support
@@ -110,6 +113,7 @@ public class CompressionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task CSSFiles_AreCompressed()
     {
         // Act: Request CSS file with compression
@@ -147,6 +151,7 @@ public class CompressionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task JavaScriptFiles_AreCompressed()
     {
         // Act: Request JS file with compression
@@ -179,6 +184,7 @@ public class CompressionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task HTMLFiles_AreCompressed()
     {
         // Act: Request HTML file with compression
@@ -216,6 +222,7 @@ public class CompressionTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task Compression_IsAppliedWhenRequested()
     {
         // Act: Request file with compression support

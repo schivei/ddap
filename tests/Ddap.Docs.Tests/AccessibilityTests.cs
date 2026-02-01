@@ -8,7 +8,6 @@ namespace Ddap.Docs.Tests;
 /// Accessibility tests for DDAP documentation website.
 /// Tests WCAG AA/AAA compliance, theme support, and keyboard navigation.
 /// </summary>
-[Ignore("Playwright tests are slow and flaky - require browser automation. Better suited for manual testing.")]
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class AccessibilityTests : PageTest
@@ -24,6 +23,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LightMode_MeetsWCAG_AA_ContrastRequirements()
     {
         // Arrange: Set light theme
@@ -59,6 +59,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task DarkMode_MeetsWCAG_AA_ContrastRequirements()
     {
         // Arrange: Set dark theme
@@ -97,6 +98,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task HighContrastMode_MeetsWCAG_AAA_ContrastRequirements()
     {
         // Arrange: Set high contrast theme
@@ -132,6 +134,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task KeyboardNavigation_AllElementsAccessible()
     {
         // Act: Tab through all interactive elements
@@ -159,6 +162,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task SkipToContent_LinkExists_AndWorks()
     {
         // Arrange: Press Tab to focus skip link
@@ -183,6 +187,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task ScreenReader_SemanticHTML_Present()
     {
         // Act: Check for semantic HTML elements
@@ -199,6 +204,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task ScreenReader_AriaLabels_Present()
     {
         // Act: Check for ARIA labels on key elements
@@ -212,6 +218,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task MobileResponsive_NoHorizontalScroll()
     {
         // Arrange: Set mobile viewport
@@ -251,6 +258,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task ThemeToggle_Cycles_ThroughAllThemes()
     {
         // Arrange: Start with light theme
@@ -285,6 +293,7 @@ public class AccessibilityTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task AllPages_Accessible_FromHomepage()
     {
         // Arrange: Get all navigation links

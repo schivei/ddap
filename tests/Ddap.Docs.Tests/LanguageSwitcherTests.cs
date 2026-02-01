@@ -8,7 +8,6 @@ namespace Ddap.Docs.Tests;
 /// Language switcher tests for DDAP documentation website.
 /// Tests language detection, switching, localStorage persistence, and fallback.
 /// </summary>
-[Ignore("Playwright tests are slow and flaky - require browser automation. Better suited for manual testing.")]
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class LanguageSwitcherTests : PageTest
@@ -48,6 +47,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageSwitcher_ExistsOnPage()
     {
         // Assert: Language switcher should be present
@@ -62,6 +62,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task DefaultLanguage_IsEnglish()
     {
         // Act: Get the current language from document
@@ -72,6 +73,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task BrowserLanguageDetection_Portuguese()
     {
         // Arrange: Clear localStorage and set browser language to Portuguese
@@ -100,6 +102,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task BrowserLanguageDetection_Spanish()
     {
         // Arrange: Clear localStorage and set browser language to Spanish
@@ -124,6 +127,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task BrowserLanguageDetection_Fallback_ToEnglish()
     {
         // Arrange: Clear localStorage and set unsupported browser language
@@ -155,6 +159,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageSwitch_ToPortuguese_UpdatesUI()
     {
         // Arrange: Open language dropdown
@@ -180,6 +185,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageSwitch_ToSpanish_UpdatesUI()
     {
         // Arrange: Open language dropdown
@@ -205,6 +211,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LocalStorage_PersistsLanguageChoice()
     {
         // Arrange: Switch to Portuguese
@@ -225,6 +232,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LocalStorage_OverridesBrowserDetection()
     {
         // Create a new page with English browser language
@@ -258,6 +266,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageDropdown_Opens_OnClick()
     {
         // Arrange: Get language toggle button
@@ -284,6 +293,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageDropdown_Closes_OnOutsideClick()
     {
         // Arrange: Open the dropdown
@@ -307,6 +317,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task AllLanguages_AreAvailable_InDropdown()
     {
         // Arrange: Expected languages
@@ -330,6 +341,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task ActiveLanguage_IsMarked_InDropdown()
     {
         // Arrange: Set French as the language preference in localStorage
@@ -385,6 +397,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageAPI_IsAccessible_Globally()
     {
         // Act: Check if global API is available
@@ -416,6 +429,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task LanguageAPI_Reset_ClearsLocalStorage()
     {
         // Wait for language API to be available with longer timeout
@@ -481,6 +495,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task ScreenReader_Announcement_OnLanguageChange()
     {
         // Arrange: Ensure we're on the English page with language switcher
@@ -506,6 +521,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task KeyboardNavigation_ArrowKeys_InDropdown()
     {
         // Arrange: Open dropdown
@@ -529,6 +545,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task KeyboardNavigation_Escape_ClosesDropdown()
     {
         // Arrange: Open dropdown
@@ -546,6 +563,7 @@ public class LanguageSwitcherTests : PageTest
     }
 
     [Test]
+    [CancelAfter(30000)]
     public async Task HreflangTags_PresentInHead()
     {
         // Act: Get all link tags with hreflang
